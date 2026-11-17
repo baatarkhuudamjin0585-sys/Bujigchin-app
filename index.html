@@ -2,7 +2,7 @@
 <html lang="mn" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Bar Dancer Revenue & Bonus System</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -24,12 +24,6 @@
                             700: '#232d3f',
                             600: '#323f56',
                         },
-                        gold: {
-                            400: '#fbbf24',
-                            500: '#d97706',
-                            600: '#b45309',
-                            DEFAULT: '#c5a059',
-                        },
                         amber: {
                             500: '#f59e0b',
                             600: '#d97706',
@@ -44,649 +38,490 @@
         }
     </script>
     <style>
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #0d1117; }
-        ::-webkit-scrollbar-thumb { background: #232d3f; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #323f56; }
-        * { -webkit-tap-highlight-color: transparent; }
-        .tab-active {
-            color: #fbbf24;
-            border-bottom: 2px solid #d97706;
-            background: rgba(217, 119, 6, 0.05);
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            overflow-x: hidden;
+            width: 100%;
+        }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: #07090d; }
+        ::-webkit-scrollbar-thumb { background: #232d3f; border-radius: 2px; }
+        
+        .tab-btn-active {
+            background-color: #d97706 !important;
+            color: #07090d !important;
+            font-weight: 700 !important;
+        }
+        .club-chip-active {
+            background-color: rgba(217, 119, 6, 0.15) !important;
+            border-color: #d97706 !important;
+            color: #fbbf24 !important;
+            font-weight: 700 !important;
         }
     </style>
 </head>
-<body class="bg-dark-950 text-gray-200 min-h-screen font-sans antialiased selection:bg-amber-600/30 selection:text-amber-200">
+<body class="bg-dark-950 text-gray-200 min-h-screen font-sans antialiased selection:bg-amber-600/30 selection:text-amber-200 pb-28">
 
-    <!-- Top Navigation Bar -->
-    <header class="border-b border-dark-800 bg-dark-900/90 backdrop-blur-md sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <!-- Brand / Logo -->
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-lg bg-dark-800 border border-dark-700 flex items-center justify-center text-amber-500 shadow-inner">
-                        <i data-lucide="wine" class="w-5 h-5"></i>
-                    </div>
-                    <div>
-                        <div class="flex items-center gap-2">
-                            <span class="font-bold tracking-wider text-sm uppercase text-gray-100">BOUDOIR & NIGHT</span>
-                            <span class="text-[10px] px-1.5 py-0.5 rounded bg-dark-800 border border-dark-700 text-gray-400 font-mono">v1.2</span>
-                        </div>
-                        <p class="text-[11px] text-gray-400">Бүжигчдийн орлого, бонусын систем</p>
-                    </div>
+    <!-- Top Navigation Header (Compact & Centered) -->
+    <header class="border-b border-dark-800 bg-dark-900/95 backdrop-blur-md sticky top-0 z-30 w-full px-3 py-2.5">
+        <div class="max-w-md mx-auto flex items-center justify-between gap-2">
+            <!-- Brand -->
+            <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-md bg-dark-800 border border-dark-700 flex items-center justify-center text-amber-500">
+                    <i data-lucide="wine" class="w-4 h-4"></i>
                 </div>
+                <span class="font-bold tracking-wider text-xs uppercase text-gray-100">BOUDOIR</span>
+            </div>
 
-                <!-- Navigation Tabs -->
-                <div class="flex items-center gap-1 sm:gap-2">
-                    <button id="tab-btn-bartender" onclick="switchTab('bartender')" 
-                        class="tab-active flex items-center gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-t transition-colors">
-                        <i data-lucide="clipboard-edit" class="w-4 h-4"></i>
-                        <span>Бармен горим</span>
-                    </button>
-                    <button id="tab-btn-admin" onclick="switchTab('admin')" 
-                        class="text-gray-400 hover:text-gray-200 flex items-center gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-t transition-colors">
-                        <i data-lucide="shield-check" class="w-4 h-4"></i>
-                        <span>Ерөнхий нягтлан</span>
-                    </button>
-                </div>
+            <!-- Segmented Top Tabs -->
+            <div class="flex bg-dark-850 border border-dark-700 p-0.5 rounded-lg text-xs font-medium">
+                <button id="tab-btn-bartender" onclick="switchTab('bartender')" 
+                    class="tab-btn-active px-3 py-1 rounded-md transition-all flex items-center gap-1.5">
+                    <i data-lucide="clipboard-edit" class="w-3.5 h-3.5"></i>
+                    <span>Бармен</span>
+                </button>
+                <button id="tab-btn-admin" onclick="switchTab('admin')" 
+                    class="text-gray-400 hover:text-gray-200 px-3 py-1 rounded-md transition-all flex items-center gap-1.5">
+                    <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+                    <span>Нягтлан</span>
+                </button>
             </div>
         </div>
     </header>
 
-    <!-- MAIN CONTENT CONTAINER -->
-    <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5">
+    <!-- MAIN CONTAINER (Fixed width for Mobile Ergonomics) -->
+    <main class="max-w-md mx-auto px-3 py-3 w-full">
 
         <!-- ======================================================== -->
-        <!-- VIEW 1: BARTENDER ENTRY VIEW (MOBILE FIRST)              -->
+        <!-- VIEW 1: BARTENDER ENTRY (COMPACT ZERO-SCROLL FOR MOBILE) -->
         <!-- ======================================================== -->
-        <section id="view-bartender" class="space-y-5">
-            <!-- Filter & Context Banner -->
-            <div class="bg-dark-900 border border-dark-800 rounded-xl p-4 shadow-sm">
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <!-- Branch Selector -->
-                    <div>
-                        <label class="block text-xs font-medium text-gray-400 mb-1.5 flex items-center gap-1.5">
-                            <i data-lucide="map-pin" class="w-3.5 h-3.5 text-amber-500"></i>
-                            <span>Салбар сонгох</span>
-                        </label>
-                        <select id="bar-club-select" onchange="onClubOrDateChange()"
-                            class="w-full bg-dark-850 border border-dark-700 rounded-lg px-3 py-2.5 text-sm text-gray-200 focus:outline-none focus:border-amber-500">
-                        </select>
-                    </div>
-
-                    <!-- Date Selector -->
-                    <div>
-                        <label class="block text-xs font-medium text-gray-400 mb-1.5 flex items-center gap-1.5">
-                            <i data-lucide="calendar" class="w-3.5 h-3.5 text-amber-500"></i>
-                            <span>Огноо</span>
-                        </label>
-                        <input type="date" id="bar-date-input" onchange="onClubOrDateChange()"
-                            class="w-full bg-dark-850 border border-dark-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-amber-500 font-mono">
-                    </div>
-
-                    <!-- Bartender Name -->
-                    <div>
-                        <label class="block text-xs font-medium text-gray-400 mb-1.5 flex items-center gap-1.5">
-                            <i data-lucide="user" class="w-3.5 h-3.5 text-amber-500"></i>
-                            <span>Ээлжийн бармен / Менежер</span>
-                        </label>
-                        <input type="text" id="bar-bartender-name" placeholder="Жишээ: Б.Заяа"
-                            class="w-full bg-dark-850 border border-dark-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-amber-500">
-                    </div>
+        <section id="view-bartender" class="space-y-3">
+            
+            <!-- Quick Club Selector (3 One-Tap Chips) -->
+            <div class="space-y-1.5">
+                <div class="flex items-center justify-between text-[11px] text-gray-400 px-0.5">
+                    <span class="flex items-center gap-1">
+                        <i data-lucide="map-pin" class="w-3 h-3 text-amber-500"></i>
+                        Салбар сонгох:
+                    </span>
+                    <input type="date" id="bar-date-input" onchange="onClubOrDateChange()"
+                        class="bg-dark-850 border border-dark-700 rounded px-2 py-0.5 text-[11px] text-gray-200 font-mono focus:outline-none focus:border-amber-500">
+                </div>
+                <div id="club-chips-container" class="grid grid-cols-3 gap-1.5">
+                    <!-- Populated dynamically via JS -->
                 </div>
             </div>
 
-            <!-- Dancer Daily Entry Card -->
-            <div class="bg-dark-900 border border-dark-800 rounded-xl overflow-hidden shadow-lg">
-                <div class="px-4 py-3.5 border-b border-dark-800 bg-dark-850/60 flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <i data-lucide="plus-circle" class="w-4 h-4 text-amber-500"></i>
-                        <h2 class="text-sm font-semibold tracking-wide uppercase text-gray-100">Бүжигчний өдрийн орлого бүртгэх</h2>
-                    </div>
-                    <span id="rate-badge" class="text-[11px] px-2 py-0.5 rounded bg-dark-800 border border-dark-700 text-amber-400 font-mono">
-                        Тариф: Үндсэн
+            <!-- Dancer Quick Selector Card -->
+            <div class="bg-dark-900 border border-dark-800 rounded-xl p-3 shadow-md space-y-2">
+                <div class="flex items-center justify-between">
+                    <label class="text-[11px] font-medium text-gray-300 flex items-center gap-1">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
+                        <span>Бүжигчин сонгох</span>
+                    </label>
+                    <span id="rate-badge" class="text-[10px] px-1.5 py-0.5 rounded bg-dark-800 text-amber-400 font-mono border border-dark-700">
+                        Үндсэн
                     </span>
                 </div>
 
-                <div class="p-4 sm:p-6 space-y-5">
-                    <!-- Dancer Selection Dropdown & Auto Account Info -->
-                    <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
-                        <div class="md:col-span-6">
-                            <label class="block text-xs font-medium text-gray-400 mb-1.5 flex items-center gap-1.5">
-                                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i>
-                                <span>Бүжигчин сонгох (Тайзны нэр)</span>
-                            </label>
-                            <select id="bar-dancer-select" onchange="onDancerSelected()"
-                                class="w-full bg-dark-850 border border-dark-700 rounded-lg px-3 py-2.5 text-sm text-gray-100 font-medium focus:outline-none focus:border-amber-500">
-                                <option value="">-- Бүжигчин сонгоно уу --</option>
-                            </select>
-                        </div>
+                <select id="bar-dancer-select" onchange="onDancerSelected()"
+                    class="w-full bg-dark-850 border border-dark-700 rounded-lg px-3 py-2 text-sm text-gray-100 font-bold focus:outline-none focus:border-amber-500">
+                    <option value="">-- Бүжигчнийг энд дарж сонгоно уу --</option>
+                </select>
 
-                        <!-- Auto-filled Account Details -->
-                        <div class="md:col-span-6 flex flex-col justify-center bg-dark-950/60 border border-dark-800/80 rounded-lg px-3 py-2 text-xs">
-                            <div class="flex justify-between items-center text-gray-400">
-                                <span>Данс эзэмшигч:</span>
-                                <span id="auto-real-name" class="font-medium text-gray-200">-</span>
-                            </div>
-                            <div class="flex justify-between items-center text-gray-400 mt-1">
-                                <span>Дансны дугаар:</span>
-                                <span id="auto-bank-account" class="font-mono text-amber-400/90 font-medium tracking-wider">-</span>
-                            </div>
+                <!-- Mini Account Info Banner (Compact one-line) -->
+                <div id="dancer-info-strip" class="hidden bg-dark-950/80 border border-dark-800 rounded px-2.5 py-1.5 text-[11px] flex items-center justify-between">
+                    <span id="auto-real-name" class="text-gray-300 font-medium truncate mr-2">-</span>
+                    <span id="auto-bank-account" class="font-mono text-amber-400 font-bold shrink-0 tracking-wide">-</span>
+                </div>
+            </div>
+
+            <!-- Compact Counter Rows (All 6 Items Fits on Single Screen) -->
+            <div class="bg-dark-900 border border-dark-800 rounded-xl divide-y divide-dark-800 overflow-hidden shadow-md">
+                
+                <!-- 1. TIP -->
+                <div class="flex items-center justify-between px-3 py-2 hover:bg-dark-850/40">
+                    <div class="w-36">
+                        <div class="text-xs font-bold text-gray-100 flex items-center gap-1.5">
+                            <i data-lucide="coins" class="w-3.5 h-3.5 text-amber-400"></i>
+                            <span>TIP (Тип)</span>
                         </div>
+                        <div id="tip-rate-label" class="text-[10px] text-gray-400 font-mono">15,000₮</div>
                     </div>
 
-                    <!-- Counter Controls Grid (Mobile-friendly touch inputs) -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-2">
-                        <!-- 1. TIP Counter -->
-                        <div class="bg-dark-850 border border-dark-700/80 rounded-lg p-3">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-xs font-medium text-gray-300 flex items-center gap-1.5">
-                                    <i data-lucide="coins" class="w-3.5 h-3.5 text-amber-400"></i>
-                                    <span>TIP (Тип)</span>
-                                </span>
-                                <span id="tip-rate-label" class="text-[10px] text-gray-400 font-mono">15,000₮</span>
-                            </div>
-                            <div class="flex items-center justify-between gap-2">
-                                <button type="button" onclick="adjustCount('tip_qty', -1)" 
-                                    class="w-10 h-10 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-95 text-gray-200 border border-dark-600 flex items-center justify-center font-bold text-lg">
-                                    -
-                                </button>
-                                <input type="number" id="tip_qty" value="0" min="0" oninput="calculateEntryTotal()"
-                                    class="w-16 h-10 text-center bg-dark-900 border border-dark-700 rounded-lg font-bold text-gray-100 text-base focus:outline-none focus:border-amber-500 font-mono">
-                                <button type="button" onclick="adjustCount('tip_qty', 1)" 
-                                    class="w-10 h-10 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-95 text-gray-200 border border-dark-600 flex items-center justify-center font-bold text-lg">
-                                    +
-                                </button>
-                            </div>
-                            <div class="text-right mt-1.5 text-[11px] text-gray-400 font-mono" id="subtotal-tip">0 ₮</div>
-                        </div>
-
-                        <!-- 2. Regular Wine (Энгийн Wine) -->
-                        <div class="bg-dark-850 border border-dark-700/80 rounded-lg p-3">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-xs font-medium text-gray-300 flex items-center gap-1.5">
-                                    <i data-lucide="wine" class="w-3.5 h-3.5 text-purple-400"></i>
-                                    <span>Энгийн Wine</span>
-                                </span>
-                                <span id="wine-reg-rate-label" class="text-[10px] text-gray-400 font-mono">100,000₮</span>
-                            </div>
-                            <div class="flex items-center justify-between gap-2">
-                                <button type="button" onclick="adjustCount('wine_reg_qty', -1)" 
-                                    class="w-10 h-10 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-95 text-gray-200 border border-dark-600 flex items-center justify-center font-bold text-lg">
-                                    -
-                                </button>
-                                <input type="number" id="wine_reg_qty" value="0" min="0" oninput="calculateEntryTotal()"
-                                    class="w-16 h-10 text-center bg-dark-900 border border-dark-700 rounded-lg font-bold text-gray-100 text-base focus:outline-none focus:border-amber-500 font-mono">
-                                <button type="button" onclick="adjustCount('wine_reg_qty', 1)" 
-                                    class="w-10 h-10 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-95 text-gray-200 border border-dark-600 flex items-center justify-center font-bold text-lg">
-                                    +
-                                </button>
-                            </div>
-                            <div class="text-right mt-1.5 text-[11px] text-gray-400 font-mono" id="subtotal-wine-reg">0 ₮</div>
-                        </div>
-
-                        <!-- 3. Expensive Wine (Үнэтэй Wine) -->
-                        <div class="bg-dark-850 border border-dark-700/80 rounded-lg p-3">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-xs font-medium text-gray-300 flex items-center gap-1.5">
-                                    <i data-lucide="sparkle" class="w-3.5 h-3.5 text-amber-400"></i>
-                                    <span>Үнэтэй Wine</span>
-                                </span>
-                                <span id="wine-exp-rate-label" class="text-[10px] text-gray-400 font-mono">120,000₮</span>
-                            </div>
-                            <div class="flex items-center justify-between gap-2">
-                                <button type="button" onclick="adjustCount('wine_exp_qty', -1)" 
-                                    class="w-10 h-10 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-95 text-gray-200 border border-dark-600 flex items-center justify-center font-bold text-lg">
-                                    -
-                                </button>
-                                <input type="number" id="wine_exp_qty" value="0" min="0" oninput="calculateEntryTotal()"
-                                    class="w-16 h-10 text-center bg-dark-900 border border-dark-700 rounded-lg font-bold text-gray-100 text-base focus:outline-none focus:border-amber-500 font-mono">
-                                <button type="button" onclick="adjustCount('wine_exp_qty', 1)" 
-                                    class="w-10 h-10 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-95 text-gray-200 border border-dark-600 flex items-center justify-center font-bold text-lg">
-                                    +
-                                </button>
-                            </div>
-                            <div class="text-right mt-1.5 text-[11px] text-gray-400 font-mono" id="subtotal-wine-exp">0 ₮</div>
-                        </div>
-
-                        <!-- 4. Regular Sit (Энгийн суулт) -->
-                        <div class="bg-dark-850 border border-dark-700/80 rounded-lg p-3">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-xs font-medium text-gray-300 flex items-center gap-1.5">
-                                    <i data-lucide="armchair" class="w-3.5 h-3.5 text-blue-400"></i>
-                                    <span>Энгийн суулт</span>
-                                </span>
-                                <span id="sit-reg-rate-label" class="text-[10px] text-gray-400 font-mono">70,000₮</span>
-                            </div>
-                            <div class="flex items-center justify-between gap-2">
-                                <button type="button" onclick="adjustCount('sit_reg_qty', -1)" 
-                                    class="w-10 h-10 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-95 text-gray-200 border border-dark-600 flex items-center justify-center font-bold text-lg">
-                                    -
-                                </button>
-                                <input type="number" id="sit_reg_qty" value="0" min="0" oninput="calculateEntryTotal()"
-                                    class="w-16 h-10 text-center bg-dark-900 border border-dark-700 rounded-lg font-bold text-gray-100 text-base focus:outline-none focus:border-amber-500 font-mono">
-                                <button type="button" onclick="adjustCount('sit_reg_qty', 1)" 
-                                    class="w-10 h-10 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-95 text-gray-200 border border-dark-600 flex items-center justify-center font-bold text-lg">
-                                    +
-                                </button>
-                            </div>
-                            <div class="text-right mt-1.5 text-[11px] text-gray-400 font-mono" id="subtotal-sit-reg">0 ₮</div>
-                        </div>
-
-                        <!-- 5. Drink Sit (Уулттай суулт) -->
-                        <div class="bg-dark-850 border border-dark-700/80 rounded-lg p-3">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-xs font-medium text-gray-300 flex items-center gap-1.5">
-                                    <i data-lucide="glass-water" class="w-3.5 h-3.5 text-emerald-400"></i>
-                                    <span>Уулттай суулт</span>
-                                </span>
-                                <span id="sit-drink-rate-label" class="text-[10px] text-gray-400 font-mono">120,000₮</span>
-                            </div>
-                            <div class="flex items-center justify-between gap-2">
-                                <button type="button" onclick="adjustCount('sit_drink_qty', -1)" 
-                                    class="w-10 h-10 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-95 text-gray-200 border border-dark-600 flex items-center justify-center font-bold text-lg">
-                                    -
-                                </button>
-                                <input type="number" id="sit_drink_qty" value="0" min="0" oninput="calculateEntryTotal()"
-                                    class="w-16 h-10 text-center bg-dark-900 border border-dark-700 rounded-lg font-bold text-gray-100 text-base focus:outline-none focus:border-amber-500 font-mono">
-                                <button type="button" onclick="adjustCount('sit_drink_qty', 1)" 
-                                    class="w-10 h-10 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-95 text-gray-200 border border-dark-600 flex items-center justify-center font-bold text-lg">
-                                    +
-                                </button>
-                            </div>
-                            <div class="text-right mt-1.5 text-[11px] text-gray-400 font-mono" id="subtotal-sit-drink">0 ₮</div>
-                        </div>
-
-                        <!-- 6. Extra Counter (200,000₮) -->
-                        <div class="bg-dark-850 border border-dark-700/80 rounded-lg p-3">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-xs font-medium text-gray-300 flex items-center gap-1.5">
-                                    <i data-lucide="award" class="w-3.5 h-3.5 text-yellow-400"></i>
-                                    <span>Extra бонус</span>
-                                </span>
-                                <span id="extra-rate-label" class="text-[10px] text-gray-400 font-mono">200,000₮</span>
-                            </div>
-                            <div class="flex items-center justify-between gap-2">
-                                <button type="button" onclick="adjustCount('extra_qty', -1)" 
-                                    class="w-10 h-10 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-95 text-gray-200 border border-dark-600 flex items-center justify-center font-bold text-lg">
-                                    -
-                                </button>
-                                <input type="number" id="extra_qty" value="0" min="0" oninput="calculateEntryTotal()"
-                                    class="w-16 h-10 text-center bg-dark-900 border border-dark-700 rounded-lg font-bold text-gray-100 text-base focus:outline-none focus:border-amber-500 font-mono">
-                                <button type="button" onclick="adjustCount('extra_qty', 1)" 
-                                    class="w-10 h-10 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-95 text-gray-200 border border-dark-600 flex items-center justify-center font-bold text-lg">
-                                    +
-                                </button>
-                            </div>
-                            <div class="text-right mt-1.5 text-[11px] text-gray-400 font-mono" id="subtotal-extra">0 ₮</div>
-                        </div>
+                    <!-- Step Controls -->
+                    <div class="flex items-center gap-1">
+                        <button type="button" onclick="adjustCount('tip_qty', -1)" 
+                            class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-90 text-gray-100 border border-dark-700 font-bold text-base flex items-center justify-center">
+                            -
+                        </button>
+                        <input type="number" id="tip_qty" value="0" min="0" oninput="calculateEntryTotal()"
+                            class="w-12 h-9 text-center bg-dark-950 border border-dark-700 rounded-lg font-mono font-bold text-gray-100 text-sm focus:outline-none focus:border-amber-500">
+                        <button type="button" onclick="adjustCount('tip_qty', 1)" 
+                            class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-90 text-gray-100 border border-dark-700 font-bold text-base flex items-center justify-center">
+                            +
+                        </button>
                     </div>
 
-                    <!-- Extra Manual Amount, Penalty & Notes Row -->
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-                        <div>
-                            <label class="block text-xs font-medium text-gray-400 mb-1 flex items-center gap-1">
-                                <i data-lucide="badge-plus" class="w-3.5 h-3.5 text-emerald-400"></i>
-                                <span>Бусад нэмэгдэл дүн (₮)</span>
-                            </label>
-                            <input type="number" id="manual_extra_amount" value="0" min="0" step="5000" oninput="calculateEntryTotal()" placeholder="0 ₮"
-                                class="w-full bg-dark-850 border border-dark-700 rounded-lg px-3 py-2 text-sm text-gray-200 font-mono focus:outline-none focus:border-amber-500">
-                        </div>
+                    <div class="w-16 text-right font-mono text-xs text-gray-300 font-medium" id="subtotal-tip">0 ₮</div>
+                </div>
 
-                        <div>
-                            <label class="block text-xs font-medium text-gray-400 mb-1 flex items-center gap-1">
-                                <i data-lucide="badge-minus" class="w-3.5 h-3.5 text-red-400"></i>
-                                <span>Торгууль (Хасагдах ₮)</span>
-                            </label>
-                            <input type="number" id="penalty_amount" value="0" min="0" step="5000" oninput="calculateEntryTotal()" placeholder="0 ₮"
-                                class="w-full bg-dark-850 border border-dark-700 rounded-lg px-3 py-2 text-sm text-red-400 font-mono focus:outline-none focus:border-red-500">
+                <!-- 2. Regular Wine (Энгийн Wine) -->
+                <div class="flex items-center justify-between px-3 py-2 hover:bg-dark-850/40">
+                    <div class="w-36">
+                        <div class="text-xs font-bold text-gray-100 flex items-center gap-1.5">
+                            <i data-lucide="wine" class="w-3.5 h-3.5 text-purple-400"></i>
+                            <span>Энгийн Wine</span>
                         </div>
-
-                        <div>
-                            <label class="block text-xs font-medium text-gray-400 mb-1 flex items-center gap-1">
-                                <i data-lucide="file-text" class="w-3.5 h-3.5 text-gray-400"></i>
-                                <span>Тэмдэглэл</span>
-                            </label>
-                            <input type="text" id="entry_note" placeholder="Жишээ: Holly цаг сунгалт"
-                                class="w-full bg-dark-850 border border-dark-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-amber-500">
-                        </div>
+                        <div id="wine-reg-rate-label" class="text-[10px] text-gray-400 font-mono">100,000₮</div>
                     </div>
 
-                    <!-- Total & Save Action Footer -->
-                    <div class="pt-3 border-t border-dark-800 flex flex-col sm:flex-row items-center justify-between gap-4">
-                        <div class="flex items-baseline gap-2 w-full sm:w-auto justify-between sm:justify-start">
-                            <span class="text-xs text-gray-400 uppercase tracking-wider">Нийт олгох дүн:</span>
-                            <span id="entry-grand-total" class="text-2xl font-bold font-mono text-amber-400 tracking-tight">0 ₮</span>
-                        </div>
+                    <div class="flex items-center gap-1">
+                        <button type="button" onclick="adjustCount('wine_reg_qty', -1)" 
+                            class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-90 text-gray-100 border border-dark-700 font-bold text-base flex items-center justify-center">
+                            -
+                        </button>
+                        <input type="number" id="wine_reg_qty" value="0" min="0" oninput="calculateEntryTotal()"
+                            class="w-12 h-9 text-center bg-dark-950 border border-dark-700 rounded-lg font-mono font-bold text-gray-100 text-sm focus:outline-none focus:border-amber-500">
+                        <button type="button" onclick="adjustCount('wine_reg_qty', 1)" 
+                            class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-90 text-gray-100 border border-dark-700 font-bold text-base flex items-center justify-center">
+                            +
+                        </button>
+                    </div>
 
-                        <div class="flex gap-2 w-full sm:w-auto">
-                            <button type="button" onclick="resetEntryForm()"
-                                class="flex-1 sm:flex-none px-4 py-2.5 rounded-lg border border-dark-700 bg-dark-800 hover:bg-dark-700 text-xs text-gray-300 font-medium transition-colors">
-                                Цэвэрлэх
-                            </button>
-                            <button type="button" onclick="submitEntryRecord()"
-                                class="flex-2 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-amber-600 hover:bg-amber-500 active:scale-[0.98] text-gray-950 font-bold text-sm tracking-wide transition-all shadow-md shadow-amber-600/20">
-                                <i data-lucide="check" class="w-4 h-4"></i>
-                                <span>Бүртгэл хадгалах</span>
-                            </button>
+                    <div class="w-16 text-right font-mono text-xs text-gray-300 font-medium" id="subtotal-wine-reg">0 ₮</div>
+                </div>
+
+                <!-- 3. Expensive Wine (Үнэтэй Wine) -->
+                <div class="flex items-center justify-between px-3 py-2 hover:bg-dark-850/40">
+                    <div class="w-36">
+                        <div class="text-xs font-bold text-gray-100 flex items-center gap-1.5">
+                            <i data-lucide="sparkle" class="w-3.5 h-3.5 text-amber-400"></i>
+                            <span>Үнэтэй Wine</span>
                         </div>
+                        <div id="wine-exp-rate-label" class="text-[10px] text-gray-400 font-mono">120,000₮</div>
+                    </div>
+
+                    <div class="flex items-center gap-1">
+                        <button type="button" onclick="adjustCount('wine_exp_qty', -1)" 
+                            class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-90 text-gray-100 border border-dark-700 font-bold text-base flex items-center justify-center">
+                            -
+                        </button>
+                        <input type="number" id="wine_exp_qty" value="0" min="0" oninput="calculateEntryTotal()"
+                            class="w-12 h-9 text-center bg-dark-950 border border-dark-700 rounded-lg font-mono font-bold text-gray-100 text-sm focus:outline-none focus:border-amber-500">
+                        <button type="button" onclick="adjustCount('wine_exp_qty', 1)" 
+                            class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-90 text-gray-100 border border-dark-700 font-bold text-base flex items-center justify-center">
+                            +
+                        </button>
+                    </div>
+
+                    <div class="w-16 text-right font-mono text-xs text-gray-300 font-medium" id="subtotal-wine-exp">0 ₮</div>
+                </div>
+
+                <!-- 4. Regular Sit (Энгийн суулт) -->
+                <div class="flex items-center justify-between px-3 py-2 hover:bg-dark-850/40">
+                    <div class="w-36">
+                        <div class="text-xs font-bold text-gray-100 flex items-center gap-1.5">
+                            <i data-lucide="armchair" class="w-3.5 h-3.5 text-blue-400"></i>
+                            <span>Энгийн суулт</span>
+                        </div>
+                        <div id="sit-reg-rate-label" class="text-[10px] text-gray-400 font-mono">70,000₮</div>
+                    </div>
+
+                    <div class="flex items-center gap-1">
+                        <button type="button" onclick="adjustCount('sit_reg_qty', -1)" 
+                            class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-90 text-gray-100 border border-dark-700 font-bold text-base flex items-center justify-center">
+                            -
+                        </button>
+                        <input type="number" id="sit_reg_qty" value="0" min="0" oninput="calculateEntryTotal()"
+                            class="w-12 h-9 text-center bg-dark-950 border border-dark-700 rounded-lg font-mono font-bold text-gray-100 text-sm focus:outline-none focus:border-amber-500">
+                        <button type="button" onclick="adjustCount('sit_reg_qty', 1)" 
+                            class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-90 text-gray-100 border border-dark-700 font-bold text-base flex items-center justify-center">
+                            +
+                        </button>
+                    </div>
+
+                    <div class="w-16 text-right font-mono text-xs text-gray-300 font-medium" id="subtotal-sit-reg">0 ₮</div>
+                </div>
+
+                <!-- 5. Drink Sit (Уулттай суулт) -->
+                <div class="flex items-center justify-between px-3 py-2 hover:bg-dark-850/40">
+                    <div class="w-36">
+                        <div class="text-xs font-bold text-gray-100 flex items-center gap-1.5">
+                            <i data-lucide="glass-water" class="w-3.5 h-3.5 text-emerald-400"></i>
+                            <span>Уулттай суулт</span>
+                        </div>
+                        <div id="sit-drink-rate-label" class="text-[10px] text-gray-400 font-mono">120,000₮</div>
+                    </div>
+
+                    <div class="flex items-center gap-1">
+                        <button type="button" onclick="adjustCount('sit_drink_qty', -1)" 
+                            class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-90 text-gray-100 border border-dark-700 font-bold text-base flex items-center justify-center">
+                            -
+                        </button>
+                        <input type="number" id="sit_drink_qty" value="0" min="0" oninput="calculateEntryTotal()"
+                            class="w-12 h-9 text-center bg-dark-950 border border-dark-700 rounded-lg font-mono font-bold text-gray-100 text-sm focus:outline-none focus:border-amber-500">
+                        <button type="button" onclick="adjustCount('sit_drink_qty', 1)" 
+                            class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-90 text-gray-100 border border-dark-700 font-bold text-base flex items-center justify-center">
+                            +
+                        </button>
+                    </div>
+
+                    <div class="w-16 text-right font-mono text-xs text-gray-300 font-medium" id="subtotal-sit-drink">0 ₮</div>
+                </div>
+
+                <!-- 6. Extra бонус (200,000₮) -->
+                <div class="flex items-center justify-between px-3 py-2 hover:bg-dark-850/40">
+                    <div class="w-36">
+                        <div class="text-xs font-bold text-gray-100 flex items-center gap-1.5">
+                            <i data-lucide="award" class="w-3.5 h-3.5 text-yellow-400"></i>
+                            <span>Extra бонус</span>
+                        </div>
+                        <div id="extra-rate-label" class="text-[10px] text-gray-400 font-mono">200,000₮</div>
+                    </div>
+
+                    <div class="flex items-center gap-1">
+                        <button type="button" onclick="adjustCount('extra_qty', -1)" 
+                            class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-90 text-gray-100 border border-dark-700 font-bold text-base flex items-center justify-center">
+                            -
+                        </button>
+                        <input type="number" id="extra_qty" value="0" min="0" oninput="calculateEntryTotal()"
+                            class="w-12 h-9 text-center bg-dark-950 border border-dark-700 rounded-lg font-mono font-bold text-gray-100 text-sm focus:outline-none focus:border-amber-500">
+                        <button type="button" onclick="adjustCount('extra_qty', 1)" 
+                            class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-90 text-gray-100 border border-dark-700 font-bold text-base flex items-center justify-center">
+                            +
+                        </button>
+                    </div>
+
+                    <div class="w-16 text-right font-mono text-xs text-gray-300 font-medium" id="subtotal-extra">0 ₮</div>
+                </div>
+            </div>
+
+            <!-- Collapsible Optional Details (Торгууль, тэмдэглэл зөвхөн хэрэгтэй үед л дэлгэгдэнэ) -->
+            <div class="bg-dark-900 border border-dark-800 rounded-xl overflow-hidden shadow-sm">
+                <button type="button" onclick="toggleDetails()" class="w-full px-3 py-2 text-left text-xs text-gray-400 hover:text-gray-200 flex items-center justify-between">
+                    <span class="flex items-center gap-1.5">
+                        <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 text-amber-500"></i>
+                        <span>Торгууль, нэмэлт тэмдэглэл оруулах</span>
+                    </span>
+                    <i id="details-chevron" data-lucide="chevron-down" class="w-3.5 h-3.5 transition-transform"></i>
+                </button>
+                <div id="details-drawer" class="hidden p-3 border-t border-dark-800 space-y-2 bg-dark-950/40 text-xs">
+                    <div>
+                        <label class="block text-gray-400 mb-1">Торгууль (Хасагдах ₮)</label>
+                        <input type="number" id="penalty_amount" value="0" min="0" step="5000" oninput="calculateEntryTotal()" placeholder="0 ₮"
+                            class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-red-400 font-mono focus:outline-none focus:border-red-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 mb-1">Бусад нэмэгдэл дүн (₮)</label>
+                        <input type="number" id="manual_extra_amount" value="0" min="0" step="5000" oninput="calculateEntryTotal()" placeholder="0 ₮"
+                            class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200 font-mono focus:outline-none focus:border-amber-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 mb-1">Тэмдэглэл</label>
+                        <input type="text" id="entry_note" placeholder="Жишээ: Holly цаг сунгалт"
+                            class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200 focus:outline-none focus:border-amber-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 mb-1">Бармены нэр</label>
+                        <input type="text" id="bar-bartender-name" placeholder="Жишээ: Б.Заяа"
+                            class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200 focus:outline-none focus:border-amber-500">
                     </div>
                 </div>
             </div>
 
-            <!-- Today's Recorded List in Selected Club -->
+            <!-- Today's Record List in Selected Club -->
             <div class="bg-dark-900 border border-dark-800 rounded-xl overflow-hidden shadow-sm">
-                <div class="px-4 py-3 border-b border-dark-800 flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <i data-lucide="list" class="w-4 h-4 text-amber-500"></i>
-                        <h3 class="text-xs font-semibold tracking-wider uppercase text-gray-200">
-                            Сонгосон өдрийн бүртгэгдсэн жагсаалт (<span id="shift-count-label">0</span> бүжигчин)
-                        </h3>
-                    </div>
-                    <div class="text-xs text-gray-400 font-mono">
-                        Өдрийн нийт: <span id="shift-total-label" class="text-amber-400 font-bold">0 ₮</span>
-                    </div>
+                <div class="px-3 py-2 border-b border-dark-800 flex items-center justify-between text-xs">
+                    <span class="font-semibold text-gray-300">Өдрийн жагсаалт (<span id="shift-count-label">0</span>)</span>
+                    <span class="font-mono text-amber-400 font-bold" id="shift-total-label">0 ₮</span>
                 </div>
-
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs border-collapse">
-                        <thead>
-                            <tr class="border-b border-dark-800 bg-dark-850/70 text-gray-400">
-                                <th class="py-2.5 px-3 font-medium">№</th>
-                                <th class="py-2.5 px-3 font-medium">Бүжигчин</th>
-                                <th class="py-2.5 px-3 font-medium hidden sm:table-cell">Дансны дугаар</th>
-                                <th class="py-2.5 px-3 font-medium text-center">TIP</th>
-                                <th class="py-2.5 px-3 font-medium text-center">Wine (Энгийн/Үнэтэй)</th>
-                                <th class="py-2.5 px-3 font-medium text-center">Суулт (Энгийн/Уулттай)</th>
-                                <th class="py-2.5 px-3 font-medium text-center">Extra</th>
-                                <th class="py-2.5 px-3 font-medium text-right">Торгууль</th>
-                                <th class="py-2.5 px-3 font-medium text-right font-bold text-gray-300">Нийт дүн</th>
-                                <th class="py-2.5 px-3 font-medium text-center">Үйлдэл</th>
-                            </tr>
-                        </thead>
-                        <tbody id="daily-records-tbody" class="divide-y divide-dark-800 text-gray-300">
-                        </tbody>
-                    </table>
+                <div id="daily-records-list" class="divide-y divide-dark-800 text-xs max-h-60 overflow-y-auto">
+                    <!-- Populated dynamically via JS -->
                 </div>
             </div>
         </section>
 
-
         <!-- ======================================================== -->
         <!-- VIEW 2: ADMIN & ACCOUNTANT VIEW                          -->
         <!-- ======================================================== -->
-        <section id="view-admin" class="hidden space-y-6">
+        <section id="view-admin" class="hidden space-y-4">
             <!-- Admin Sub-navigation -->
-            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-dark-800 pb-3">
-                <div class="flex items-center gap-2">
-                    <button onclick="switchAdminSection('report')" id="admin-subtab-report"
-                        class="px-3.5 py-1.5 rounded-lg text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/30">
-                        Нэгдсэн тайлан & Бонус
-                    </button>
-                    <button onclick="switchAdminSection('dancers')" id="admin-subtab-dancers"
-                        class="px-3.5 py-1.5 rounded-lg text-xs font-medium text-gray-400 hover:text-gray-200 border border-transparent">
-                        Бүжигчдийн лавлах сан (CRUD)
-                    </button>
-                    <button onclick="switchAdminSection('tariffs')" id="admin-subtab-tariffs"
-                        class="px-3.5 py-1.5 rounded-lg text-xs font-medium text-gray-400 hover:text-gray-200 border border-transparent">
-                        Тарифын үнэ тохиргоо
-                    </button>
-                </div>
-
-                <!-- Export Excel Button -->
-                <button onclick="exportToExcel()" 
-                    class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-dark-800 hover:bg-dark-700 text-emerald-400 border border-dark-700 text-xs font-medium transition-colors">
-                    <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i>
-                    <span>Excel татах (Банкны шилжүүлэг)</span>
+            <div class="flex items-center gap-1 bg-dark-900 border border-dark-800 p-1 rounded-lg text-xs">
+                <button onclick="switchAdminSection('report')" id="admin-subtab-report"
+                    class="flex-1 py-1.5 rounded-md font-medium text-center bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                    Тайлан
+                </button>
+                <button onclick="switchAdminSection('dancers')" id="admin-subtab-dancers"
+                    class="flex-1 py-1.5 rounded-md font-medium text-center text-gray-400 hover:text-gray-200">
+                    Бүжигчид
+                </button>
+                <button onclick="switchAdminSection('tariffs')" id="admin-subtab-tariffs"
+                    class="flex-1 py-1.5 rounded-md font-medium text-center text-gray-400 hover:text-gray-200">
+                    Ханш
                 </button>
             </div>
 
-            <!-- ADMIN SECTION A: REPORT & REVENUE -->
-            <div id="admin-sec-report" class="space-y-5">
-                <!-- Filters Bar -->
-                <div class="bg-dark-900 border border-dark-800 rounded-xl p-4 flex flex-wrap items-center justify-between gap-3">
-                    <div class="flex flex-wrap items-center gap-3">
+            <!-- Export Excel Button -->
+            <button onclick="exportToExcel()" 
+                class="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-dark-850 hover:bg-dark-800 text-emerald-400 border border-dark-700 text-xs font-bold transition-all shadow">
+                <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+                <span>Банкны шилжүүлгийн Excel татах</span>
+            </button>
+
+            <!-- SECTION A: REPORT -->
+            <div id="admin-sec-report" class="space-y-3">
+                <!-- Filters -->
+                <div class="bg-dark-900 border border-dark-800 rounded-xl p-3 space-y-2 text-xs">
+                    <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="block text-[11px] text-gray-400 mb-1">Салбар шүүх</label>
-                            <select id="report-club-filter" onchange="loadAdminReport()"
-                                class="bg-dark-850 border border-dark-700 rounded-lg px-3 py-1.5 text-xs text-gray-200 focus:outline-none focus:border-amber-500">
-                                <option value="all">Бүх салбар (3 клуб)</option>
+                            <label class="block text-[10px] text-gray-400 mb-0.5">Салбар</label>
+                            <select id="report-club-filter" onchange="loadAdminReport()" class="w-full bg-dark-850 border border-dark-700 rounded px-2 py-1 text-gray-200">
+                                <option value="all">Бүх салбар</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-[11px] text-gray-400 mb-1">Эхлэх огноо</label>
-                            <input type="date" id="report-start-date" onchange="loadAdminReport()"
-                                class="bg-dark-850 border border-dark-700 rounded-lg px-3 py-1.5 text-xs text-gray-200 font-mono focus:outline-none focus:border-amber-500">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] text-gray-400 mb-1">Дуусах огноо</label>
-                            <input type="date" id="report-end-date" onchange="loadAdminReport()"
-                                class="bg-dark-850 border border-dark-700 rounded-lg px-3 py-1.5 text-xs text-gray-200 font-mono focus:outline-none focus:border-amber-500">
+                            <label class="block text-[10px] text-gray-400 mb-0.5">Түргэн сонголт</label>
+                            <div class="grid grid-cols-3 gap-1">
+                                <button onclick="setReportQuickDate('today')" class="py-1 bg-dark-800 rounded text-[10px] text-center">Өнөөдөр</button>
+                                <button onclick="setReportQuickDate('week')" class="py-1 bg-dark-800 rounded text-[10px] text-center">7 хоног</button>
+                                <button onclick="setReportQuickDate('month')" class="py-1 bg-dark-800 rounded text-[10px] text-center">Энэ сар</button>
+                            </div>
                         </div>
                     </div>
-
-                    <div class="flex items-center gap-1.5">
-                        <button onclick="setReportQuickDate('today')" class="px-2.5 py-1 rounded bg-dark-800 text-[11px] text-gray-300 hover:bg-dark-700">Өнөөдөр</button>
-                        <button onclick="setReportQuickDate('week')" class="px-2.5 py-1 rounded bg-dark-800 text-[11px] text-gray-300 hover:bg-dark-700">7 хоног</button>
-                        <button onclick="setReportQuickDate('month')" class="px-2.5 py-1 rounded bg-dark-800 text-[11px] text-gray-300 hover:bg-dark-700">Энэ сар</button>
-                        <button onclick="setReportQuickDate('all')" class="px-2.5 py-1 rounded bg-dark-800 text-[11px] text-gray-300 hover:bg-dark-700">Бүгд</button>
+                    <div class="grid grid-cols-2 gap-2 pt-1 border-t border-dark-800">
+                        <input type="date" id="report-start-date" onchange="loadAdminReport()" class="bg-dark-850 border border-dark-700 rounded px-2 py-1 text-[11px] font-mono">
+                        <input type="date" id="report-end-date" onchange="loadAdminReport()" class="bg-dark-850 border border-dark-700 rounded px-2 py-1 text-[11px] font-mono">
                     </div>
                 </div>
 
-                <!-- Summary Metrics Cards -->
-                <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                    <div class="bg-dark-900 border border-dark-800 rounded-xl p-3.5">
-                        <div class="flex items-center justify-between text-gray-400 text-xs">
-                            <span>Нийт олгох дүн</span>
-                            <i data-lucide="dollar-sign" class="w-4 h-4 text-amber-500"></i>
-                        </div>
-                        <div id="stat-grand-total" class="text-lg sm:text-xl font-bold font-mono text-amber-400 mt-2">0 ₮</div>
-                        <div class="text-[10px] text-gray-400 mt-1">Сонгосон хугацаа</div>
+                <!-- Stats Summary -->
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="bg-dark-900 border border-dark-800 rounded-xl p-3">
+                        <div class="text-[10px] text-gray-400">Нийт олгох бонус</div>
+                        <div id="stat-grand-total" class="text-lg font-bold font-mono text-amber-400 mt-1">0 ₮</div>
                     </div>
-
-                    <div class="bg-dark-900 border border-dark-800 rounded-xl p-3.5">
-                        <div class="flex items-center justify-between text-gray-400 text-xs">
-                            <span>Нийт TIP тоо</span>
-                            <i data-lucide="coins" class="w-4 h-4 text-blue-400"></i>
-                        </div>
-                        <div id="stat-tips" class="text-lg sm:text-xl font-bold font-mono text-gray-100 mt-2">0</div>
-                        <div class="text-[10px] text-gray-400 mt-1">Тип тоо</div>
+                    <div class="bg-dark-900 border border-dark-800 rounded-xl p-3">
+                        <div class="text-[10px] text-gray-400">Нийт TIP тоо</div>
+                        <div id="stat-tips" class="text-lg font-bold font-mono text-gray-100 mt-1">0</div>
                     </div>
-
-                    <div class="bg-dark-900 border border-dark-800 rounded-xl p-3.5">
-                        <div class="flex items-center justify-between text-gray-400 text-xs">
-                            <span>Wine (Энг / Үнэтэй)</span>
-                            <i data-lucide="wine" class="w-4 h-4 text-purple-400"></i>
-                        </div>
-                        <div id="stat-wines" class="text-lg sm:text-xl font-bold font-mono text-gray-100 mt-2">0 / 0</div>
-                        <div class="text-[10px] text-gray-400 mt-1">Дарсны тоо</div>
+                    <div class="bg-dark-900 border border-dark-800 rounded-xl p-3">
+                        <div class="text-[10px] text-gray-400">Wine (Энг / Үнэтэй)</div>
+                        <div id="stat-wines" class="text-base font-bold font-mono text-purple-300 mt-1">0 / 0</div>
                     </div>
-
-                    <div class="bg-dark-900 border border-dark-800 rounded-xl p-3.5">
-                        <div class="flex items-center justify-between text-gray-400 text-xs">
-                            <span>Нийт Суулт</span>
-                            <i data-lucide="armchair" class="w-4 h-4 text-emerald-400"></i>
-                        </div>
-                        <div id="stat-sits" class="text-lg sm:text-xl font-bold font-mono text-gray-100 mt-2">0</div>
-                        <div class="text-[10px] text-gray-400 mt-1">Энгийн ба уулттай</div>
-                    </div>
-
-                    <div class="bg-dark-900 border border-dark-800 rounded-xl p-3.5">
-                        <div class="flex items-center justify-between text-gray-400 text-xs">
-                            <span>Extra тоо</span>
-                            <i data-lucide="award" class="w-4 h-4 text-yellow-400"></i>
-                        </div>
-                        <div id="stat-extras" class="text-lg sm:text-xl font-bold font-mono text-gray-100 mt-2">0</div>
-                        <div class="text-[10px] text-gray-400 mt-1">Extra урамшуулал</div>
+                    <div class="bg-dark-900 border border-dark-800 rounded-xl p-3">
+                        <div class="text-[10px] text-gray-400">Суулт / Extra</div>
+                        <div id="stat-sits" class="text-base font-bold font-mono text-emerald-400 mt-1">0 / 0</div>
                     </div>
                 </div>
 
-                <!-- Consolidated Bonus Table -->
+                <!-- Dancer Bonus List -->
                 <div class="bg-dark-900 border border-dark-800 rounded-xl overflow-hidden shadow-sm">
-                    <div class="px-4 py-3 border-b border-dark-800 flex items-center justify-between">
-                        <div class="flex items-center gap-2">
-                            <i data-lucide="table" class="w-4 h-4 text-amber-500"></i>
-                            <h3 class="text-xs font-semibold tracking-wider uppercase text-gray-200">
-                                Бүжигчин бүрийн нийт бонус & Дансны мэдээлэл
-                            </h3>
-                        </div>
-                        <span class="text-[11px] text-gray-400">Банкны гүйлгээний жагсаалт</span>
+                    <div class="px-3 py-2 border-b border-dark-800 text-xs font-bold text-gray-300">
+                        Бүжигчдийн олгох бонус & Данс
                     </div>
-
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs border-collapse">
-                            <thead>
-                                <tr class="border-b border-dark-800 bg-dark-850/80 text-gray-400">
-                                    <th class="py-2.5 px-3 font-medium">№</th>
-                                    <th class="py-2.5 px-3 font-medium">Салбар</th>
-                                    <th class="py-2.5 px-3 font-medium">Бүжигчний нэр</th>
-                                    <th class="py-2.5 px-3 font-medium">Данс эзэмшигч</th>
-                                    <th class="py-2.5 px-3 font-medium font-mono">Дансны дугаар</th>
-                                    <th class="py-2.5 px-3 font-medium text-center">Ээлж</th>
-                                    <th class="py-2.5 px-3 font-medium text-center">TIP</th>
-                                    <th class="py-2.5 px-3 font-medium text-center">Wine (Энг/Үнэ)</th>
-                                    <th class="py-2.5 px-3 font-medium text-center">Суулт (Э/У)</th>
-                                    <th class="py-2.5 px-3 font-medium text-right">Extra</th>
-                                    <th class="py-2.5 px-3 font-medium text-right">Торгууль</th>
-                                    <th class="py-2.5 px-3 font-medium text-right font-bold text-amber-400">Олгох нийт дүн</th>
-                                </tr>
-                            </thead>
-                            <tbody id="admin-report-tbody" class="divide-y divide-dark-800 text-gray-300">
-                            </tbody>
-                        </table>
+                    <div id="admin-report-list" class="divide-y divide-dark-800 text-xs">
+                        <!-- Populated via JS -->
                     </div>
                 </div>
             </div>
 
-            <!-- ADMIN SECTION B: DANCERS CRUD DIRECTORY -->
-            <div id="admin-sec-dancers" class="hidden space-y-4">
-                <div class="flex flex-wrap items-center justify-between gap-3">
-                    <div class="flex items-center gap-2 flex-1 max-w-md">
-                        <div class="relative w-full">
-                            <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-3 top-2.5"></i>
-                            <input type="text" id="dancer-search-input" oninput="filterDancersTable()" placeholder="Нэр, дансны дугаараар хайх..."
-                                class="w-full bg-dark-900 border border-dark-800 rounded-lg pl-9 pr-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-amber-500">
-                        </div>
-                        <select id="dancer-filter-club" onchange="filterDancersTable()"
-                            class="bg-dark-900 border border-dark-800 rounded-lg px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-amber-500">
-                            <option value="all">Бүх салбар</option>
-                        </select>
-                    </div>
-
+            <!-- SECTION B: DANCERS CRUD -->
+            <div id="admin-sec-dancers" class="hidden space-y-3">
+                <div class="flex items-center gap-2">
+                    <input type="text" id="dancer-search-input" oninput="filterDancersTable()" placeholder="Нэрээр хайх..."
+                        class="flex-1 bg-dark-900 border border-dark-800 rounded-lg px-3 py-2 text-xs text-gray-200">
                     <button onclick="openDancerModal('add')"
-                        class="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-gray-950 font-bold text-xs transition-colors">
-                        <i data-lucide="plus" class="w-4 h-4"></i>
-                        <span>Шинэ бүжигчин бүртгэх</span>
+                        class="px-3 py-2 rounded-lg bg-amber-600 text-gray-950 font-bold text-xs flex items-center gap-1 shrink-0">
+                        <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                        <span>Нэмэх</span>
                     </button>
                 </div>
-
-                <div class="bg-dark-900 border border-dark-800 rounded-xl overflow-hidden shadow-sm">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs border-collapse">
-                            <thead>
-                                <tr class="border-b border-dark-800 bg-dark-850/80 text-gray-400">
-                                    <th class="py-2.5 px-3 font-medium">№</th>
-                                    <th class="py-2.5 px-3 font-medium">Салбар</th>
-                                    <th class="py-2.5 px-3 font-medium">Тайзны нэр</th>
-                                    <th class="py-2.5 px-3 font-medium">Өөрийн нэр (Данс эзэмшигч)</th>
-                                    <th class="py-2.5 px-3 font-medium font-mono">Дансны дугаар</th>
-                                    <th class="py-2.5 px-3 font-medium">Төрөл</th>
-                                    <th class="py-2.5 px-3 font-medium">Шошго (Tag)</th>
-                                    <th class="py-2.5 px-3 font-medium text-center">Үйлдэл</th>
-                                </tr>
-                            </thead>
-                            <tbody id="dancers-crud-tbody" class="divide-y divide-dark-800 text-gray-300">
-                            </tbody>
-                        </table>
-                    </div>
+                <div id="dancers-crud-list" class="bg-dark-900 border border-dark-800 rounded-xl divide-y divide-dark-800 overflow-hidden text-xs">
+                    <!-- Populated via JS -->
                 </div>
             </div>
 
-            <!-- ADMIN SECTION C: TARIFF SETTINGS -->
-            <div id="admin-sec-tariffs" class="hidden space-y-4">
-                <div class="bg-dark-900 border border-dark-800 rounded-xl p-5 space-y-4">
-                    <div class="flex items-center justify-between border-b border-dark-800 pb-3">
-                        <div>
-                            <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-200">Тарифын ханш тохируулах</h3>
-                            <p class="text-xs text-gray-400 mt-0.5">Ерөнхий нягтлан салбар тус бүрийн TIP, Wine, Суулт, Extra ханшийг эндээс өөрчилнө</p>
-                        </div>
-                        <button onclick="saveTariffChanges()"
-                            class="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-gray-950 font-bold text-xs transition-colors">
-                            <i data-lucide="save" class="w-3.5 h-3.5"></i>
-                            <span>Ханшийн өөрчлөлтийг хадгалах</span>
-                        </button>
-                    </div>
-
-                    <div id="tariffs-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    </div>
+            <!-- SECTION C: TARIFFS -->
+            <div id="admin-sec-tariffs" class="hidden space-y-3">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-gray-400">Ханш өөрчлөөд хадгална уу</span>
+                    <button onclick="saveTariffChanges()" class="px-3 py-1.5 rounded-lg bg-amber-600 text-gray-950 font-bold text-xs">
+                        Хадгалах
+                    </button>
+                </div>
+                <div id="tariffs-grid" class="space-y-3">
+                    <!-- Populated dynamically -->
                 </div>
             </div>
         </section>
 
     </main>
 
+    <!-- STICKY BOTTOM ACTION BAR (ZERO SCROLL FOR BARTENDER) -->
+    <div id="sticky-bottom-bar" class="fixed bottom-0 left-0 right-0 z-40 bg-dark-900/95 backdrop-blur-md border-t border-dark-800 px-4 py-2.5 shadow-2xl">
+        <div class="max-w-md mx-auto flex items-center justify-between gap-3">
+            <div>
+                <div class="text-[10px] text-gray-400 uppercase tracking-wider">Олгох нийт дүн:</div>
+                <div id="entry-grand-total" class="text-xl font-bold font-mono text-amber-400 leading-tight">0 ₮</div>
+            </div>
+            <div class="flex items-center gap-2">
+                <button type="button" onclick="resetEntryForm()" class="px-3 py-2 rounded-lg bg-dark-800 border border-dark-700 text-xs text-gray-300 active:scale-95">
+                    Цэвэрлэх
+                </button>
+                <button type="button" onclick="submitEntryRecord()" class="px-5 py-2.5 rounded-lg bg-amber-600 hover:bg-amber-500 active:scale-95 text-gray-950 font-extrabold text-sm flex items-center gap-1.5 shadow-lg shadow-amber-600/20">
+                    <i data-lucide="check" class="w-4 h-4"></i>
+                    <span>Хадгалах</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- DANCER ADD/EDIT MODAL -->
     <div id="dancer-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-        <div class="bg-dark-900 border border-dark-700 rounded-xl max-w-md w-full overflow-hidden shadow-2xl">
-            <div class="px-5 py-4 border-b border-dark-800 flex items-center justify-between">
-                <h3 id="dancer-modal-title" class="text-sm font-bold uppercase tracking-wider text-gray-200">Шинэ бүжигчин нэмэх</h3>
+        <div class="bg-dark-900 border border-dark-700 rounded-xl max-w-sm w-full overflow-hidden shadow-2xl">
+            <div class="px-4 py-3 border-b border-dark-800 flex items-center justify-between">
+                <h3 id="dancer-modal-title" class="text-xs font-bold uppercase tracking-wider text-gray-200">Бүжигчин</h3>
                 <button onclick="closeDancerModal()" class="text-gray-400 hover:text-gray-200">
                     <i data-lucide="x" class="w-4 h-4"></i>
                 </button>
             </div>
-            <form id="dancer-modal-form" onsubmit="submitDancerModal(event)" class="p-5 space-y-3.5 text-xs">
+            <form id="dancer-modal-form" onsubmit="submitDancerModal(event)" class="p-4 space-y-2.5 text-xs">
                 <input type="hidden" id="modal-dancer-id">
                 <div>
-                    <label class="block text-gray-400 mb-1">Харьяалагдах салбар</label>
-                    <select id="modal-dancer-club" required class="w-full bg-dark-850 border border-dark-700 rounded-lg px-3 py-2 text-gray-200 focus:outline-none focus:border-amber-500">
-                    </select>
+                    <label class="block text-gray-400 mb-0.5">Салбар</label>
+                    <select id="modal-dancer-club" required class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200"></select>
                 </div>
                 <div>
-                    <label class="block text-gray-400 mb-1">Тайзны нэр (Бааранд дуудах нэр) *</label>
-                    <input type="text" id="modal-dancer-stagename" required placeholder="Жишээ: Дөк, Роза"
-                        class="w-full bg-dark-850 border border-dark-700 rounded-lg px-3 py-2 text-gray-200 focus:outline-none focus:border-amber-500">
+                    <label class="block text-gray-400 mb-0.5">Тайзны нэр *</label>
+                    <input type="text" id="modal-dancer-stagename" required placeholder="Дөк, Роза..."
+                        class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200">
                 </div>
                 <div>
-                    <label class="block text-gray-400 mb-1">Данс эзэмшигчийн нэр (Овог, нэр)</label>
-                    <input type="text" id="modal-dancer-realname" placeholder="Жишээ: Зориг Нандин-Эрдэнэ"
-                        class="w-full bg-dark-850 border border-dark-700 rounded-lg px-3 py-2 text-gray-200 focus:outline-none focus:border-amber-500">
+                    <label class="block text-gray-400 mb-0.5">Данс эзэмшигчийн нэр</label>
+                    <input type="text" id="modal-dancer-realname" placeholder="Зориг Нандин-Эрдэнэ..."
+                        class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200">
                 </div>
                 <div>
-                    <label class="block text-gray-400 mb-1">Дансны дугаар *</label>
-                    <input type="text" id="modal-dancer-bankacc" required placeholder="Жишээ: 5200500512841158"
-                        class="w-full bg-dark-850 border border-dark-700 rounded-lg px-3 py-2 text-gray-200 font-mono focus:outline-none focus:border-amber-500">
+                    <label class="block text-gray-400 mb-0.5">Дансны дугаар *</label>
+                    <input type="text" id="modal-dancer-bankacc" required placeholder="5200..."
+                        class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200 font-mono">
                 </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-gray-400 mb-1">Төрөл</label>
-                        <select id="modal-dancer-type" class="w-full bg-dark-850 border border-dark-700 rounded-lg px-3 py-2 text-gray-200 focus:outline-none focus:border-amber-500">
-                            <option value="Үндсэн">Үндсэн</option>
-                            <option value="Халтуур">Халтуур</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-gray-400 mb-1">Шошго (Tag)</label>
-                        <input type="text" id="modal-dancer-tag" placeholder="Жишээ: Holly, Aloha"
-                            class="w-full bg-dark-850 border border-dark-700 rounded-lg px-3 py-2 text-gray-200 focus:outline-none focus:border-amber-500">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-gray-400 mb-1">Утасны дугаар</label>
-                    <input type="text" id="modal-dancer-phone" placeholder="Жишээ: 9911..."
-                        class="w-full bg-dark-850 border border-dark-700 rounded-lg px-3 py-2 text-gray-200 font-mono focus:outline-none focus:border-amber-500">
-                </div>
-                <div class="pt-3 flex justify-end gap-2 border-t border-dark-800">
-                    <button type="button" onclick="closeDancerModal()" class="px-4 py-2 rounded-lg bg-dark-800 text-gray-300 hover:bg-dark-700">Болих</button>
-                    <button type="submit" class="px-5 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-gray-950 font-bold">Хадгалах</button>
+                <div class="pt-2 flex justify-end gap-2 border-t border-dark-800">
+                    <button type="button" onclick="closeDancerModal()" class="px-3 py-1.5 rounded bg-dark-800 text-gray-300">Болих</button>
+                    <button type="submit" class="px-4 py-1.5 rounded bg-amber-600 text-gray-950 font-bold">Хадгалах</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- NOTIFICATION TOAST -->
-    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 max-w-sm bg-dark-850 border border-dark-700 rounded-lg shadow-xl px-4 py-3 flex items-center gap-3 text-xs">
+    <div id="toast" class="fixed top-3 left-1/2 transform -translate-x-1/2 z-50 -translate-y-20 opacity-0 transition-all duration-300 max-w-xs w-full bg-dark-850 border border-dark-700 rounded-lg shadow-xl px-3 py-2 flex items-center gap-2 text-xs">
         <i id="toast-icon" data-lucide="check-circle" class="w-4 h-4 text-emerald-400 shrink-0"></i>
-        <span id="toast-msg" class="text-gray-200 font-medium">Мэдээлэл хадгалагдлаа</span>
+        <span id="toast-msg" class="text-gray-200 font-medium truncate">Мэдээлэл хадгалагдлаа</span>
     </div>
 
     <!-- EMBEDDED SEED DATA FOR STANDALONE VERCEL DEPLOYMENT -->
@@ -2266,8 +2101,7 @@
 
     <!-- CLIENT STORAGE & APPLICATION LOGIC -->
     <script>
-        // Data Store (LocalStorage powered for Vercel 24/7 reliability)
-        const STORAGE_KEY = 'BAR_SYSTEM_DATA_V12';
+        const STORAGE_KEY = 'BAR_SYSTEM_DATA_V13';
 
         function getStoredData() {
             let data = null;
@@ -2289,7 +2123,6 @@
             } catch (e) { console.error(e); }
         }
 
-        // Global State
         let store = getStoredData();
         let currentClubId = store.clubs[0]?.id || 1;
         let selectedDancer = null;
@@ -2311,10 +2144,10 @@
             toastIcon.setAttribute('data-lucide', isError ? 'alert-triangle' : 'check-circle');
             lucide.createIcons();
 
-            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.remove('-translate-y-20', 'opacity-0');
             setTimeout(() => {
-                toast.classList.add('translate-y-20', 'opacity-0');
-            }, 3000);
+                toast.classList.add('-translate-y-20', 'opacity-0');
+            }, 2500);
         }
 
         function switchTab(tab) {
@@ -2322,18 +2155,21 @@
             const btnAdmin = document.getElementById('tab-btn-admin');
             const viewBartender = document.getElementById('view-bartender');
             const viewAdmin = document.getElementById('view-admin');
+            const stickyBar = document.getElementById('sticky-bottom-bar');
 
             if (tab === 'bartender') {
-                btnBartender.className = 'tab-active flex items-center gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-t transition-colors';
-                btnAdmin.className = 'text-gray-400 hover:text-gray-200 flex items-center gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-t transition-colors';
+                btnBartender.className = 'tab-btn-active px-3 py-1 rounded-md transition-all flex items-center gap-1.5';
+                btnAdmin.className = 'text-gray-400 hover:text-gray-200 px-3 py-1 rounded-md transition-all flex items-center gap-1.5';
                 viewBartender.classList.remove('hidden');
                 viewAdmin.classList.add('hidden');
+                stickyBar.classList.remove('hidden');
                 loadDailyRecords();
             } else {
-                btnAdmin.className = 'tab-active flex items-center gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-t transition-colors';
-                btnBartender.className = 'text-gray-400 hover:text-gray-200 flex items-center gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-t transition-colors';
+                btnAdmin.className = 'tab-btn-active px-3 py-1 rounded-md transition-all flex items-center gap-1.5';
+                btnBartender.className = 'text-gray-400 hover:text-gray-200 px-3 py-1 rounded-md transition-all flex items-center gap-1.5';
                 viewAdmin.classList.remove('hidden');
                 viewBartender.classList.add('hidden');
+                stickyBar.classList.add('hidden');
                 switchAdminSection(activeAdminSubtab);
             }
             lucide.createIcons();
@@ -2341,15 +2177,14 @@
 
         function switchAdminSection(sec) {
             activeAdminSubtab = sec;
-            const tabs = ['report', 'dancers', 'tariffs'];
-            tabs.forEach(t => {
+            ['report', 'dancers', 'tariffs'].forEach(t => {
                 const btn = document.getElementById(`admin-subtab-${t}`);
                 const el = document.getElementById(`admin-sec-${t}`);
                 if (t === sec) {
-                    btn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/30';
+                    btn.className = 'flex-1 py-1.5 rounded-md font-medium text-center bg-amber-500/10 text-amber-400 border border-amber-500/30';
                     el.classList.remove('hidden');
                 } else {
-                    btn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-medium text-gray-400 hover:text-gray-200 border border-transparent';
+                    btn.className = 'flex-1 py-1.5 rounded-md font-medium text-center text-gray-400 hover:text-gray-200';
                     el.classList.add('hidden');
                 }
             });
@@ -2366,47 +2201,65 @@
             document.getElementById('report-start-date').value = today;
             document.getElementById('report-end-date').value = today;
 
-            populateClubDropdowns();
+            renderClubChips();
             updateBarDancerSelect();
             loadDailyRecords();
             lucide.createIcons();
         }
 
-        function populateClubDropdowns() {
-            const barSelect = document.getElementById('bar-club-select');
+        function renderClubChips() {
+            const container = document.getElementById('club-chips-container');
             const reportFilter = document.getElementById('report-club-filter');
-            const dancerClubFilter = document.getElementById('dancer-filter-club');
             const modalClub = document.getElementById('modal-dancer-club');
 
-            barSelect.innerHTML = '';
+            container.innerHTML = '';
             modalClub.innerHTML = '';
-            reportFilter.innerHTML = '<option value="all">Бүх салбар (3 клуб)</option>';
-            dancerClubFilter.innerHTML = '<option value="all">Бүх салбар</option>';
+            reportFilter.innerHTML = '<option value="all">Бүх салбар</option>';
 
             store.clubs.forEach((c, idx) => {
-                barSelect.add(new Option(c.name, c.id));
+                // Chip button
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.id = `club-chip-${c.id}`;
+                btn.className = `py-2 px-1 text-center text-xs font-medium rounded-lg border border-dark-700 bg-dark-900 transition-all ${c.id === currentClubId ? 'club-chip-active' : 'text-gray-400'}`;
+                btn.textContent = c.name.replace(' CLUB', '');
+                btn.onclick = () => selectClub(c.id);
+                container.appendChild(btn);
+
                 modalClub.add(new Option(c.name, c.id));
                 reportFilter.add(new Option(c.name, c.id));
-                dancerClubFilter.add(new Option(c.name, c.id));
-                if (idx === 0) currentClubId = c.id;
             });
+        }
+
+        function selectClub(clubId) {
+            currentClubId = clubId;
+            store.clubs.forEach(c => {
+                const el = document.getElementById(`club-chip-${c.id}`);
+                if (el) {
+                    if (c.id === currentClubId) {
+                        el.className = 'py-2 px-1 text-center text-xs font-bold rounded-lg border border-amber-500 bg-amber-500/15 text-amber-400 transition-all';
+                    } else {
+                        el.className = 'py-2 px-1 text-center text-xs font-medium rounded-lg border border-dark-700 bg-dark-900 text-gray-400 transition-all';
+                    }
+                }
+            });
+            onClubOrDateChange();
         }
 
         function updateBarDancerSelect() {
             const select = document.getElementById('bar-dancer-select');
-            select.innerHTML = '<option value="">-- Бүжигчин сонгоно уу --</option>';
+            select.innerHTML = '<option value="">-- Бүжигчнийг сонгоно уу --</option>';
 
             const filtered = store.dancers.filter(d => String(d.club_id) === String(currentClubId) && d.is_active !== 0);
             filtered.forEach(d => {
                 const opt = document.createElement('option');
                 opt.value = d.id;
-                opt.textContent = `${d.stage_name} (${d.dancer_type || 'Үндсэн'}) ${d.tag ? '['+d.tag+']' : ''}`;
+                opt.textContent = `${d.stage_name} ${d.tag ? '['+d.tag+']' : ''}`;
                 select.appendChild(opt);
             });
         }
 
         function onClubOrDateChange() {
-            currentClubId = document.getElementById('bar-club-select').value;
             updateBarDancerSelect();
             resetEntryForm();
             loadDailyRecords();
@@ -2416,19 +2269,20 @@
             const dId = document.getElementById('bar-dancer-select').value;
             selectedDancer = store.dancers.find(d => String(d.id) === String(dId));
 
+            const strip = document.getElementById('dancer-info-strip');
             const realNameEl = document.getElementById('auto-real-name');
             const bankAccEl = document.getElementById('auto-bank-account');
             const rateBadge = document.getElementById('rate-badge');
 
             if (selectedDancer) {
-                realNameEl.textContent = selectedDancer.real_name || 'Бүртгэлгүй';
-                bankAccEl.textContent = selectedDancer.bank_account || 'Бүртгэлгүй';
-                rateBadge.textContent = `Тариф: ${selectedDancer.dancer_type || 'Үндсэн'}`;
+                strip.classList.remove('hidden');
+                realNameEl.textContent = selectedDancer.real_name || 'Нэр бичигдээгүй';
+                bankAccEl.textContent = selectedDancer.bank_account || 'Дансгүй';
+                rateBadge.textContent = selectedDancer.dancer_type || 'Үндсэн';
                 updateRateLabels(selectedDancer.dancer_type || 'Үндсэн');
             } else {
-                realNameEl.textContent = '-';
-                bankAccEl.textContent = '-';
-                rateBadge.textContent = 'Тариф: Үндсэн';
+                strip.classList.add('hidden');
+                rateBadge.textContent = 'Үндсэн';
                 updateRateLabels('Үндсэн');
             }
             calculateEntryTotal();
@@ -2488,6 +2342,18 @@
 
             const total = subTip + subWineReg + subWineExp + subSitReg + subSitDrink + subExtra - penalty;
             document.getElementById('entry-grand-total').textContent = formatMNT(total);
+        }
+
+        function toggleDetails() {
+            const drawer = document.getElementById('details-drawer');
+            const chevron = document.getElementById('details-chevron');
+            if (drawer.classList.contains('hidden')) {
+                drawer.classList.remove('hidden');
+                chevron.classList.add('rotate-180');
+            } else {
+                drawer.classList.add('hidden');
+                chevron.classList.remove('rotate-180');
+            }
         }
 
         function resetEntryForm() {
@@ -2562,14 +2428,14 @@
             store.records.unshift(newRecord);
             saveStoredData(store);
 
-            showToast('Өдрийн орлого амжилттай бүртгэгдлээ!');
+            showToast('Бүртгэл амжилттай хадгалагдлаа!');
             resetEntryForm();
             loadDailyRecords();
         }
 
         function loadDailyRecords() {
             const date = document.getElementById('bar-date-input').value;
-            const tbody = document.getElementById('daily-records-tbody');
+            const listEl = document.getElementById('daily-records-list');
 
             const filtered = store.records.filter(r => String(r.club_id) === String(currentClubId) && r.date === date);
 
@@ -2578,40 +2444,39 @@
             document.getElementById('shift-total-label').textContent = formatMNT(total);
 
             if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="10" class="text-center py-6 text-gray-500 font-mono">Энэ өдөр одоогоор бүртгэл ороогүй байна</td></tr>';
+                listEl.innerHTML = '<div class="text-center py-4 text-gray-500 font-mono text-[11px]">Энэ өдөр одоогоор бүртгэл ороогүй</div>';
                 return;
             }
 
-            tbody.innerHTML = '';
+            listEl.innerHTML = '';
             filtered.forEach((r, idx) => {
-                const tr = document.createElement('tr');
-                tr.className = 'hover:bg-dark-850/50 transition-colors';
+                const div = document.createElement('div');
+                div.className = 'px-3 py-2 flex items-center justify-between hover:bg-dark-850/40';
 
-                const wineInfo = `${r.wine_reg_qty > 0 ? 'Энг:'+r.wine_reg_qty : ''} ${r.wine_exp_qty > 0 ? 'Үнэтэй:'+r.wine_exp_qty : ''}`.trim() || '-';
-                const sitInfo = `${r.sit_reg_qty > 0 ? 'Э:'+r.sit_reg_qty : ''} ${r.sit_drink_qty > 0 ? 'У:'+r.sit_drink_qty : ''}`.trim() || '-';
-                const extraInfo = r.extra_amount > 0 ? `<span class="text-emerald-400 font-mono">+${r.extra_amount.toLocaleString()}₮</span>` : '-';
-                const penInfo = r.penalty_amount > 0 ? `<span class="text-red-400 font-mono">-${r.penalty_amount.toLocaleString()}₮</span>` : '-';
+                const details = [];
+                if (r.tip_qty > 0) details.push(`Тип:${r.tip_qty}`);
+                if (r.wine_reg_qty > 0) details.push(`Э.Вай:${r.wine_reg_qty}`);
+                if (r.wine_exp_qty > 0) details.push(`Ү.Вай:${r.wine_exp_qty}`);
+                if (r.sit_reg_qty > 0) details.push(`Э.Суу:${r.sit_reg_qty}`);
+                if (r.sit_drink_qty > 0) details.push(`У.Суу:${r.sit_drink_qty}`);
+                if (r.extra_qty > 0) details.push(`Ext:${r.extra_qty}`);
 
-                tr.innerHTML = `
-                    <td class="py-2.5 px-3 text-gray-500 font-mono">${idx + 1}</td>
-                    <td class="py-2.5 px-3">
-                        <div class="font-bold text-gray-100">${r.stage_name}</div>
-                        <div class="text-[10px] text-gray-400">${r.real_name || '-'}</div>
-                    </td>
-                    <td class="py-2.5 px-3 font-mono text-gray-400 hidden sm:table-cell">${r.bank_account || '-'}</td>
-                    <td class="py-2.5 px-3 text-center font-mono font-medium">${r.tip_qty || 0}</td>
-                    <td class="py-2.5 px-3 text-center font-mono text-purple-300">${wineInfo}</td>
-                    <td class="py-2.5 px-3 text-center font-mono text-gray-300">${sitInfo}</td>
-                    <td class="py-2.5 px-3 text-center">${extraInfo}</td>
-                    <td class="py-2.5 px-3 text-right">${penInfo}</td>
-                    <td class="py-2.5 px-3 text-right font-bold font-mono text-amber-400 text-sm">${formatMNT(r.total_amount)}</td>
-                    <td class="py-2.5 px-3 text-center">
-                        <button onclick="deleteRecord(${r.id})" class="text-gray-500 hover:text-red-400 p-1 transition-colors">
+                div.innerHTML = `
+                    <div class="flex-1 pr-2">
+                        <div class="flex items-center gap-1.5">
+                            <span class="font-bold text-gray-100">${r.stage_name}</span>
+                            <span class="text-[10px] text-gray-400 font-mono">${r.bank_account || ''}</span>
+                        </div>
+                        <div class="text-[10px] text-gray-400 mt-0.5">${details.join(' • ') || 'Үзүүлбэргүй'}</div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-bold font-mono text-amber-400 text-xs">${formatMNT(r.total_amount)}</span>
+                        <button onclick="deleteRecord(${r.id})" class="text-gray-500 hover:text-red-400 p-1">
                             <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                         </button>
-                    </td>
+                    </div>
                 `;
-                tbody.appendChild(tr);
+                listEl.appendChild(div);
             });
             lucide.createIcons();
         }
@@ -2620,7 +2485,7 @@
             if (!confirm('Энэ бичилтийг устгах уу?')) return;
             store.records = store.records.filter(r => r.id !== id);
             saveStoredData(store);
-            showToast('Бичилт устгагдлаа');
+            showToast('Устгагдлаа');
             loadDailyRecords();
         }
 
@@ -2643,9 +2508,6 @@
                 const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
                 startInput.value = firstDay.toISOString().split('T')[0];
                 endInput.value = today.toISOString().split('T')[0];
-            } else if (type === 'all') {
-                startInput.value = '2026-01-01';
-                endInput.value = '2027-12-31';
             }
             loadAdminReport();
         }
@@ -2655,17 +2517,10 @@
             const startDate = document.getElementById('report-start-date').value;
             const endDate = document.getElementById('report-end-date').value;
 
-            const tbody = document.getElementById('admin-report-tbody');
-
             let records = store.records;
-            if (clubId !== 'all') {
-                records = records.filter(r => String(r.club_id) === String(clubId));
-            }
-            if (startDate && endDate) {
-                records = records.filter(r => r.date >= startDate && r.date <= endDate);
-            }
+            if (clubId !== 'all') records = records.filter(r => String(r.club_id) === String(clubId));
+            if (startDate && endDate) records = records.filter(r => r.date >= startDate && r.date <= endDate);
 
-            // Aggregate by dancer
             const dancerMap = {};
             records.forEach(r => {
                 if (!dancerMap[r.dancer_id]) {
@@ -2699,7 +2554,6 @@
 
             const rows = Object.values(dancerMap).sort((a, b) => b.grand_total - a.grand_total);
 
-            // Summary
             const sumTotal = rows.reduce((s, r) => s + r.grand_total, 0);
             const sumTips = rows.reduce((s, r) => s + r.total_tip_qty, 0);
             const sumWineReg = rows.reduce((s, r) => s + r.total_wine_reg_qty, 0);
@@ -2710,43 +2564,35 @@
             document.getElementById('stat-grand-total').textContent = formatMNT(sumTotal);
             document.getElementById('stat-tips').textContent = sumTips;
             document.getElementById('stat-wines').textContent = `${sumWineReg} / ${sumWineExp}`;
-            document.getElementById('stat-sits').textContent = sumSits;
-            document.getElementById('stat-extras').textContent = sumExtras;
+            document.getElementById('stat-sits').textContent = `${sumSits} / ${sumExtras}`;
 
+            const listEl = document.getElementById('admin-report-list');
             if (rows.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="12" class="text-center py-6 text-gray-500 font-mono">Сонгосон хугацаанд бүртгэл олдсонгүй</td></tr>';
+                listEl.innerHTML = '<div class="text-center py-4 text-gray-500 font-mono text-[11px]">Бүртгэл олдсонгүй</div>';
                 return;
             }
 
-            tbody.innerHTML = '';
-            rows.forEach((r, idx) => {
-                const tr = document.createElement('tr');
-                tr.className = 'hover:bg-dark-850/50 transition-colors';
-
-                const wineDetail = `${r.total_wine_reg_qty} / ${r.total_wine_exp_qty}`;
-                const sitsDetail = `${r.total_sit_reg_qty} / ${r.total_sit_drink_qty}`;
-                const extraHtml = r.total_extra > 0 ? `<span class="text-emerald-400 font-mono">+${r.total_extra.toLocaleString()}</span>` : '-';
-                const penHtml = r.total_penalty > 0 ? `<span class="text-red-400 font-mono">-${r.total_penalty.toLocaleString()}</span>` : '-';
-
-                tr.innerHTML = `
-                    <td class="py-2.5 px-3 text-gray-500 font-mono">${idx + 1}</td>
-                    <td class="py-2.5 px-3 font-medium text-gray-400">${r.club_name}</td>
-                    <td class="py-2.5 px-3 font-bold text-gray-100">${r.stage_name}</td>
-                    <td class="py-2.5 px-3 text-gray-300">${r.real_name || '-'}</td>
-                    <td class="py-2.5 px-3 font-mono text-amber-400/90 font-medium tracking-wide">${r.bank_account || '-'}</td>
-                    <td class="py-2.5 px-3 text-center font-mono text-gray-400">${r.shifts_count} ээлж</td>
-                    <td class="py-2.5 px-3 text-center font-mono font-medium">${r.total_tip_qty}</td>
-                    <td class="py-2.5 px-3 text-center font-mono text-purple-300">${wineDetail}</td>
-                    <td class="py-2.5 px-3 text-center font-mono text-gray-300">${sitsDetail}</td>
-                    <td class="py-2.5 px-3 text-right">${extraHtml}</td>
-                    <td class="py-2.5 px-3 text-right">${penHtml}</td>
-                    <td class="py-2.5 px-3 text-right font-bold font-mono text-emerald-400 text-sm">${formatMNT(r.grand_total)}</td>
+            listEl.innerHTML = '';
+            rows.forEach(r => {
+                const div = document.createElement('div');
+                div.className = 'px-3 py-2.5 flex items-center justify-between hover:bg-dark-850/40';
+                div.innerHTML = `
+                    <div class="flex-1 pr-2">
+                        <div class="flex items-center gap-1.5">
+                            <span class="font-bold text-gray-100">${r.stage_name}</span>
+                            <span class="text-[10px] text-gray-400 font-medium">${r.real_name || ''}</span>
+                        </div>
+                        <div class="text-[10px] text-amber-400/90 font-mono mt-0.5">${r.bank_account || '-'} • ${r.shifts_count} ээлж</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-bold font-mono text-emerald-400 text-sm">${formatMNT(r.grand_total)}</div>
+                        <div class="text-[9px] text-gray-400 font-mono">Tip:${r.total_tip_qty} • Wai:${r.total_wine_reg_qty+r.total_wine_exp_qty}</div>
+                    </div>
                 `;
-                tbody.appendChild(tr);
+                listEl.appendChild(div);
             });
         }
 
-        // Client-side Excel Export using SheetJS
         function exportToExcel() {
             const clubId = document.getElementById('report-club-filter').value;
             const startDate = document.getElementById('report-start-date').value;
@@ -2791,7 +2637,7 @@
             const rows = Object.values(dancerMap).sort((a, b) => b.grand_total - a.grand_total);
 
             const data = [
-                ["БҮЖИГЧДИЙН ОРЛОГО, БОНУСЫН НЭГДСЭН ТАЙЛАН", "", "", "", "", "", "", "", "", "", "", "", ""],
+                ["БҮЖИГЧДИЙН ОРЛОГО, БОНУСЫН НЭГДСЭН ТАЙЛАН"],
                 ["Хугацаа: " + (startDate ? `${startDate} - ${endDate}` : "Бүх хугацаа")],
                 [],
                 ["№", "Салбар", "Бүжигчний нэр", "Овог нэр", "Дансны дугаар", "Төрөл", "Ээлж", "TIP", "Энгийн Wine", "Үнэтэй Wine", "Энгийн суулт", "Уулттай суулт", "Extra бонус", "Торгууль", "НИЙТ ОЛГОХ БОНУС"]
@@ -2823,59 +2669,45 @@
 
             const fileName = `Dancers_Bonus_Report_${new Date().toISOString().split('T')[0]}.xlsx`;
             XLSX.writeFile(wb, fileName);
-            showToast('Excel файл амжилттай татагдлаа!');
+            showToast('Excel файл татагдлаа!');
         }
 
         // ================= DANCERS CRUD =================
         function renderDancersTable() {
-            const tbody = document.getElementById('dancers-crud-tbody');
+            const listEl = document.getElementById('dancers-crud-list');
             const search = (document.getElementById('dancer-search-input')?.value || '').toLowerCase().trim();
-            const clubFilter = document.getElementById('dancer-filter-club')?.value || 'all';
 
             const filtered = store.dancers.filter(d => {
                 if (d.is_active === 0) return false;
-                const matchClub = clubFilter === 'all' || String(d.club_id) === String(clubFilter);
-                const matchSearch = !search || 
+                return !search || 
                     (d.stage_name || '').toLowerCase().includes(search) ||
                     (d.real_name || '').toLowerCase().includes(search) ||
                     (d.bank_account || '').includes(search);
-                return matchClub && matchSearch;
             });
 
-            if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" class="text-center py-6 text-gray-500 font-mono">Бүжигчин олдсонгүй</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = '';
-            filtered.forEach((d, idx) => {
-                const tr = document.createElement('tr');
-                tr.className = 'hover:bg-dark-850/50 transition-colors';
+            listEl.innerHTML = '';
+            filtered.forEach(d => {
+                const div = document.createElement('div');
+                div.className = 'px-3 py-2 flex items-center justify-between hover:bg-dark-850/40';
                 const club = store.clubs.find(c => c.id === d.club_id);
-                tr.innerHTML = `
-                    <td class="py-2.5 px-3 text-gray-500 font-mono">${idx + 1}</td>
-                    <td class="py-2.5 px-3 text-gray-400">${club?.name || '-'}</td>
-                    <td class="py-2.5 px-3 font-bold text-gray-100">${d.stage_name}</td>
-                    <td class="py-2.5 px-3 text-gray-300">${d.real_name || '-'}</td>
-                    <td class="py-2.5 px-3 font-mono text-amber-400 font-medium tracking-wide">${d.bank_account || '-'}</td>
-                    <td class="py-2.5 px-3">
-                        <span class="px-2 py-0.5 rounded text-[10px] bg-dark-800 text-gray-300 border border-dark-700">
-                            ${d.dancer_type || 'Үндсэн'}
-                        </span>
-                    </td>
-                    <td class="py-2.5 px-3 text-gray-400 font-mono text-[11px]">${d.tag || '-'}</td>
-                    <td class="py-2.5 px-3 text-center">
-                        <div class="flex items-center justify-center gap-1">
-                            <button onclick="openDancerModal('edit', ${d.id})" class="p-1 text-gray-400 hover:text-amber-400 transition-colors">
-                                <i data-lucide="edit" class="w-3.5 h-3.5"></i>
-                            </button>
-                            <button onclick="deleteDancer(${d.id})" class="p-1 text-gray-400 hover:text-red-400 transition-colors">
-                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                            </button>
+                div.innerHTML = `
+                    <div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="font-bold text-gray-100">${d.stage_name}</span>
+                            <span class="text-[10px] text-gray-400 font-mono">${club?.name.replace(' CLUB','') || ''}</span>
                         </div>
-                    </td>
+                        <div class="text-[10px] text-amber-400/90 font-mono">${d.bank_account || '-'} • ${d.real_name || ''}</div>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <button onclick="openDancerModal('edit', ${d.id})" class="p-1 text-gray-400 hover:text-amber-400">
+                            <i data-lucide="edit" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <button onclick="deleteDancer(${d.id})" class="p-1 text-gray-400 hover:text-red-400">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
                 `;
-                tbody.appendChild(tr);
+                listEl.appendChild(div);
             });
             lucide.createIcons();
         }
@@ -2890,12 +2722,12 @@
             const idInput = document.getElementById('modal-dancer-id');
 
             if (mode === 'add') {
-                title.textContent = 'Шинэ бүжигчин бүртгэх';
+                title.textContent = 'Шинэ бүжигчин нэмэх';
                 idInput.value = '';
                 document.getElementById('dancer-modal-form').reset();
                 document.getElementById('modal-dancer-club').value = currentClubId;
             } else {
-                title.textContent = 'Бүжигчний мэдээлэл засах';
+                title.textContent = 'Бүжигчин засах';
                 const d = store.dancers.find(x => x.id === dancerId);
                 if (!d) return;
 
@@ -2904,9 +2736,6 @@
                 document.getElementById('modal-dancer-stagename').value = d.stage_name;
                 document.getElementById('modal-dancer-realname').value = d.real_name || '';
                 document.getElementById('modal-dancer-bankacc').value = d.bank_account || '';
-                document.getElementById('modal-dancer-type').value = d.dancer_type || 'Үндсэн';
-                document.getElementById('modal-dancer-tag').value = d.tag || '';
-                document.getElementById('modal-dancer-phone').value = d.phone || '';
             }
             modal.classList.remove('hidden');
             lucide.createIcons();
@@ -2923,38 +2752,28 @@
             const stageName = document.getElementById('modal-dancer-stagename').value.trim();
             const realName = document.getElementById('modal-dancer-realname').value.trim();
             const bankAcc = document.getElementById('modal-dancer-bankacc').value.trim();
-            const dancerType = document.getElementById('modal-dancer-type').value;
-            const tag = document.getElementById('modal-dancer-tag').value.trim();
-            const phone = document.getElementById('modal-dancer-phone').value.trim();
 
             if (id) {
-                // Edit
                 const d = store.dancers.find(x => String(x.id) === String(id));
                 if (d) {
                     d.club_id = clubId;
                     d.stage_name = stageName;
                     d.real_name = realName;
                     d.bank_account = bankAcc;
-                    d.dancer_type = dancerType;
-                    d.tag = tag;
-                    d.phone = phone;
                 }
-                showToast('Бүжигчний мэдээлэл шинэчлэгдлээ');
+                showToast('Шинэчлэгдлээ');
             } else {
-                // Add
                 const newDancer = {
                     id: Date.now(),
                     club_id: clubId,
                     stage_name: stageName,
                     real_name: realName,
                     bank_account: bankAcc,
-                    dancer_type: dancerType,
-                    tag: tag,
-                    phone: phone,
+                    dancer_type: 'Үндсэн',
                     is_active: 1
                 };
                 store.dancers.push(newDancer);
-                showToast('Шинэ бүжигчин амжилттай нэмэгдлээ');
+                showToast('Нэмэгдлээ');
             }
 
             saveStoredData(store);
@@ -2964,10 +2783,10 @@
         }
 
         function deleteDancer(id) {
-            if (!confirm('Энэ бүжигчнийг сангаас устгах уу?')) return;
+            if (!confirm('Устгах уу?')) return;
             store.dancers = store.dancers.filter(d => d.id !== id);
             saveStoredData(store);
-            showToast('Бүжигчин устгагдлаа');
+            showToast('Устгагдлаа');
             updateBarDancerSelect();
             renderDancersTable();
         }
@@ -2978,32 +2797,27 @@
             grid.innerHTML = '';
 
             store.clubs.forEach(c => {
-                const clubTariffs = store.tariffs.filter(t => String(t.club_id) === String(c.id));
+                const clubTariffs = store.tariffs.filter(t => String(t.club_id) === String(c.id) && t.dancer_type === 'Үндсэн');
                 const card = document.createElement('div');
-                card.className = 'bg-dark-850 border border-dark-700 rounded-xl p-4 space-y-3';
+                card.className = 'bg-dark-900 border border-dark-800 rounded-xl p-3 space-y-2';
 
                 let rowsHtml = '';
                 clubTariffs.forEach(t => {
                     rowsHtml += `
                         <div class="flex items-center justify-between gap-2 text-xs">
-                            <span class="text-gray-300">${t.item_name} <span class="text-[10px] text-gray-400 font-mono">(${t.dancer_type})</span></span>
+                            <span class="text-gray-300">${t.item_name}</span>
                             <div class="flex items-center gap-1">
                                 <input type="number" step="5000" data-tariff-id="${t.id}" value="${t.rate}"
-                                    class="tariff-rate-input w-28 bg-dark-900 border border-dark-700 rounded px-2 py-1 text-right font-mono text-amber-400 focus:outline-none focus:border-amber-500">
-                                <span class="text-gray-500 font-mono">₮</span>
+                                    class="tariff-rate-input w-24 bg-dark-950 border border-dark-700 rounded px-2 py-1 text-right font-mono text-amber-400 focus:outline-none focus:border-amber-500">
+                                <span class="text-gray-500 font-mono text-[11px]">₮</span>
                             </div>
                         </div>
                     `;
                 });
 
                 card.innerHTML = `
-                    <div class="flex items-center justify-between border-b border-dark-700/80 pb-2">
-                        <span class="font-bold text-xs uppercase tracking-wider text-gray-100">${c.name}</span>
-                        <span class="text-[10px] text-gray-400 font-mono">${c.code}</span>
-                    </div>
-                    <div class="space-y-2 pt-1">
-                        ${rowsHtml}
-                    </div>
+                    <div class="font-bold text-xs uppercase tracking-wider text-gray-200 border-b border-dark-800 pb-1.5">${c.name}</div>
+                    <div class="space-y-1.5 pt-1">${rowsHtml}</div>
                 `;
                 grid.appendChild(card);
             });
@@ -3018,7 +2832,7 @@
             });
 
             saveStoredData(store);
-            showToast('Тарифын ханш амжилттай шинэчлэгдлээ!');
+            showToast('Ханш хадгалагдлаа!');
             updateRateLabels('Үндсэн');
         }
 
