@@ -62,6 +62,77 @@
             font-weight: 700 !important;
         }
     </style>
+
+    <!-- TACTILE SOUND & HAPTIC SYSTEM -->
+    <script>
+        let audioCtx = null;
+        function getAudioContext() {
+            if (!audioCtx) {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioContextClass) audioCtx = new AudioContextClass();
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        // Unlock audio on first touch for iOS Safari
+        window.addEventListener('touchstart', () => getAudioContext(), { once: true, passive: true });
+        window.addEventListener('click', () => getAudioContext(), { once: true, passive: true });
+
+        function playFeedback(type = 'click') {
+            try {
+                const ctx = getAudioContext();
+                if (ctx) {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    const now = ctx.currentTime;
+
+                    if (type === 'click') {
+                        // Crisp mechanical tick ('чаг' чимээ)
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(850, now);
+                        osc.frequency.exponentialRampToValueAtTime(140, now + 0.018);
+                        gain.gain.setValueAtTime(0.28, now);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.018);
+                        osc.start(now);
+                        osc.stop(now + 0.02);
+                    } else if (type === 'tab') {
+                        // Soft elegant switch
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(540, now);
+                        osc.frequency.exponentialRampToValueAtTime(280, now + 0.028);
+                        gain.gain.setValueAtTime(0.22, now);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.028);
+                        osc.start(now);
+                        osc.stop(now + 0.03);
+                    } else if (type === 'success') {
+                        // Pleasant chime
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(587.33, now);
+                        osc.frequency.setValueAtTime(880, now + 0.04);
+                        gain.gain.setValueAtTime(0.18, now);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+                        osc.start(now);
+                        osc.stop(now + 0.13);
+                    }
+                }
+            } catch (e) {
+                // AudioContext not available or blocked
+            }
+
+            // Haptic vibration feedback
+            try {
+                if (navigator.vibrate) {
+                    navigator.vibrate(type === 'success' ? [15, 40, 25] : 10);
+                }
+            } catch (e) {}
+        }
+    </script>
+
 </head>
 <body class="bg-dark-950 text-gray-200 min-h-screen font-sans antialiased selection:bg-amber-600/30 selection:text-amber-200 pb-28">
 
@@ -2151,6 +2222,7 @@
         }
 
         function switchTab(tab) {
+            playFeedback("tab");
             const btnBartender = document.getElementById('tab-btn-bartender');
             const btnAdmin = document.getElementById('tab-btn-admin');
             const viewBartender = document.getElementById('view-bartender');
@@ -2176,6 +2248,7 @@
         }
 
         function switchAdminSection(sec) {
+            playFeedback("tab");
             activeAdminSubtab = sec;
             ['report', 'dancers', 'tariffs'].forEach(t => {
                 const btn = document.getElementById(`admin-subtab-${t}`);
@@ -2232,6 +2305,7 @@
         }
 
         function selectClub(clubId) {
+            playFeedback("tab");
             currentClubId = clubId;
             store.clubs.forEach(c => {
                 const el = document.getElementById(`club-chip-${c.id}`);
@@ -2306,6 +2380,7 @@
         }
 
         function adjustCount(inputId, delta) {
+            playFeedback("click");
             const el = document.getElementById(inputId);
             let val = parseInt(el.value || 0) + delta;
             if (val < 0) val = 0;
@@ -2428,6 +2503,7 @@
             store.records.unshift(newRecord);
             saveStoredData(store);
 
+            playFeedback('success');
             showToast('Бүртгэл амжилттай хадгалагдлаа!');
             resetEntryForm();
             loadDailyRecords();
