@@ -1716,6 +1716,8 @@
       "club_id": 1,
       "club_name": "ARUM CLUB",
       "bartender_name": "Арум Бармен 1",
+      "driver_name": "Д.Батбаяр",
+      "driver_bank": "5005250242",
       "taxi_qty": 2,
       "rate": 40000,
       "amount": 80000,
@@ -1728,9 +1730,11 @@
       "club_id": 1,
       "club_name": "ARUM CLUB",
       "bartender_name": "Арум Бармен 1",
+      "pr_manager_name": "Б.Нандин-Эрдэнэ",
+      "pr_manager_bank": "5200341890",
       "bill_no": "#1042",
       "amount": 150000,
-      "note": "VIP ширээ PR үйлчилгээ"
+      "note": "VIP ширээний PR (Уух зүйлийн 10%)"
     }
   ]
 }
