@@ -241,6 +241,22 @@
                     </div>
                 </div>
 
+                <!-- Bartender Entry Mode Switcher (Dancer vs Taxi/PR) -->
+                <div class="flex items-center bg-dark-900 border border-dark-800 p-1 rounded-xl text-xs shadow-sm">
+                    <button type="button" id="bar-mode-btn-dancer" onclick="switchBartenderEntryMode('dancer')"
+                        class="flex-1 py-1.5 rounded-lg font-bold flex items-center justify-center gap-1.5 transition-all bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                        <span>Бүжигчний орлого</span>
+                    </button>
+                    <button type="button" id="bar-mode-btn-taxipr" onclick="switchBartenderEntryMode('taxipr')"
+                        class="flex-1 py-1.5 rounded-lg font-medium flex items-center justify-center gap-1.5 transition-all text-gray-400 hover:text-gray-200">
+                        <i data-lucide="car" class="w-3.5 h-3.5"></i>
+                        <span>Такси & PR бүртгэх</span>
+                    </button>
+                </div>
+
+                <!-- SECTION 1: DANCER ENTRY -->
+                <div id="bar-mode-dancer-section" class="space-y-3">
                 <!-- Dancer Quick Selector Card -->
                 <div class="bg-dark-900 border border-dark-800 rounded-xl p-3 shadow-md space-y-2">
                     <div class="flex items-center justify-between">
@@ -457,6 +473,91 @@
                     </div>
                 </div>
 
+                </div><!-- /bar-mode-dancer-section -->
+
+                <!-- SECTION 2: TAXI & PR ENTRY (FAST 1-TAP FOR BARTENDER) -->
+                <div id="bar-mode-taxipr-section" class="hidden space-y-3">
+                    <!-- 1. TAXI REGISTRATION CARD -->
+                    <div class="bg-dark-900 border border-dark-800 rounded-xl p-3 shadow-md space-y-2.5">
+                        <div class="flex items-center justify-between border-b border-dark-800 pb-2">
+                            <div class="flex items-center gap-1.5 font-bold text-xs text-amber-400">
+                                <i data-lucide="car" class="w-4 h-4"></i>
+                                <span>Такси (Taxi Tax)</span>
+                            </div>
+                            <span id="bar-taxi-rate-badge" class="text-[10px] px-2 py-0.5 rounded bg-dark-800 text-amber-300 font-mono border border-dark-700">
+                                40,000 ₮ / 1 такси
+                            </span>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-gray-300 font-medium">Ширхэг (Тоо):</span>
+                            <div class="flex items-center gap-2">
+                                <button type="button" onclick="adjustTaxiQty(-1)" class="w-8 h-8 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-95 text-amber-400 font-bold text-lg flex items-center justify-center border border-dark-700">-</button>
+                                <input type="number" id="bar_taxi_qty" value="1" min="1" oninput="updateTaxiTotal()" class="w-12 h-8 text-center bg-dark-950 border border-dark-700 rounded-lg text-sm font-bold text-gray-100 font-mono">
+                                <button type="button" onclick="adjustTaxiQty(1)" class="w-8 h-8 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-95 text-amber-400 font-bold text-lg flex items-center justify-center border border-dark-700">+</button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] text-gray-400 mb-1">Жолоочийн тэмдэглэл / Машины дугаар (Сонголттой):</label>
+                            <input type="text" id="bar_taxi_note" placeholder="Жишээ: 1234 УБҮ, Приус 20..."
+                                class="w-full bg-dark-850 border border-dark-700 rounded-lg px-2.5 py-1.5 text-xs text-gray-200 focus:outline-none focus:border-amber-500">
+                        </div>
+
+                        <div class="flex items-center justify-between pt-1">
+                            <div>
+                                <span class="text-[10px] text-gray-400">Нийт такси зардал:</span>
+                                <div id="bar_taxi_total_disp" class="font-mono text-base font-bold text-amber-400">40,000 ₮</div>
+                            </div>
+                            <button type="button" onclick="submitTaxiRecord()"
+                                class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 active:scale-95 text-gray-950 font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-amber-500/10">
+                                <i data-lucide="check" class="w-4 h-4"></i>
+                                <span>Такси хадгалах</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 2. PR EXPENSE REGISTRATION CARD -->
+                    <div class="bg-dark-900 border border-dark-800 rounded-xl p-3 shadow-md space-y-2.5">
+                        <div class="flex items-center justify-between border-b border-dark-800 pb-2">
+                            <div class="flex items-center gap-1.5 font-bold text-xs text-purple-400">
+                                <i data-lucide="receipt" class="w-4 h-4"></i>
+                                <span>PR зардал (Биллийн дугаартай)</span>
+                            </div>
+                            <span class="text-[10px] px-2 py-0.5 rounded bg-dark-800 text-purple-300 font-mono border border-dark-700">
+                                Гараар оруулах
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[11px] text-gray-400 mb-1">Биллийн дугаар *</label>
+                                <input type="text" id="bar_pr_bill" placeholder="Жишээ: #1042..."
+                                    class="w-full bg-dark-850 border border-dark-700 rounded-lg px-2.5 py-1.5 text-xs text-gray-100 font-mono focus:outline-none focus:border-purple-500">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-gray-400 mb-1">Үнийн дүн (₮) *</label>
+                                <input type="number" id="bar_pr_amount" placeholder="50000..." step="1000"
+                                    class="w-full bg-dark-850 border border-dark-700 rounded-lg px-2.5 py-1.5 text-xs text-amber-400 font-bold font-mono focus:outline-none focus:border-purple-500">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] text-gray-400 mb-1">Тайлбар / Зориулалт (Сонголттой):</label>
+                            <input type="text" id="bar_pr_note" placeholder="Жишээ: VIP ширээний PR, ундаа..."
+                                class="w-full bg-dark-850 border border-dark-700 rounded-lg px-2.5 py-1.5 text-xs text-gray-200 focus:outline-none focus:border-purple-500">
+                        </div>
+
+                        <div class="pt-1">
+                            <button type="button" onclick="submitPrRecord()"
+                                class="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 active:scale-95 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-purple-600/10">
+                                <i data-lucide="check" class="w-4 h-4"></i>
+                                <span>PR зардал хадгалах</span>
+                            </button>
+                        </div>
+                    </div>
+                </div><!-- /bar-mode-taxipr-section -->
+
                 <!-- Today's Record List in Selected Club -->
                 <div class="bg-dark-900 border border-dark-800 rounded-xl overflow-hidden shadow-sm">
                     <div class="px-3 py-2 border-b border-dark-800 flex items-center justify-between text-xs">
@@ -482,6 +583,10 @@
                     <button onclick="switchAdminSection('dancers')" id="admin-subtab-dancers"
                         class="flex-1 py-1.5 rounded-md font-medium text-center text-gray-400 hover:text-gray-200">
                         Бүжигчид
+                    </button>
+                    <button onclick="switchAdminSection('taxipr')" id="admin-subtab-taxipr"
+                        class="flex-1 py-1.5 rounded-md font-medium text-center text-gray-400 hover:text-gray-200">
+                        Такси/PR
                     </button>
                     <button onclick="switchAdminSection('tariffs')" id="admin-subtab-tariffs"
                         class="flex-1 py-1.5 rounded-md font-medium text-center text-gray-400 hover:text-gray-200">
@@ -564,6 +669,85 @@
                         </button>
                     </div>
                     <div id="dancers-crud-list" class="bg-dark-900 border border-dark-800 rounded-xl divide-y divide-dark-800 overflow-hidden text-xs"></div>
+                </div>
+
+                <!-- SECTION TAXIPR: TAXI & PR MANAGEMENT -->
+                <div id="admin-sec-taxipr" class="hidden space-y-3">
+                    <!-- Filters & Add button -->
+                    <div class="bg-dark-900 border border-dark-800 rounded-xl p-3 space-y-2 text-xs">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-0.5">Салбар</label>
+                                <select id="taxipr-club-filter" onchange="renderTaxiPrSection()" class="w-full bg-dark-850 border border-dark-700 rounded px-2 py-1 text-gray-200">
+                                    <option value="all">Бүх салбар</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-0.5">Төрөл</label>
+                                <select id="taxipr-type-filter" onchange="renderTaxiPrSection()" class="w-full bg-dark-850 border border-dark-700 rounded px-2 py-1 text-gray-200">
+                                    <option value="all">Бүгд (Такси + PR)</option>
+                                    <option value="taxi">Зөвхөн Такси</option>
+                                    <option value="pr">Зөвхөн PR</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-0.5">Түргэн сонголт</label>
+                            <div class="grid grid-cols-3 gap-1">
+                                <button onclick="setTaxiPrQuickDate('today')" class="py-1 bg-dark-800 rounded text-[10px] text-center hover:bg-dark-700">Өнөөдөр</button>
+                                <button onclick="setTaxiPrQuickDate('week')" class="py-1 bg-dark-800 rounded text-[10px] text-center hover:bg-dark-700">7 хоног</button>
+                                <button onclick="setTaxiPrQuickDate('month')" class="py-1 bg-dark-800 rounded text-[10px] text-center hover:bg-dark-700">Энэ сар</button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-0.5">Эхлэх</label>
+                                <input type="date" id="taxipr-start-date" onchange="renderTaxiPrSection()" class="w-full bg-dark-850 border border-dark-700 rounded px-2 py-1 text-gray-200 font-mono">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-0.5">Дуусах</label>
+                                <input type="date" id="taxipr-end-date" onchange="renderTaxiPrSection()" class="w-full bg-dark-850 border border-dark-700 rounded px-2 py-1 text-gray-200 font-mono">
+                            </div>
+                        </div>
+
+                        <button type="button" onclick="openAdminTaxiPrModal()"
+                            class="w-full mt-1 py-2 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 font-bold flex items-center justify-center gap-1.5 transition-all">
+                            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                            <span>+ Админ: Такси / PR бүртгэл нэмэх</span>
+                        </button>
+                    </div>
+
+                    <!-- Summary KPI Cards -->
+                    <div class="grid grid-cols-3 gap-2 text-center">
+                        <div class="bg-dark-900 border border-dark-800 rounded-xl p-2.5">
+                            <div class="text-[10px] text-gray-400 font-medium">🚕 Такси</div>
+                            <div id="stat-taxi-qty" class="text-xs font-bold text-amber-400 font-mono mt-0.5">0 ш</div>
+                            <div id="stat-taxi-total" class="text-[10px] text-gray-400 font-mono">0 ₮</div>
+                        </div>
+                        <div class="bg-dark-900 border border-dark-800 rounded-xl p-2.5">
+                            <div class="text-[10px] text-gray-400 font-medium">🧾 PR билл</div>
+                            <div id="stat-pr-count" class="text-xs font-bold text-purple-400 font-mono mt-0.5">0 билл</div>
+                            <div id="stat-pr-total" class="text-[10px] text-gray-400 font-mono">0 ₮</div>
+                        </div>
+                        <div class="bg-dark-900 border border-dark-800 rounded-xl p-2.5">
+                            <div class="text-[10px] text-gray-400 font-medium">Нийт зардал</div>
+                            <div id="stat-taxipr-grand" class="text-xs font-bold text-emerald-400 font-mono mt-0.5">0 ₮</div>
+                            <div class="text-[9px] text-gray-500">Такси + PR</div>
+                        </div>
+                    </div>
+
+                    <!-- Records List -->
+                    <div class="bg-dark-900 border border-dark-800 rounded-xl overflow-hidden shadow-sm">
+                        <div class="px-3 py-2 border-b border-dark-800 flex items-center justify-between text-xs">
+                            <span class="font-bold text-gray-200">Такси & PR түүх</span>
+                            <span id="taxipr-list-count" class="text-[10px] text-gray-400 font-mono">0 бичилт</span>
+                        </div>
+                        <div id="taxipr-records-list" class="divide-y divide-dark-800 text-xs max-h-96 overflow-y-auto">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
                 </div>
 
                 <!-- SECTION C: TARIFFS -->
@@ -2026,6 +2210,30 @@
       "item_key": "extra",
       "item_name": "Extra бонус",
       "rate": 200000
+    },
+    {
+      "id": 101,
+      "club_id": 1,
+      "dancer_type": "Үндсэн",
+      "item_key": "taxi",
+      "item_name": "Такси татвар (1 такси)",
+      "rate": 40000
+    },
+    {
+      "id": 102,
+      "club_id": 2,
+      "dancer_type": "Үндсэн",
+      "item_key": "taxi",
+      "item_name": "Такси татвар (1 такси)",
+      "rate": 40000
+    },
+    {
+      "id": 103,
+      "club_id": 3,
+      "dancer_type": "Үндсэн",
+      "item_key": "taxi",
+      "item_name": "Такси татвар (1 такси)",
+      "rate": 40000
     }
   ],
   "records": [
@@ -2382,6 +2590,31 @@
       "club_id": 3,
       "is_blocked": 0
     }
+  ],
+  "taxi_pr_records": [
+    {
+      "id": 1731900000001,
+      "type": "taxi",
+      "date": "2026-11-18",
+      "club_id": 1,
+      "club_name": "ARUM CLUB",
+      "bartender_name": "Арум Бармен 1",
+      "taxi_qty": 2,
+      "rate": 40000,
+      "amount": 80000,
+      "note": "1234 УБҮ Приус 20"
+    },
+    {
+      "id": 1731900000002,
+      "type": "pr",
+      "date": "2026-11-18",
+      "club_id": 1,
+      "club_name": "ARUM CLUB",
+      "bartender_name": "Арум Бармен 1",
+      "bill_no": "#1042",
+      "amount": 150000,
+      "note": "VIP ширээ PR үйлчилгээ"
+    }
   ]
 };
     </script>
@@ -2401,6 +2634,24 @@
             if (!data || !data.dancers || data.dancers.length === 0 || !data.users) {
                 data = window.INITIAL_DATA;
                 saveStoredData(data);
+            }
+            if (!data.taxi_pr_records) {
+                data.taxi_pr_records = window.INITIAL_DATA?.taxi_pr_records || [];
+            }
+            if (data.tariffs) {
+                [1, 2, 3].forEach(cid => {
+                    const hasTaxi = data.tariffs.some(t => String(t.club_id) === String(cid) && t.item_key === 'taxi');
+                    if (!hasTaxi) {
+                        data.tariffs.push({
+                            id: 100 + cid,
+                            club_id: cid,
+                            dancer_type: 'Үндсэн',
+                            item_key: 'taxi',
+                            item_name: 'Такси татвар (1 такси)',
+                            rate: 40000
+                        });
+                    }
+                });
             }
             return data;
         }
@@ -2563,6 +2814,8 @@
             document.getElementById('bar-date-input').value = today;
             document.getElementById('report-start-date').value = today;
             document.getElementById('report-end-date').value = today;
+            if (document.getElementById('taxipr-start-date')) document.getElementById('taxipr-start-date').value = today;
+            if (document.getElementById('taxipr-end-date')) document.getElementById('taxipr-end-date').value = today;
 
             checkSession();
         }
@@ -2572,6 +2825,8 @@
             const reportFilter = document.getElementById('report-club-filter');
             const modalClub = document.getElementById('modal-dancer-club');
             const modalUserClub = document.getElementById('modal-user-club');
+            const taxiprClubFilter = document.getElementById('taxipr-club-filter');
+            const modalTaxiprClub = document.getElementById('modal-taxipr-club');
 
             container.innerHTML = '';
             modalClub.innerHTML = '';
@@ -2816,21 +3071,28 @@
             const date = document.getElementById('bar-date-input').value;
             const listEl = document.getElementById('daily-records-list');
 
-            const filtered = store.records.filter(r => String(r.club_id) === String(currentClubId) && r.date === date);
+            const dancerRecords = store.records.filter(r => String(r.club_id) === String(currentClubId) && r.date === date);
+            const taxiPrRecords = (store.taxi_pr_records || []).filter(r => String(r.club_id) === String(currentClubId) && r.date === date);
 
-            document.getElementById('shift-count-label').textContent = filtered.length;
-            const total = filtered.reduce((sum, r) => sum + (r.total_amount || 0), 0);
-            document.getElementById('shift-total-label').textContent = formatMNT(total);
+            const dancerTotal = dancerRecords.reduce((s, r) => s + (r.total_amount || 0), 0);
+            const taxiTotal = taxiPrRecords.filter(r => r.type === 'taxi').reduce((s, r) => s + (r.amount || 0), 0);
+            const prTotal = taxiPrRecords.filter(r => r.type === 'pr').reduce((s, r) => s + (r.amount || 0), 0);
+            const grandTotal = dancerTotal + taxiTotal + prTotal;
 
-            if (filtered.length === 0) {
+            const totalCount = dancerRecords.length + taxiPrRecords.length;
+            document.getElementById('shift-count-label').textContent = `${totalCount} бичилт`;
+            document.getElementById('shift-total-label').textContent = formatMNT(grandTotal);
+
+            if (totalCount === 0) {
                 listEl.innerHTML = '<div class="text-center py-4 text-gray-500 font-mono text-[11px]">Энэ өдөр одоогоор бүртгэл ороогүй</div>';
                 return;
             }
 
             const todayStr = new Date().toISOString().split('T')[0];
-
             listEl.innerHTML = '';
-            filtered.forEach((r) => {
+
+            // 1. Render Dancer Records
+            dancerRecords.forEach((r) => {
                 const div = document.createElement('div');
                 div.className = 'px-3 py-2 flex items-center justify-between hover:bg-dark-850/40';
 
@@ -2870,6 +3132,66 @@
                 `;
                 listEl.appendChild(div);
             });
+
+            // 2. Render Taxi & PR Records
+            taxiPrRecords.forEach((r) => {
+                const div = document.createElement('div');
+                div.className = 'px-3 py-2 flex items-center justify-between hover:bg-dark-850/40 bg-dark-950/20';
+                const isPastRecord = r.date !== todayStr;
+                const canDeleteThisRecord = currentUser && (currentUser.role === 'admin' || (currentUser.role === 'bartender' && !isPastRecord));
+
+                if (r.type === 'taxi') {
+                    div.innerHTML = `
+                        <div class="flex-1 pr-2">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-400 font-mono font-bold border border-amber-500/30">🚕 Такси</span>
+                                <span class="font-bold text-gray-100 text-xs">${r.taxi_qty} ширхэг (${formatMNT(r.rate)})</span>
+                            </div>
+                            <div class="text-[10px] text-gray-400 mt-0.5">${r.note || 'Тэмдэглэлгүй'}</div>
+                            <div class="text-[9px] text-gray-500 mt-0.5 flex items-center gap-2">
+                                <span>Бүртгэсэн: ${r.bartender_name || 'Ажилтан'}</span>
+                                <span class="font-mono text-gray-600">${r.date}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold font-mono text-amber-400 text-xs">${formatMNT(r.amount)}</span>
+                            ${canDeleteThisRecord ? `
+                            <button onclick="deleteTaxiPrRecord(${r.id})" class="text-gray-500 hover:text-red-400 p-1" title="Устгах">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            </button>` : `
+                            <span class="text-[10px] text-gray-600 p-1 cursor-not-allowed" title="Өнгөрсөн өдрийн бүртгэл (Зөвхөн нягтлан засах эрхтэй)">
+                                <i data-lucide="lock" class="w-3.5 h-3.5 text-gray-600"></i>
+                            </span>`}
+                        </div>
+                    `;
+                } else {
+                    div.innerHTML = `
+                        <div class="flex-1 pr-2">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/15 text-purple-300 font-mono font-bold border border-purple-500/30">🧾 PR Билл</span>
+                                <span class="font-bold text-gray-100 text-xs font-mono">${r.bill_no}</span>
+                            </div>
+                            <div class="text-[10px] text-gray-400 mt-0.5">${r.note || 'Тайлбаргүй'}</div>
+                            <div class="text-[9px] text-gray-500 mt-0.5 flex items-center gap-2">
+                                <span>Бүртгэсэн: ${r.bartender_name || 'Ажилтан'}</span>
+                                <span class="font-mono text-gray-600">${r.date}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold font-mono text-purple-300 text-xs">${formatMNT(r.amount)}</span>
+                            ${canDeleteThisRecord ? `
+                            <button onclick="deleteTaxiPrRecord(${r.id})" class="text-gray-500 hover:text-red-400 p-1" title="Устгах">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            </button>` : `
+                            <span class="text-[10px] text-gray-600 p-1 cursor-not-allowed" title="Өнгөрсөн өдрийн бүртгэл (Зөвхөн нягтлан засах эрхтэй)">
+                                <i data-lucide="lock" class="w-3.5 h-3.5 text-gray-600"></i>
+                            </span>`}
+                        </div>
+                    `;
+                }
+                listEl.appendChild(div);
+            });
+
             lucide.createIcons();
         }
 
@@ -2892,6 +3214,389 @@
             showToast('Бүртгэл устгагдлаа');
             loadDailyRecords();
         }
+
+                // ================= TAXI & PR HANDLERS =================
+        let currentBartenderEntryMode = 'dancer';
+
+        function switchBartenderEntryMode(mode) {
+            playFeedback("tab");
+            currentBartenderEntryMode = mode;
+            const btnDancer = document.getElementById('bar-mode-btn-dancer');
+            const btnTaxiPr = document.getElementById('bar-mode-btn-taxipr');
+            const secDancer = document.getElementById('bar-mode-dancer-section');
+            const secTaxiPr = document.getElementById('bar-mode-taxipr-section');
+            const stickyBar = document.getElementById('sticky-bottom-bar');
+
+            if (mode === 'dancer') {
+                btnDancer.className = 'flex-1 py-1.5 rounded-lg font-bold flex items-center justify-center gap-1.5 transition-all bg-amber-500/10 text-amber-400 border border-amber-500/30';
+                btnTaxiPr.className = 'flex-1 py-1.5 rounded-lg font-medium flex items-center justify-center gap-1.5 transition-all text-gray-400 hover:text-gray-200';
+                secDancer.classList.remove('hidden');
+                secTaxiPr.classList.add('hidden');
+                stickyBar.classList.remove('hidden');
+            } else {
+                btnTaxiPr.className = 'flex-1 py-1.5 rounded-lg font-bold flex items-center justify-center gap-1.5 transition-all bg-amber-500/10 text-amber-400 border border-amber-500/30';
+                btnDancer.className = 'flex-1 py-1.5 rounded-lg font-medium flex items-center justify-center gap-1.5 transition-all text-gray-400 hover:text-gray-200';
+                secDancer.classList.add('hidden');
+                secTaxiPr.classList.remove('hidden');
+                stickyBar.classList.add('hidden');
+                updateTaxiTotal();
+            }
+            lucide.createIcons();
+        }
+
+        function getTaxiRate(clubId) {
+            const t = store.tariffs.find(x => String(x.club_id) === String(clubId) && x.item_key === 'taxi');
+            return t ? t.rate : 40000;
+        }
+
+        function adjustTaxiQty(delta) {
+            playFeedback("click");
+            const inp = document.getElementById('bar_taxi_qty');
+            let val = parseInt(inp.value || 1) + delta;
+            if (val < 1) val = 1;
+            inp.value = val;
+            updateTaxiTotal();
+        }
+
+        function updateTaxiTotal() {
+            const qty = parseInt(document.getElementById('bar_taxi_qty')?.value || 1);
+            const rate = getTaxiRate(currentClubId);
+            const badge = document.getElementById('bar-taxi-rate-badge');
+            if (badge) badge.textContent = `${formatMNT(rate)} / 1 такси`;
+            const disp = document.getElementById('bar_taxi_total_disp');
+            if (disp) disp.textContent = formatMNT(qty * rate);
+        }
+
+        function submitTaxiRecord() {
+            const qty = parseInt(document.getElementById('bar_taxi_qty').value || 1);
+            if (qty < 1) {
+                alert('Таксины тоо 1-ээс бага байж болохгүй!');
+                return;
+            }
+            const rate = getTaxiRate(currentClubId);
+            const note = document.getElementById('bar_taxi_note').value.trim();
+            const club = store.clubs.find(c => String(c.id) === String(currentClubId));
+
+            const todayStr = new Date().toISOString().split('T')[0];
+            let entryDate = document.getElementById('bar-date-input').value;
+            if (currentUser && currentUser.role === 'bartender') {
+                entryDate = todayStr;
+            }
+
+            const newRec = {
+                id: Date.now(),
+                type: 'taxi',
+                date: entryDate,
+                club_id: parseInt(currentClubId),
+                club_name: club?.name || '',
+                bartender_name: currentUser ? currentUser.name : 'Ээлжийн ажилтан',
+                taxi_qty: qty,
+                rate: rate,
+                amount: qty * rate,
+                note: note
+            };
+
+            if (!store.taxi_pr_records) store.taxi_pr_records = [];
+            store.taxi_pr_records.unshift(newRec);
+            saveStoredData(store);
+
+            playFeedback("success");
+            showToast(`🚕 Такси (${formatMNT(newRec.amount)}) амжилттай бүртгэгдлээ!`);
+            document.getElementById('bar_taxi_qty').value = 1;
+            document.getElementById('bar_taxi_note').value = '';
+            updateTaxiTotal();
+            loadDailyRecords();
+        }
+
+        function submitPrRecord() {
+            const billNo = document.getElementById('bar_pr_bill').value.trim();
+            const amount = parseInt(document.getElementById('bar_pr_amount').value || 0);
+            const note = document.getElementById('bar_pr_note').value.trim();
+            const club = store.clubs.find(c => String(c.id) === String(currentClubId));
+
+            if (!billNo) {
+                alert('Биллийн дугаарыг заавал оруулна уу!');
+                document.getElementById('bar_pr_bill').focus();
+                return;
+            }
+            if (amount <= 0) {
+                alert('PR зардлын үнийн дүнг заавал оруулна уу!');
+                document.getElementById('bar_pr_amount').focus();
+                return;
+            }
+
+            const todayStr = new Date().toISOString().split('T')[0];
+            let entryDate = document.getElementById('bar-date-input').value;
+            if (currentUser && currentUser.role === 'bartender') {
+                entryDate = todayStr;
+            }
+
+            const newRec = {
+                id: Date.now(),
+                type: 'pr',
+                date: entryDate,
+                club_id: parseInt(currentClubId),
+                club_name: club?.name || '',
+                bartender_name: currentUser ? currentUser.name : 'Ээлжийн ажилтан',
+                bill_no: billNo,
+                amount: amount,
+                note: note
+            };
+
+            if (!store.taxi_pr_records) store.taxi_pr_records = [];
+            store.taxi_pr_records.unshift(newRec);
+            saveStoredData(store);
+
+            playFeedback("success");
+            showToast(`🧾 PR Билл ${billNo} (${formatMNT(amount)}) амжилттай бүртгэгдлээ!`);
+            document.getElementById('bar_pr_bill').value = '';
+            document.getElementById('bar_pr_amount').value = '';
+            document.getElementById('bar_pr_note').value = '';
+            loadDailyRecords();
+        }
+
+        function deleteTaxiPrRecord(id) {
+            const rec = (store.taxi_pr_records || []).find(r => r.id === id);
+            if (!rec) return;
+
+            const todayStr = new Date().toISOString().split('T')[0];
+            if (currentUser && currentUser.role === 'bartender') {
+                if (rec.date !== todayStr) {
+                    alert('Бармен өнгөрсөн өдрийн Такси/PR бүртгэлийг устгах эрхгүй!\nЗөвхөн Ерөнхий нягтлан устгах эрхтэй.');
+                    return;
+                }
+            }
+
+            const label = rec.type === 'taxi' ? `Такси (${rec.taxi_qty} ш - ${formatMNT(rec.amount)})` : `PR (Билл: ${rec.bill_no} - ${formatMNT(rec.amount)})`;
+            if (!confirm(`Энэ ${label} бичилтийг устгах уу?`)) return;
+
+            store.taxi_pr_records = store.taxi_pr_records.filter(r => r.id !== id);
+            saveStoredData(store);
+            showToast('Устгагдлаа');
+            loadDailyRecords();
+            renderTaxiPrSection();
+        }
+
+        // ================= ADMIN TAXI & PR SECTION =================
+        function setTaxiPrQuickDate(type) {
+            const startInput = document.getElementById('taxipr-start-date');
+            const endInput = document.getElementById('taxipr-end-date');
+            const today = new Date();
+
+            if (type === 'today') {
+                const d = today.toISOString().split('T')[0];
+                startInput.value = d;
+                endInput.value = d;
+            } else if (type === 'week') {
+                const lastWeek = new Date(today);
+                lastWeek.setDate(today.getDate() - 7);
+                startInput.value = lastWeek.toISOString().split('T')[0];
+                endInput.value = today.toISOString().split('T')[0];
+            } else if (type === 'month') {
+                const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+                startInput.value = firstDay.toISOString().split('T')[0];
+                endInput.value = today.toISOString().split('T')[0];
+            }
+            renderTaxiPrSection();
+        }
+
+        function renderTaxiPrSection() {
+            const clubId = document.getElementById('taxipr-club-filter')?.value || 'all';
+            const typeFilter = document.getElementById('taxipr-type-filter')?.value || 'all';
+            const startDate = document.getElementById('taxipr-start-date')?.value;
+            const endDate = document.getElementById('taxipr-end-date')?.value;
+            const listEl = document.getElementById('taxipr-records-list');
+
+            let records = store.taxi_pr_records || [];
+            if (clubId !== 'all') records = records.filter(r => String(r.club_id) === String(clubId));
+            if (typeFilter !== 'all') records = records.filter(r => r.type === typeFilter);
+            if (startDate && endDate) records = records.filter(r => r.date >= startDate && r.date <= endDate);
+
+            // Compute KPIs
+            const taxiRecs = records.filter(r => r.type === 'taxi');
+            const prRecs = records.filter(r => r.type === 'pr');
+
+            const taxiQtySum = taxiRecs.reduce((s, r) => s + (r.taxi_qty || 0), 0);
+            const taxiAmountSum = taxiRecs.reduce((s, r) => s + (r.amount || 0), 0);
+
+            const prCountSum = prRecs.length;
+            const prAmountSum = prRecs.reduce((s, r) => s + (r.amount || 0), 0);
+
+            const grandTotal = taxiAmountSum + prAmountSum;
+
+            document.getElementById('stat-taxi-qty').textContent = `${taxiQtySum} ш`;
+            document.getElementById('stat-taxi-total').textContent = formatMNT(taxiAmountSum);
+            document.getElementById('stat-pr-count').textContent = `${prCountSum} билл`;
+            document.getElementById('stat-pr-total').textContent = formatMNT(prAmountSum);
+            document.getElementById('stat-taxipr-grand').textContent = formatMNT(grandTotal);
+            document.getElementById('taxipr-list-count').textContent = `${records.length} бичилт`;
+
+            if (records.length === 0) {
+                listEl.innerHTML = '<div class="text-center py-6 text-gray-500 font-mono text-[11px]">Бүртгэл олдсонгүй</div>';
+                return;
+            }
+
+            listEl.innerHTML = '';
+            records.forEach(r => {
+                const div = document.createElement('div');
+                div.className = 'px-3 py-2.5 flex items-center justify-between hover:bg-dark-850/40';
+
+                if (r.type === 'taxi') {
+                    div.innerHTML = `
+                        <div class="flex-1 pr-2">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-400 font-mono font-bold border border-amber-500/30">🚕 Такси</span>
+                                <span class="font-bold text-gray-100 text-xs">${r.taxi_qty} ширхэг (${formatMNT(r.rate)})</span>
+                                <span class="text-[10px] text-gray-400 font-mono">${r.club_name.replace(' CLUB','')}</span>
+                            </div>
+                            <div class="text-[10px] text-gray-300 mt-0.5">${r.note || 'Тэмдэглэлгүй'}</div>
+                            <div class="text-[9px] text-gray-500 mt-0.5 flex items-center gap-2">
+                                <span>Бүртгэсэн: ${r.bartender_name || 'Ажилтан'}</span>
+                                <span class="font-mono text-gray-600">${r.date}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold font-mono text-amber-400 text-xs">${formatMNT(r.amount)}</span>
+                            <button onclick="deleteTaxiPrRecord(${r.id})" class="p-1 text-gray-400 hover:text-red-400" title="Устгах">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    div.innerHTML = `
+                        <div class="flex-1 pr-2">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/15 text-purple-300 font-mono font-bold border border-purple-500/30">🧾 PR</span>
+                                <span class="font-bold text-gray-100 text-xs font-mono">Билл: ${r.bill_no}</span>
+                                <span class="text-[10px] text-gray-400 font-mono">${r.club_name.replace(' CLUB','')}</span>
+                            </div>
+                            <div class="text-[10px] text-gray-300 mt-0.5">${r.note || 'Тайлбаргүй'}</div>
+                            <div class="text-[9px] text-gray-500 mt-0.5 flex items-center gap-2">
+                                <span>Бүртгэсэн: ${r.bartender_name || 'Ажилтан'}</span>
+                                <span class="font-mono text-gray-600">${r.date}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold font-mono text-purple-300 text-xs">${formatMNT(r.amount)}</span>
+                            <button onclick="deleteTaxiPrRecord(${r.id})" class="p-1 text-gray-400 hover:text-red-400" title="Устгах">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                    `;
+                }
+                listEl.appendChild(div);
+            });
+            lucide.createIcons();
+        }
+
+        // ================= ADMIN MODAL FOR TAXI & PR =================
+        function openAdminTaxiPrModal() {
+            playFeedback("click");
+            const modal = document.getElementById('admin-taxipr-modal');
+            const todayStr = new Date().toISOString().split('T')[0];
+            document.getElementById('admin-taxipr-form').reset();
+            document.getElementById('modal-taxipr-date').value = todayStr;
+            document.getElementById('modal-taxipr-club').value = currentClubId;
+            onAdminTaxiPrTypeChange();
+            modal.classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeAdminTaxiPrModal() {
+            document.getElementById('admin-taxipr-modal').classList.add('hidden');
+        }
+
+        function onAdminTaxiPrTypeChange() {
+            const type = document.getElementById('modal-taxipr-type').value;
+            const taxiFields = document.getElementById('modal-taxi-fields');
+            const prFields = document.getElementById('modal-pr-fields');
+
+            if (type === 'taxi') {
+                taxiFields.classList.remove('hidden');
+                prFields.classList.add('hidden');
+                updateAdminModalTaxiTotal();
+            } else {
+                taxiFields.classList.add('hidden');
+                prFields.classList.remove('hidden');
+            }
+        }
+
+        function updateAdminModalTaxiTotal() {
+            const clubId = document.getElementById('modal-taxipr-club')?.value || currentClubId;
+            const qty = parseInt(document.getElementById('modal-taxi-qty')?.value || 1);
+            const rate = getTaxiRate(clubId);
+            document.getElementById('modal-taxi-total').value = formatMNT(qty * rate);
+        }
+
+        function submitAdminTaxiPrModal(e) {
+            e.preventDefault();
+            const type = document.getElementById('modal-taxipr-type').value;
+            const clubId = parseInt(document.getElementById('modal-taxipr-club').value);
+            const date = document.getElementById('modal-taxipr-date').value;
+            const club = store.clubs.find(c => c.id === clubId);
+
+            if (!date) {
+                alert('Огноо сонгоно уу!');
+                return;
+            }
+
+            let newRec = null;
+            if (type === 'taxi') {
+                const qty = parseInt(document.getElementById('modal-taxi-qty').value || 1);
+                const rate = getTaxiRate(clubId);
+                const note = document.getElementById('modal-taxi-note').value.trim();
+                newRec = {
+                    id: Date.now(),
+                    type: 'taxi',
+                    date: date,
+                    club_id: clubId,
+                    club_name: club?.name || '',
+                    bartender_name: currentUser ? currentUser.name : 'Ерөнхий нягтлан',
+                    taxi_qty: qty,
+                    rate: rate,
+                    amount: qty * rate,
+                    note: note
+                };
+            } else {
+                const billNo = document.getElementById('modal-pr-bill').value.trim();
+                const amount = parseInt(document.getElementById('modal-pr-amount').value || 0);
+                const note = document.getElementById('modal-pr-note').value.trim();
+
+                if (!billNo) {
+                    alert('Биллийн дугаарыг заавал оруулна уу!');
+                    document.getElementById('modal-pr-bill').focus();
+                    return;
+                }
+                if (amount <= 0) {
+                    alert('PR зардлын үнийн дүнг заавал оруулна уу!');
+                    document.getElementById('modal-pr-amount').focus();
+                    return;
+                }
+
+                newRec = {
+                    id: Date.now(),
+                    type: 'pr',
+                    date: date,
+                    club_id: clubId,
+                    club_name: club?.name || '',
+                    bartender_name: currentUser ? currentUser.name : 'Ерөнхий нягтлан',
+                    bill_no: billNo,
+                    amount: amount,
+                    note: note
+                };
+            }
+
+            if (!store.taxi_pr_records) store.taxi_pr_records = [];
+            store.taxi_pr_records.unshift(newRec);
+            saveStoredData(store);
+
+            playFeedback("success");
+            showToast('Такси/PR бүртгэл амжилттай нэмэгдлээ!');
+            closeAdminTaxiPrModal();
+            renderTaxiPrSection();
+            loadDailyRecords();
+        }
+
 
         // ================= TABS SWITCHING =================
         function switchTab(tab) {
@@ -2923,7 +3628,7 @@
         function switchAdminSection(sec) {
             playFeedback("tab");
             activeAdminSubtab = sec;
-            ['report', 'dancers', 'tariffs', 'users'].forEach(t => {
+            ['report', 'dancers', 'taxipr', 'tariffs', 'users'].forEach(t => {
                 const btn = document.getElementById(`admin-subtab-${t}`);
                 const el = document.getElementById(`admin-sec-${t}`);
                 if (btn && el) {
@@ -2939,6 +3644,7 @@
 
             if (sec === 'report') loadAdminReport();
             if (sec === 'dancers') renderDancersTable();
+            if (sec === 'taxipr') renderTaxiPrSection();
             if (sec === 'tariffs') renderTariffs();
             if (sec === 'users') renderUsersTable();
             lucide.createIcons();
@@ -3122,7 +3828,34 @@
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Бонус Тайлан");
 
-            const fileName = `Dancers_Bonus_Report_${new Date().toISOString().split('T')[0]}.xlsx`;
+            // Sheet 2: Taxi & PR Expenses
+            let taxiPrRecords = store.taxi_pr_records || [];
+            if (clubId !== 'all') taxiPrRecords = taxiPrRecords.filter(r => String(r.club_id) === String(clubId));
+            if (startDate && endDate) taxiPrRecords = taxiPrRecords.filter(r => r.date >= startDate && r.date <= endDate);
+
+            const taxiPrSheetData = [
+                ["ТАКСИ БА PR ЗАРДЛЫН ТАЙЛАН"],
+                ["Хугацаа: " + (startDate ? `${startDate} - ${endDate}` : "Бүх хугацаа")],
+                [],
+                ["№", "Огноо", "Салбар", "Төрөл", "Тоо ширхэг / Билл №", "Үнийн дүн", "Тайлбар / Зориулалт", "Бүртгэсэн ажилтан"]
+            ];
+            let tIdx = 1;
+            taxiPrRecords.forEach(r => {
+                taxiPrSheetData.push([
+                    tIdx++,
+                    r.date,
+                    r.club_name,
+                    r.type === 'taxi' ? 'Такси татвар' : 'PR зардал',
+                    r.type === 'taxi' ? `${r.taxi_qty} такси` : `Билл ${r.bill_no}`,
+                    r.amount,
+                    r.note || '-',
+                    r.bartender_name || '-'
+                ]);
+            });
+            const ws2 = XLSX.utils.aoa_to_sheet(taxiPrSheetData);
+            XLSX.utils.book_append_sheet(wb, ws2, "Такси ба PR");
+
+            const fileName = `Dancers_and_TaxiPR_Report_${new Date().toISOString().split('T')[0]}.xlsx`;
             XLSX.writeFile(wb, fileName);
             showToast('Excel файл татагдлаа!');
         }
@@ -3510,5 +4243,84 @@
 
         window.addEventListener('DOMContentLoaded', initApp);
     </script>
+    <!-- ADMIN TAXI & PR ADD/EDIT MODAL -->
+    <div id="admin-taxipr-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+        <div class="bg-dark-900 border border-dark-700 rounded-xl max-w-sm w-full overflow-hidden shadow-2xl">
+            <div class="px-4 py-3 border-b border-dark-800 flex items-center justify-between">
+                <h3 id="admin-taxipr-modal-title" class="text-xs font-bold uppercase tracking-wider text-gray-200">Такси / PR бүртгэх</h3>
+                <button onclick="closeAdminTaxiPrModal()" class="text-gray-400 hover:text-gray-200">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <form id="admin-taxipr-form" onsubmit="submitAdminTaxiPrModal(event)" class="p-4 space-y-2.5 text-xs">
+                <input type="hidden" id="modal-taxipr-id">
+                <div>
+                    <label class="block text-gray-400 mb-0.5">Төрөл *</label>
+                    <select id="modal-taxipr-type" onchange="onAdminTaxiPrTypeChange()" class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200 font-bold">
+                        <option value="taxi">🚕 Такси (Taxi Tax - 40,000₮)</option>
+                        <option value="pr">🧾 PR зардал (Биллийн дугаартай)</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-gray-400 mb-0.5">Салбар *</label>
+                        <select id="modal-taxipr-club" required class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200"></select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 mb-0.5">Огноо *</label>
+                        <input type="date" id="modal-taxipr-date" required class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200 font-mono">
+                    </div>
+                </div>
+
+                <!-- Fields for Taxi -->
+                <div id="modal-taxi-fields" class="space-y-2">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-gray-400 mb-0.5">Тоо ширхэг *</label>
+                            <input type="number" id="modal-taxi-qty" value="1" min="1" oninput="updateAdminModalTaxiTotal()"
+                                class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200 font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 mb-0.5">Нийт дүн (₮)</label>
+                            <input type="text" id="modal-taxi-total" readonly
+                                class="w-full bg-dark-950 border border-dark-800 rounded px-2.5 py-1.5 text-amber-400 font-bold font-mono">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 mb-0.5">Жолоочийн тэмдэглэл / Машины дугаар</label>
+                        <input type="text" id="modal-taxi-note" placeholder="1234 УБҮ..."
+                            class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200">
+                    </div>
+                </div>
+
+                <!-- Fields for PR -->
+                <div id="modal-pr-fields" class="hidden space-y-2">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-gray-400 mb-0.5">Биллийн дугаар *</label>
+                            <input type="text" id="modal-pr-bill" placeholder="#1042..."
+                                class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200 font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 mb-0.5">Үнийн дүн (₮) *</label>
+                            <input type="number" id="modal-pr-amount" placeholder="50000..." step="1000"
+                                class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-amber-400 font-bold font-mono">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 mb-0.5">Тайлбар</label>
+                        <input type="text" id="modal-pr-note" placeholder="VIP ширээний PR..."
+                            class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200">
+                    </div>
+                </div>
+
+                <div class="pt-2 flex justify-end gap-2 border-t border-dark-800">
+                    <button type="button" onclick="closeAdminTaxiPrModal()" class="px-3 py-1.5 rounded bg-dark-800 text-gray-300">Болих</button>
+                    <button type="submit" class="px-4 py-1.5 rounded bg-amber-600 text-gray-950 font-bold">Хадгалах</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 </body>
 </html>
