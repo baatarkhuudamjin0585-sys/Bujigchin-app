@@ -1303,6 +1303,30 @@
       "item_key": "extra",
       "item_name": "Extra бонус",
       "rate": 200000
+    },
+    {
+      "id": 101,
+      "club_id": 1,
+      "dancer_type": "Үндсэн",
+      "item_key": "taxi",
+      "item_name": "Такси татвар (1 такси)",
+      "rate": 40000
+    },
+    {
+      "id": 102,
+      "club_id": 2,
+      "dancer_type": "Үндсэн",
+      "item_key": "taxi",
+      "item_name": "Такси татвар (1 такси)",
+      "rate": 40000
+    },
+    {
+      "id": 103,
+      "club_id": 3,
+      "dancer_type": "Үндсэн",
+      "item_key": "taxi",
+      "item_name": "Такси татвар (1 такси)",
+      "rate": 40000
     }
   ],
   "records": [
@@ -1658,6 +1682,31 @@
       "role": "manager",
       "club_id": 3,
       "is_blocked": 0
+    }
+  ],
+  "taxi_pr_records": [
+    {
+      "id": 1731900000001,
+      "type": "taxi",
+      "date": "2026-11-18",
+      "club_id": 1,
+      "club_name": "ARUM CLUB",
+      "bartender_name": "Арум Бармен 1",
+      "taxi_qty": 2,
+      "rate": 40000,
+      "amount": 80000,
+      "note": "1234 УБҮ Приус 20"
+    },
+    {
+      "id": 1731900000002,
+      "type": "pr",
+      "date": "2026-11-18",
+      "club_id": 1,
+      "club_name": "ARUM CLUB",
+      "bartender_name": "Арум Бармен 1",
+      "bill_no": "#1042",
+      "amount": 150000,
+      "note": "VIP ширээ PR үйлчилгээ"
     }
   ]
 }
