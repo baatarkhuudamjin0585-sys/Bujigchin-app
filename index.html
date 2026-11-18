@@ -230,8 +230,11 @@
                             <i data-lucide="map-pin" class="w-3 h-3 text-amber-500"></i>
                             <span id="club-select-label">Салбар сонгох:</span>
                         </span>
-                        <input type="date" id="bar-date-input" onchange="onClubOrDateChange()"
-                            class="bg-dark-850 border border-dark-700 rounded px-2 py-0.5 text-[11px] text-gray-200 font-mono focus:outline-none focus:border-amber-500">
+                        <div class="flex items-center gap-1">
+                            <span id="bar-date-lock-badge" class="hidden text-[10px] text-amber-400 font-mono bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">🔒 Өнөөдөр</span>
+                            <input type="date" id="bar-date-input" onchange="onClubOrDateChange()"
+                                class="bg-dark-850 border border-dark-700 rounded px-2 py-0.5 text-[11px] text-gray-200 font-mono focus:outline-none focus:border-amber-500">
+                        </div>
                     </div>
                     <div id="club-chips-container" class="grid grid-cols-3 gap-1.5">
                         <!-- Populated dynamically via JS -->
@@ -2517,17 +2520,30 @@
             const adminTabs = document.getElementById('admin-mode-tabs');
             const clubChipsContainer = document.getElementById('club-chips-container');
             const clubSelectLabel = document.getElementById('club-select-label');
+            const dateInput = document.getElementById('bar-date-input');
+            const dateLockBadge = document.getElementById('bar-date-lock-badge');
+            const todayStr = new Date().toISOString().split('T')[0];
 
             if (user.role === 'admin') {
-                // Admin has access to both tabs and all branches
+                // Admin has access to both tabs and all branches, and can pick ANY date
                 adminTabs.classList.remove('hidden');
                 clubSelectLabel.textContent = 'Салбар сонгох:';
                 currentClubId = store.clubs[0]?.id || 1;
+
+                dateInput.disabled = false;
+                dateInput.classList.remove('opacity-60', 'cursor-not-allowed');
+                if (dateLockBadge) dateLockBadge.classList.add('hidden');
             } else {
-                // Bartender or Manager: ONLY bartender tab, branch is locked to user's branch
+                // Bartender or Manager: ONLY bartender tab, branch locked, date strictly locked to today
                 adminTabs.classList.add('hidden');
                 currentClubId = parseInt(user.club_id) || 1;
                 clubSelectLabel.textContent = 'Таны харьяа салбар:';
+
+                // Bartender is locked strictly to today's date
+                dateInput.value = todayStr;
+                dateInput.disabled = true;
+                dateInput.classList.add('opacity-60', 'cursor-not-allowed');
+                if (dateLockBadge) dateLockBadge.classList.remove('hidden');
             }
 
             // Lock club chips if not admin
@@ -2606,6 +2622,14 @@
         }
 
         function onClubOrDateChange() {
+            const todayStr = new Date().toISOString().split('T')[0];
+            const dateInput = document.getElementById('bar-date-input');
+            if (currentUser && currentUser.role === 'bartender') {
+                if (dateInput.value !== todayStr) {
+                    dateInput.value = todayStr;
+                    showToast('Бармен зөвхөн өнөөдрийн огноогоор бүртгэл хийх эрхтэй');
+                }
+            }
             updateBarDancerSelect();
             resetEntryForm();
             loadDailyRecords();
@@ -2742,10 +2766,17 @@
                           (sitRegQty * rates.sit_reg) + (sitDrinkQty * rates.sit_drink) + extraAmount - penalty;
 
             const club = store.clubs.find(c => String(c.id) === String(currentClubId));
+            const todayStr = new Date().toISOString().split('T')[0];
+            let recordDate = document.getElementById('bar-date-input').value;
+
+            // Strict date rule: Bartenders can ONLY record for today
+            if (currentUser && currentUser.role === 'bartender') {
+                recordDate = todayStr;
+            }
 
             const newRecord = {
                 id: Date.now(),
-                date: document.getElementById('bar-date-input').value,
+                date: recordDate,
                 club_id: parseInt(currentClubId),
                 club_name: club?.name || '',
                 club_code: club?.code || '',
@@ -2796,6 +2827,8 @@
                 return;
             }
 
+            const todayStr = new Date().toISOString().split('T')[0];
+
             listEl.innerHTML = '';
             filtered.forEach((r) => {
                 const div = document.createElement('div');
@@ -2809,6 +2842,9 @@
                 if (r.sit_drink_qty > 0) details.push(`У.Суу:${r.sit_drink_qty}`);
                 if (r.extra_qty > 0) details.push(`Ext:${r.extra_qty}`);
 
+                const isPastRecord = r.date !== todayStr;
+                const canDeleteThisRecord = currentUser && (currentUser.role === 'admin' || (currentUser.role === 'bartender' && !isPastRecord));
+
                 div.innerHTML = `
                     <div class="flex-1 pr-2">
                         <div class="flex items-center gap-1.5">
@@ -2816,13 +2852,20 @@
                             <span class="text-[10px] text-gray-400 font-mono">${r.bank_account || ''}</span>
                         </div>
                         <div class="text-[10px] text-gray-400 mt-0.5">${details.join(' • ') || 'Үзүүлбэргүй'}</div>
-                        <div class="text-[9px] text-gray-500 mt-0.5">Бүртгэсэн: ${r.bartender_name || 'Ажилтан'}</div>
+                        <div class="text-[9px] text-gray-500 mt-0.5 flex items-center gap-2">
+                            <span>Бүртгэсэн: ${r.bartender_name || 'Ажилтан'}</span>
+                            <span class="font-mono text-gray-600">${r.date}</span>
+                        </div>
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="font-bold font-mono text-amber-400 text-xs">${formatMNT(r.total_amount)}</span>
-                        <button onclick="deleteRecord(${r.id})" class="text-gray-500 hover:text-red-400 p-1">
+                        ${canDeleteThisRecord ? `
+                        <button onclick="deleteRecord(${r.id})" class="text-gray-500 hover:text-red-400 p-1" title="Устгах">
                             <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                        </button>
+                        </button>` : `
+                        <span class="text-[10px] text-gray-600 p-1 cursor-not-allowed" title="Өнгөрсөн өдрийн бүртгэл (Зөвхөн нягтлан засах эрхтэй)">
+                            <i data-lucide="lock" class="w-3.5 h-3.5 text-gray-600"></i>
+                        </span>`}
                     </div>
                 `;
                 listEl.appendChild(div);
@@ -2831,10 +2874,22 @@
         }
 
         function deleteRecord(id) {
-            if (!confirm('Энэ бичилтийг устгах уу?')) return;
+            const rec = store.records.find(r => r.id === id);
+            if (!rec) return;
+
+            const todayStr = new Date().toISOString().split('T')[0];
+
+            if (currentUser && currentUser.role === 'bartender') {
+                if (rec.date !== todayStr) {
+                    alert('Бармен өнгөрсөн өдрийн мэдээллийг өөрчлөх, устгах эрхгүй!\nЗөвхөн Ерөнхий нягтлан өнгөрсөн өдрийн бүртгэлийг засах/устгах эрхтэй.');
+                    return;
+                }
+            }
+
+            if (!confirm(`Энэ бичилтийг устгах уу? (${rec.stage_name} - ${formatMNT(rec.total_amount)})`)) return;
             store.records = store.records.filter(r => r.id !== id);
             saveStoredData(store);
-            showToast('Устгагдлаа');
+            showToast('Бүртгэл устгагдлаа');
             loadDailyRecords();
         }
 
