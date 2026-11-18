@@ -104,17 +104,31 @@
                         osc.type = 'sine';
                         osc.frequency.setValueAtTime(587.33, now);
                         osc.frequency.setValueAtTime(880, now + 0.04);
-                        gain.gain.setValueAtTime(0.18, now);
-                        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+                        gain.gain.setValueAtTime(0.22, now);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
                         osc.start(now);
-                        osc.stop(now + 0.13);
+                        osc.stop(now + 0.15);
+                    } else if (type === 'error') {
+                        osc.type = 'sawtooth';
+                        osc.frequency.setValueAtTime(220, now);
+                        osc.frequency.exponentialRampToValueAtTime(110, now + 0.14);
+                        gain.gain.setValueAtTime(0.26, now);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+                        osc.start(now);
+                        osc.stop(now + 0.19);
                     }
                 }
             } catch (e) {}
 
             try {
                 if (navigator.vibrate) {
-                    navigator.vibrate(type === 'success' ? [15, 40, 25] : 10);
+                    if (type === 'error') {
+                        navigator.vibrate([40, 60, 40]);
+                    } else if (type === 'success') {
+                        navigator.vibrate([15, 40, 25]);
+                    } else {
+                        navigator.vibrate(10);
+                    }
                 }
             } catch (e) {}
         }
@@ -513,9 +527,9 @@
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-[11px] text-gray-400 mb-1">Машины дугаар / Тэмдэглэл:</label>
-                                <input type="text" id="bar_taxi_note" placeholder="1234 УБҮ..."
-                                    class="w-full bg-dark-850 border border-dark-700 rounded-lg px-2.5 py-1.5 text-xs text-gray-200 focus:outline-none focus:border-amber-500">
+                                <label class="block text-[11px] text-gray-400 mb-1">Машины дугаар *</label>
+                                <input type="text" id="bar_taxi_note" required placeholder="1234 УБҮ..."
+                                    class="w-full bg-dark-850 border border-dark-700 rounded-lg px-2.5 py-1.5 text-xs text-gray-200 focus:outline-none focus:border-amber-500 uppercase">
                             </div>
                         </div>
 
@@ -926,10 +940,15 @@
     </div>
 
 
-    <!-- NOTIFICATION TOAST -->
-    <div id="toast" class="fixed top-3 left-1/2 transform -translate-x-1/2 z-50 -translate-y-20 opacity-0 transition-all duration-300 max-w-xs w-full bg-dark-850 border border-dark-700 rounded-lg shadow-xl px-3 py-2 flex items-center gap-2 text-xs">
-        <i id="toast-icon" data-lucide="check-circle" class="w-4 h-4 text-emerald-400 shrink-0"></i>
-        <span id="toast-msg" class="text-gray-200 font-medium truncate">Мэдээлэл хадгалагдлаа</span>
+    <!-- NOTIFICATION TOAST (ENHANCED GREEN / RED STATUS) -->
+    <div id="toast" class="fixed top-4 left-1/2 -translate-x-1/2 z-[100] -translate-y-28 opacity-0 transition-all duration-300 ease-out max-w-sm w-[92%] sm:w-auto min-w-[300px] rounded-xl shadow-2xl p-3 flex items-start gap-2.5 text-xs pointer-events-none backdrop-blur-md">
+        <div id="toast-icon-wrap" class="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5">
+            <i id="toast-icon" data-lucide="check-circle-2" class="w-4 h-4"></i>
+        </div>
+        <div class="flex-1 min-w-0 pr-1">
+            <div id="toast-title" class="font-bold text-[12px] leading-tight mb-0.5"></div>
+            <div id="toast-msg" class="text-[12px] leading-snug break-words"></div>
+        </div>
     </div>
 
     <!-- EMBEDDED SEED DATA FOR STANDALONE VERCEL DEPLOYMENT -->
@@ -2743,21 +2762,65 @@
             return Number(num).toLocaleString('mn-MN') + ' ₮';
         }
 
-        function showToast(msg, isError = false) {
+        function highlightField(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            try {
+                el.focus();
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } catch (e) {}
+            el.classList.add('border-red-500', 'ring-2', 'ring-red-500/50');
+            const clearHighlight = () => {
+                el.classList.remove('border-red-500', 'ring-2', 'ring-red-500/50');
+                el.removeEventListener('input', clearHighlight);
+                el.removeEventListener('change', clearHighlight);
+            };
+            el.addEventListener('input', clearHighlight);
+            el.addEventListener('change', clearHighlight);
+        }
+
+        let toastTimer = null;
+        function showToast(msg, isError = false, title = null) {
             const toast = document.getElementById('toast');
             const toastMsg = document.getElementById('toast-msg');
+            const toastTitle = document.getElementById('toast-title');
+            const toastIconWrap = document.getElementById('toast-icon-wrap');
             const toastIcon = document.getElementById('toast-icon');
 
-            toastMsg.textContent = msg;
-            toast.className = toast.className.replace(/border-[a-z0-9\-]+/g, isError ? 'border-red-500/50' : 'border-emerald-500/50');
-            toastIcon.className = `w-4 h-4 shrink-0 ${isError ? 'text-red-400' : 'text-emerald-400'}`;
-            toastIcon.setAttribute('data-lucide', isError ? 'alert-triangle' : 'check-circle');
-            lucide.createIcons();
+            if (!toast) return;
+            if (toastTimer) clearTimeout(toastTimer);
 
-            toast.classList.remove('-translate-y-20', 'opacity-0');
-            setTimeout(() => {
-                toast.classList.add('-translate-y-20', 'opacity-0');
-            }, 2500);
+            toastMsg.textContent = msg;
+            toastTitle.textContent = title || (isError ? 'Алдаа гарлаа!' : 'Амжилттай!');
+
+            if (isError) {
+                // RED ERROR TOAST - HIGH CONTRAST & CLEAR
+                toast.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-[100] transition-all duration-300 ease-out max-w-sm w-[92%] sm:w-auto min-w-[300px] rounded-xl shadow-2xl p-3 flex items-start gap-2.5 text-xs pointer-events-none backdrop-blur-md bg-red-950/95 border-2 border-red-500 shadow-red-950/80 text-red-100';
+                toastIconWrap.className = 'w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 bg-red-900/80 text-red-300 ring-2 ring-red-500/60';
+                toastTitle.className = 'font-bold text-[12px] leading-tight mb-0.5 text-red-300';
+                toastMsg.className = 'text-[12px] leading-snug break-words text-red-100';
+                toastIcon.className = 'w-4 h-4 text-red-300';
+                toastIcon.setAttribute('data-lucide', 'alert-circle');
+                playFeedback('error');
+            } else {
+                // GREEN SUCCESS TOAST - CRISP & SATISFYING
+                toast.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-[100] transition-all duration-300 ease-out max-w-sm w-[92%] sm:w-auto min-w-[300px] rounded-xl shadow-2xl p-3 flex items-start gap-2.5 text-xs pointer-events-none backdrop-blur-md bg-emerald-950/95 border-2 border-emerald-500 shadow-emerald-950/80 text-emerald-100';
+                toastIconWrap.className = 'w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 bg-emerald-900/80 text-emerald-300 ring-2 ring-emerald-500/60';
+                toastTitle.className = 'font-bold text-[12px] leading-tight mb-0.5 text-emerald-300';
+                toastMsg.className = 'text-[12px] leading-snug break-words text-emerald-100';
+                toastIcon.className = 'w-4 h-4 text-emerald-300';
+                toastIcon.setAttribute('data-lucide', 'check-circle-2');
+                playFeedback('success');
+            }
+
+            if (window.lucide) lucide.createIcons();
+            toast.classList.remove('-translate-y-28', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            toastTimer = setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('-translate-y-28', 'opacity-0');
+            }, 3200);
         }
 
         // ================= AUTHENTICATION LOGIC =================
@@ -3107,7 +3170,8 @@
         function submitEntryRecord() {
             const dancerId = document.getElementById('bar-dancer-select').value;
             if (!dancerId) {
-                showToast('Бүжигчнээ сонгоно уу!', true);
+                highlightField('bar-dancer-select');
+                showToast('Бүжигчнээ заавал сонгоно уу!', true, 'Сонголт дутуу');
                 return;
             }
 
@@ -3122,6 +3186,11 @@
             const extraQty = parseInt(document.getElementById('extra_qty').value || 0);
             const manualExtra = parseInt(document.getElementById('manual_extra_amount').value || 0);
             const penalty = parseInt(document.getElementById('penalty_amount').value || 0);
+
+            if (tipQty === 0 && wineRegQty === 0 && wineExpQty === 0 && sitRegQty === 0 && sitDrinkQty === 0 && extraQty === 0 && manualExtra === 0 && penalty === 0) {
+                showToast('Үйлчилгээний тоо хэмжээг оруулна уу (TIP, Wine, Суулт гэх мэт)!', true, 'Утга хоосон байна');
+                return;
+            }
 
             const extraAmount = (extraQty * rates.extra) + manualExtra;
             const total = (tipQty * rates.tip) + (wineRegQty * rates.wine_reg) + (wineExpQty * rates.wine_exp) + 
@@ -3310,7 +3379,7 @@
 
             if (currentUser && currentUser.role === 'bartender') {
                 if (rec.date !== todayStr) {
-                    alert('Бармен өнгөрсөн өдрийн мэдээллийг өөрчлөх, устгах эрхгүй!\nЗөвхөн Ерөнхий нягтлан өнгөрсөн өдрийн бүртгэлийг засах/устгах эрхтэй.');
+                    showToast('Бармен өнгөрсөн өдрийн мэдээллийг устгах эрхгүй! Зөвхөн Ерөнхий нягтлан засах эрхтэй.', true, 'Хандах эрхгүй');
                     return;
                 }
             }
@@ -3375,13 +3444,39 @@
         }
 
         function submitTaxiRecord() {
-            const qty = parseInt(document.getElementById('bar_taxi_qty').value || 1);
-            if (qty < 1) {
-                alert('Таксины тоо 1-ээс бага байж болохгүй!');
+            const driverName = (document.getElementById('bar_taxi_driver_name')?.value || '').trim();
+            const driverBank = (document.getElementById('bar_taxi_driver_bank')?.value || '').trim().toUpperCase().replace(/\s+/g, '');
+            const carPlate = (document.getElementById('bar_taxi_note')?.value || '').trim();
+            const qty = parseInt(document.getElementById('bar_taxi_qty')?.value || 1);
+
+            // Mandatory Validation: Name, Account/IBAN, Car Plate
+            if (!driverName) {
+                highlightField('bar_taxi_driver_name');
+                showToast('Жолоочийн нэрийг заавал оруулна уу!', true, 'Мэдээлэл дутуу');
                 return;
             }
+            if (!driverBank) {
+                highlightField('bar_taxi_driver_bank');
+                showToast('Жолоочийн данс / IBAN дугаарыг заавал оруулна уу!', true, 'Мэдээлэл дутуу');
+                return;
+            }
+            if (driverBank.length < 10) {
+                highlightField('bar_taxi_driver_bank');
+                showToast('Жолоочийн данс буруу байна! (Хамгийн багадаа 10 оронтой данс эсвэл IBAN оруулна уу)', true, 'Дансны алдаа');
+                return;
+            }
+            if (!carPlate) {
+                highlightField('bar_taxi_note');
+                showToast('Машины дугаарыг заавал оруулна уу!', true, 'Мэдээлэл дутуу');
+                return;
+            }
+            if (qty < 1) {
+                highlightField('bar_taxi_qty');
+                showToast('Таксины тоо 1-ээс бага байж болохгүй!', true, 'Тоо хэмжээний алдаа');
+                return;
+            }
+
             const rate = getTaxiRate(currentClubId);
-            const note = document.getElementById('bar_taxi_note').value.trim();
             const club = store.clubs.find(c => String(c.id) === String(currentClubId));
 
             const todayStr = new Date().toISOString().split('T')[0];
@@ -3397,38 +3492,59 @@
                 club_id: parseInt(currentClubId),
                 club_name: club?.name || '',
                 bartender_name: currentUser ? currentUser.name : 'Ээлжийн ажилтан',
+                driver_name: driverName,
+                driver_bank: driverBank,
                 taxi_qty: qty,
                 rate: rate,
                 amount: qty * rate,
-                note: note
+                note: carPlate
             };
 
             if (!store.taxi_pr_records) store.taxi_pr_records = [];
             store.taxi_pr_records.unshift(newRec);
             saveStoredData(store);
 
-            playFeedback("success");
-            showToast(`🚕 Такси (${formatMNT(newRec.amount)}) амжилттай бүртгэгдлээ!`);
-            document.getElementById('bar_taxi_qty').value = 1;
+            showToast(`🚕 Такси (${driverName} • ${carPlate} • ${formatMNT(newRec.amount)}) амжилттай бүртгэгдлээ!`, false, 'Амжилттай бүртгэгдлээ');
+            document.getElementById('bar_taxi_driver_name').value = '';
+            document.getElementById('bar_taxi_driver_bank').value = '';
             document.getElementById('bar_taxi_note').value = '';
+            document.getElementById('bar_taxi_qty').value = 1;
             updateTaxiTotal();
             loadDailyRecords();
         }
 
         function submitPrRecord() {
-            const billNo = document.getElementById('bar_pr_bill').value.trim();
-            const amount = parseInt(document.getElementById('bar_pr_amount').value || 0);
-            const note = document.getElementById('bar_pr_note').value.trim();
+            const managerName = (document.getElementById('bar_pr_manager_name')?.value || '').trim();
+            const managerBank = (document.getElementById('bar_pr_manager_bank')?.value || '').trim().toUpperCase().replace(/\s+/g, '');
+            const billNo = (document.getElementById('bar_pr_bill')?.value || '').trim();
+            const amount = parseInt(document.getElementById('bar_pr_amount')?.value || 0);
+            const note = (document.getElementById('bar_pr_note')?.value || '').trim();
             const club = store.clubs.find(c => String(c.id) === String(currentClubId));
 
+            // Mandatory Validation: Manager Name, Account/IBAN, Bill No, Amount
+            if (!managerName) {
+                highlightField('bar_pr_manager_name');
+                showToast('PR Менежерийн нэрийг заавал оруулна уу!', true, 'Мэдээлэл дутуу');
+                return;
+            }
+            if (!managerBank) {
+                highlightField('bar_pr_manager_bank');
+                showToast('PR Менежерийн данс / IBAN дугаарыг заавал оруулна уу!', true, 'Мэдээлэл дутуу');
+                return;
+            }
+            if (managerBank.length < 10) {
+                highlightField('bar_pr_manager_bank');
+                showToast('PR данс буруу байна! (Хамгийн багадаа 10 оронтой данс эсвэл IBAN оруулна уу)', true, 'Дансны алдаа');
+                return;
+            }
             if (!billNo) {
-                alert('Биллийн дугаарыг заавал оруулна уу!');
-                document.getElementById('bar_pr_bill').focus();
+                highlightField('bar_pr_bill');
+                showToast('Биллийн дугаарыг заавал оруулна уу!', true, 'Мэдээлэл дутуу');
                 return;
             }
             if (amount <= 0) {
-                alert('PR зардлын үнийн дүнг заавал оруулна уу!');
-                document.getElementById('bar_pr_amount').focus();
+                highlightField('bar_pr_amount');
+                showToast('PR зардлын үнийн дүнг заавал оруулна уу (0-ээс их байх)!', true, 'Үнийн дүн дутуу');
                 return;
             }
 
@@ -3445,6 +3561,8 @@
                 club_id: parseInt(currentClubId),
                 club_name: club?.name || '',
                 bartender_name: currentUser ? currentUser.name : 'Ээлжийн ажилтан',
+                pr_manager_name: managerName,
+                pr_manager_bank: managerBank,
                 bill_no: billNo,
                 amount: amount,
                 note: note
@@ -3454,8 +3572,9 @@
             store.taxi_pr_records.unshift(newRec);
             saveStoredData(store);
 
-            playFeedback("success");
-            showToast(`🧾 PR Билл ${billNo} (${formatMNT(amount)}) амжилттай бүртгэгдлээ!`);
+            showToast(`🧾 PR Билл #${billNo} (${managerName} • ${formatMNT(amount)}) амжилттай бүртгэгдлээ!`, false, 'Амжилттай бүртгэгдлээ');
+            document.getElementById('bar_pr_manager_name').value = '';
+            document.getElementById('bar_pr_manager_bank').value = '';
             document.getElementById('bar_pr_bill').value = '';
             document.getElementById('bar_pr_amount').value = '';
             document.getElementById('bar_pr_note').value = '';
@@ -3469,7 +3588,7 @@
             const todayStr = new Date().toISOString().split('T')[0];
             if (currentUser && currentUser.role === 'bartender') {
                 if (rec.date !== todayStr) {
-                    alert('Бармен өнгөрсөн өдрийн Такси/PR бүртгэлийг устгах эрхгүй!\nЗөвхөн Ерөнхий нягтлан устгах эрхтэй.');
+                    showToast('Бармен өнгөрсөн өдрийн Такси/PR бүртгэлийг устгах эрхгүй! Зөвхөн Ерөнхий нягтлан устгах эрхтэй.', true, 'Хандах эрхгүй');
                     return;
                 }
             }
@@ -3479,7 +3598,7 @@
 
             store.taxi_pr_records = store.taxi_pr_records.filter(r => r.id !== id);
             saveStoredData(store);
-            showToast('Устгагдлаа');
+            showToast('Бүртгэл устгагдлаа', false, 'Амжилттай');
             loadDailyRecords();
             renderTaxiPrSection();
         }
@@ -3643,7 +3762,7 @@
             const club = store.clubs.find(c => c.id === clubId);
 
             if (!date) {
-                alert('Огноо сонгоно уу!');
+                showToast('Огноо сонгоно уу!', true, 'Мэдээлэл дутуу');
                 return;
             }
 
@@ -3656,13 +3775,23 @@
                 const note = document.getElementById('modal-taxi-note').value.trim();
 
                 if (!driverName) {
-                    alert('Жолоочийн нэрийг оруулна уу!');
-                    document.getElementById('modal-taxi-driver-name')?.focus();
+                    highlightField('modal-taxi-driver-name');
+                    showToast('Жолоочийн нэрийг заавал оруулна уу!', true, 'Мэдээлэл дутуу');
                     return;
                 }
                 if (!driverBank) {
-                    alert('Жолоочийн дансны дугаар / IBAN оруулна уу!');
-                    document.getElementById('modal-taxi-driver-bank')?.focus();
+                    highlightField('modal-taxi-driver-bank');
+                    showToast('Жолоочийн данс / IBAN дугаарыг заавал оруулна уу!', true, 'Мэдээлэл дутуу');
+                    return;
+                }
+                if (driverBank.length < 10) {
+                    highlightField('modal-taxi-driver-bank');
+                    showToast('Жолоочийн данс буруу байна! (Хамгийн багадаа 10 оронтой данс эсвэл IBAN оруулна уу)', true, 'Дансны алдаа');
+                    return;
+                }
+                if (!note) {
+                    highlightField('modal-taxi-note');
+                    showToast('Машины дугаарыг заавал оруулна уу!', true, 'Мэдээлэл дутуу');
                     return;
                 }
 
@@ -3688,23 +3817,28 @@
                 const note = document.getElementById('modal-pr-note').value.trim();
 
                 if (!prManagerName) {
-                    alert('PR Менежерийн нэрийг оруулна уу!');
-                    document.getElementById('modal-pr-manager-name')?.focus();
+                    highlightField('modal-pr-manager-name');
+                    showToast('PR Менежерийн нэрийг заавал оруулна уу!', true, 'Мэдээлэл дутуу');
                     return;
                 }
                 if (!prManagerBank) {
-                    alert('PR Менежерийн дансны дугаар / IBAN оруулна уу!');
-                    document.getElementById('modal-pr-manager-bank')?.focus();
+                    highlightField('modal-pr-manager-bank');
+                    showToast('PR Менежерийн данс / IBAN дугаарыг заавал оруулна уу!', true, 'Мэдээлэл дутуу');
+                    return;
+                }
+                if (prManagerBank.length < 10) {
+                    highlightField('modal-pr-manager-bank');
+                    showToast('PR данс буруу байна! (Хамгийн багадаа 10 оронтой данс эсвэл IBAN оруулна уу)', true, 'Дансны алдаа');
                     return;
                 }
                 if (!billNo) {
-                    alert('Биллийн дугаарыг заавал оруулна уу!');
-                    document.getElementById('modal-pr-bill').focus();
+                    highlightField('modal-pr-bill');
+                    showToast('Биллийн дугаарыг заавал оруулна уу!', true, 'Мэдээлэл дутуу');
                     return;
                 }
                 if (amount <= 0) {
-                    alert('PR зардлын үнийн дүнг заавал оруулна уу!');
-                    document.getElementById('modal-pr-amount').focus();
+                    highlightField('modal-pr-amount');
+                    showToast('PR зардлын үнийн дүнг заавал оруулна уу!', true, 'Үнийн дүн дутуу');
                     return;
                 }
 
@@ -4114,7 +4248,7 @@
                     errEl.textContent = msg;
                     errEl.classList.remove('hidden');
                 }
-                alert(msg);
+                showToast(msg, true, 'Бүртгэлийн алдаа');
             }
 
             // 1. Stage name validation
@@ -4247,7 +4381,7 @@
 
         function deleteDancer(id) {
             if (currentUser && currentUser.role === 'bartender') {
-                alert('Бармен бүжигчин устгах эрхгүй! Зөвхөн ерөнхий нягтлан устгах эрхтэй.');
+                showToast('Бармен бүжигчин устгах эрхгүй! Зөвхөн ерөнхий нягтлан устгах эрхтэй.', true, 'Хандах эрхгүй');
                 return;
             }
             if (!confirm('Энэ бүжигчнийг устгах уу?')) return;
@@ -4409,7 +4543,8 @@
             } else {
                 // Check username duplicate
                 if (store.users.some(x => x.username.toLowerCase() === username.toLowerCase())) {
-                    alert('Энэ нэвтрэх нэр аль хэдийн бүртгэгдсэн байна!');
+                    showToast('Энэ нэвтрэх нэр аль хэдийн бүртгэгдсэн байна!', true, 'Давхардсан нэр');
+                    highlightField('modal-user-username');
                     return;
                 }
                 const newUser = {
