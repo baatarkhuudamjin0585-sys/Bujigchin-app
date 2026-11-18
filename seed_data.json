@@ -32,7 +32,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ARUM CLUB",
-      "club_code": "ARUM"
+      "club_code": "ARUM",
+      "clubs": [
+        1
+      ]
     },
     {
       "id": 10,
@@ -46,7 +49,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ARUM CLUB",
-      "club_code": "ARUM"
+      "club_code": "ARUM",
+      "clubs": [
+        1
+      ]
     },
     {
       "id": 7,
@@ -60,21 +66,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ARUM CLUB",
-      "club_code": "ARUM"
-    },
-    {
-      "id": 71,
-      "club_id": 1,
-      "stage_name": "Гоо (100)",
-      "real_name": "Нарансолонго",
-      "bank_account": "360034270101858031",
-      "phone": null,
-      "dancer_type": "Үндсэн",
-      "tag": null,
-      "is_active": 1,
-      "created_at": "2026-11-17 13:47:05",
-      "club_name": "ARUM CLUB",
-      "club_code": "ARUM"
+      "club_code": "ARUM",
+      "clubs": [
+        1
+      ]
     },
     {
       "id": 67,
@@ -88,7 +83,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ARUM CLUB",
-      "club_code": "ARUM"
+      "club_code": "ARUM",
+      "clubs": [
+        1
+      ]
     },
     {
       "id": 1,
@@ -102,7 +100,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ARUM CLUB",
-      "club_code": "ARUM"
+      "club_code": "ARUM",
+      "clubs": [
+        1
+      ]
     },
     {
       "id": 66,
@@ -116,7 +117,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ARUM CLUB",
-      "club_code": "ARUM"
+      "club_code": "ARUM",
+      "clubs": [
+        1
+      ]
     },
     {
       "id": 8,
@@ -130,7 +134,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ARUM CLUB",
-      "club_code": "ARUM"
+      "club_code": "ARUM",
+      "clubs": [
+        1
+      ]
     },
     {
       "id": 5,
@@ -144,7 +151,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ARUM CLUB",
-      "club_code": "ARUM"
+      "club_code": "ARUM",
+      "clubs": [
+        1
+      ]
     },
     {
       "id": 11,
@@ -158,7 +168,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ARUM CLUB",
-      "club_code": "ARUM"
+      "club_code": "ARUM",
+      "clubs": [
+        1
+      ]
     },
     {
       "id": 65,
@@ -172,7 +185,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ARUM CLUB",
-      "club_code": "ARUM"
+      "club_code": "ARUM",
+      "clubs": [
+        1
+      ]
     },
     {
       "id": 9,
@@ -186,7 +202,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ARUM CLUB",
-      "club_code": "ARUM"
+      "club_code": "ARUM",
+      "clubs": [
+        1
+      ]
     },
     {
       "id": 12,
@@ -200,7 +219,11 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ARUM CLUB",
-      "club_code": "ARUM"
+      "club_code": "ARUM",
+      "clubs": [
+        1,
+        3
+      ]
     },
     {
       "id": 2,
@@ -214,7 +237,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ARUM CLUB",
-      "club_code": "ARUM"
+      "club_code": "ARUM",
+      "clubs": [
+        1
+      ]
     },
     {
       "id": 68,
@@ -228,7 +254,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ARUM CLUB",
-      "club_code": "ARUM"
+      "club_code": "ARUM",
+      "clubs": [
+        1
+      ]
     },
     {
       "id": 69,
@@ -242,7 +271,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ARUM CLUB",
-      "club_code": "ARUM"
+      "club_code": "ARUM",
+      "clubs": [
+        1
+      ]
     },
     {
       "id": 15,
@@ -256,7 +288,12 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ARUM CLUB",
-      "club_code": "ARUM"
+      "club_code": "ARUM",
+      "clubs": [
+        1,
+        2,
+        3
+      ]
     },
     {
       "id": 14,
@@ -270,7 +307,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ARUM CLUB",
-      "club_code": "ARUM"
+      "club_code": "ARUM",
+      "clubs": [
+        1
+      ]
     },
     {
       "id": 4,
@@ -284,7 +324,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ARUM CLUB",
-      "club_code": "ARUM"
+      "club_code": "ARUM",
+      "clubs": [
+        1
+      ]
     },
     {
       "id": 3,
@@ -298,7 +341,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ARUM CLUB",
-      "club_code": "ARUM"
+      "club_code": "ARUM",
+      "clubs": [
+        1
+      ]
     },
     {
       "id": 6,
@@ -312,21 +358,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ARUM CLUB",
-      "club_code": "ARUM"
-    },
-    {
-      "id": 13,
-      "club_id": 1,
-      "stage_name": "ҮҮлэн",
-      "real_name": "Нандин-Эрдэнэ",
-      "bank_account": "240004004004264869",
-      "phone": null,
-      "dancer_type": "Үндсэн",
-      "tag": "Holly",
-      "is_active": 1,
-      "created_at": "2026-11-17 13:47:05",
-      "club_name": "ARUM CLUB",
-      "club_code": "ARUM"
+      "club_code": "ARUM",
+      "clubs": [
+        1
+      ]
     },
     {
       "id": 28,
@@ -340,7 +375,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ALOHA CLUB",
-      "club_code": "ALOHA"
+      "club_code": "ALOHA",
+      "clubs": [
+        2
+      ]
     },
     {
       "id": 23,
@@ -354,7 +392,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ALOHA CLUB",
-      "club_code": "ALOHA"
+      "club_code": "ALOHA",
+      "clubs": [
+        2
+      ]
     },
     {
       "id": 31,
@@ -368,7 +409,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ALOHA CLUB",
-      "club_code": "ALOHA"
+      "club_code": "ALOHA",
+      "clubs": [
+        2
+      ]
     },
     {
       "id": 18,
@@ -382,7 +426,11 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ALOHA CLUB",
-      "club_code": "ALOHA"
+      "club_code": "ALOHA",
+      "clubs": [
+        2,
+        3
+      ]
     },
     {
       "id": 27,
@@ -396,7 +444,11 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ALOHA CLUB",
-      "club_code": "ALOHA"
+      "club_code": "ALOHA",
+      "clubs": [
+        2,
+        3
+      ]
     },
     {
       "id": 33,
@@ -410,7 +462,11 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ALOHA CLUB",
-      "club_code": "ALOHA"
+      "club_code": "ALOHA",
+      "clubs": [
+        2,
+        3
+      ]
     },
     {
       "id": 22,
@@ -424,7 +480,11 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ALOHA CLUB",
-      "club_code": "ALOHA"
+      "club_code": "ALOHA",
+      "clubs": [
+        2,
+        3
+      ]
     },
     {
       "id": 35,
@@ -438,7 +498,11 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ALOHA CLUB",
-      "club_code": "ALOHA"
+      "club_code": "ALOHA",
+      "clubs": [
+        2,
+        3
+      ]
     },
     {
       "id": 32,
@@ -452,7 +516,11 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ALOHA CLUB",
-      "club_code": "ALOHA"
+      "club_code": "ALOHA",
+      "clubs": [
+        2,
+        3
+      ]
     },
     {
       "id": 25,
@@ -466,7 +534,11 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ALOHA CLUB",
-      "club_code": "ALOHA"
+      "club_code": "ALOHA",
+      "clubs": [
+        2,
+        3
+      ]
     },
     {
       "id": 19,
@@ -480,7 +552,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ALOHA CLUB",
-      "club_code": "ALOHA"
+      "club_code": "ALOHA",
+      "clubs": [
+        2
+      ]
     },
     {
       "id": 26,
@@ -494,7 +569,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ALOHA CLUB",
-      "club_code": "ALOHA"
+      "club_code": "ALOHA",
+      "clubs": [
+        2
+      ]
     },
     {
       "id": 16,
@@ -508,7 +586,11 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ALOHA CLUB",
-      "club_code": "ALOHA"
+      "club_code": "ALOHA",
+      "clubs": [
+        2,
+        3
+      ]
     },
     {
       "id": 17,
@@ -522,7 +604,11 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ALOHA CLUB",
-      "club_code": "ALOHA"
+      "club_code": "ALOHA",
+      "clubs": [
+        2,
+        3
+      ]
     },
     {
       "id": 30,
@@ -536,7 +622,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ALOHA CLUB",
-      "club_code": "ALOHA"
+      "club_code": "ALOHA",
+      "clubs": [
+        2
+      ]
     },
     {
       "id": 34,
@@ -550,7 +639,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ALOHA CLUB",
-      "club_code": "ALOHA"
+      "club_code": "ALOHA",
+      "clubs": [
+        2
+      ]
     },
     {
       "id": 29,
@@ -564,7 +656,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ALOHA CLUB",
-      "club_code": "ALOHA"
+      "club_code": "ALOHA",
+      "clubs": [
+        2
+      ]
     },
     {
       "id": 20,
@@ -578,7 +673,11 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ALOHA CLUB",
-      "club_code": "ALOHA"
+      "club_code": "ALOHA",
+      "clubs": [
+        2,
+        3
+      ]
     },
     {
       "id": 21,
@@ -592,21 +691,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "ALOHA CLUB",
-      "club_code": "ALOHA"
-    },
-    {
-      "id": 24,
-      "club_id": 2,
-      "stage_name": "Шүүдэрээ",
-      "real_name": "Мөнхнасан",
-      "bank_account": "430005005517499494",
-      "phone": null,
-      "dancer_type": "Үндсэн",
-      "tag": "",
-      "is_active": 1,
-      "created_at": "2026-11-17 13:47:05",
-      "club_name": "ALOHA CLUB",
-      "club_code": "ALOHA"
+      "club_code": "ALOHA",
+      "clubs": [
+        2
+      ]
     },
     {
       "id": 50,
@@ -620,7 +708,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "MAN CLUB",
-      "club_code": "MAN"
+      "club_code": "MAN",
+      "clubs": [
+        3
+      ]
     },
     {
       "id": 60,
@@ -634,7 +725,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "MAN CLUB",
-      "club_code": "MAN"
+      "club_code": "MAN",
+      "clubs": [
+        3
+      ]
     },
     {
       "id": 64,
@@ -648,7 +742,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "MAN CLUB",
-      "club_code": "MAN"
+      "club_code": "MAN",
+      "clubs": [
+        3
+      ]
     },
     {
       "id": 56,
@@ -662,7 +759,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "MAN CLUB",
-      "club_code": "MAN"
+      "club_code": "MAN",
+      "clubs": [
+        3
+      ]
     },
     {
       "id": 57,
@@ -676,7 +776,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "MAN CLUB",
-      "club_code": "MAN"
+      "club_code": "MAN",
+      "clubs": [
+        3
+      ]
     },
     {
       "id": 63,
@@ -690,63 +793,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "MAN CLUB",
-      "club_code": "MAN"
-    },
-    {
-      "id": 37,
-      "club_id": 3,
-      "stage_name": "Аялгуу",
-      "real_name": "Идэрхүү Нямхишиг",
-      "bank_account": "410005005223092211",
-      "phone": null,
-      "dancer_type": "Үндсэн",
-      "tag": "Aloha",
-      "is_active": 1,
-      "created_at": "2026-11-17 13:47:05",
-      "club_name": "MAN CLUB",
-      "club_code": "MAN"
-    },
-    {
-      "id": 48,
-      "club_id": 3,
-      "stage_name": "Аялгуу",
-      "real_name": "Идэрхүү Нямхишиг",
-      "bank_account": "410005005223092211",
-      "phone": null,
-      "dancer_type": "Үндсэн",
-      "tag": "Aloha",
-      "is_active": 1,
-      "created_at": "2026-11-17 13:47:05",
-      "club_name": "MAN CLUB",
-      "club_code": "MAN"
-    },
-    {
-      "id": 38,
-      "club_id": 3,
-      "stage_name": "Бадмаараг",
-      "real_name": "Сайнбилэг",
-      "bank_account": "700015001175152858",
-      "phone": null,
-      "dancer_type": "Үндсэн",
-      "tag": "Aloha",
-      "is_active": 1,
-      "created_at": "2026-11-17 13:47:05",
-      "club_name": "MAN CLUB",
-      "club_code": "MAN"
-    },
-    {
-      "id": 58,
-      "club_id": 3,
-      "stage_name": "Балу",
-      "real_name": "Ундрах",
-      "bank_account": "210005005622312270",
-      "phone": null,
-      "dancer_type": "Үндсэн",
-      "tag": "Man",
-      "is_active": 1,
-      "created_at": "2026-11-17 13:47:05",
-      "club_name": "MAN CLUB",
-      "club_code": "MAN"
+      "club_code": "MAN",
+      "clubs": [
+        3
+      ]
     },
     {
       "id": 55,
@@ -760,7 +810,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "MAN CLUB",
-      "club_code": "MAN"
+      "club_code": "MAN",
+      "clubs": [
+        3
+      ]
     },
     {
       "id": 61,
@@ -774,7 +827,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "MAN CLUB",
-      "club_code": "MAN"
+      "club_code": "MAN",
+      "clubs": [
+        3
+      ]
     },
     {
       "id": 62,
@@ -788,7 +844,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "MAN CLUB",
-      "club_code": "MAN"
+      "club_code": "MAN",
+      "clubs": [
+        3
+      ]
     },
     {
       "id": 49,
@@ -802,35 +861,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "MAN CLUB",
-      "club_code": "MAN"
-    },
-    {
-      "id": 52,
-      "club_id": 3,
-      "stage_name": "Гоо",
-      "real_name": "Анар",
-      "bank_account": "MN750050099106967162",
-      "phone": null,
-      "dancer_type": "Үндсэн",
-      "tag": "Man",
-      "is_active": 1,
-      "created_at": "2026-11-17 13:47:05",
-      "club_name": "MAN CLUB",
-      "club_code": "MAN"
-    },
-    {
-      "id": 51,
-      "club_id": 3,
-      "stage_name": "Есүй",
-      "real_name": "Мандуул",
-      "bank_account": "190050099106151624",
-      "phone": null,
-      "dancer_type": "Үндсэн",
-      "tag": "Man",
-      "is_active": 1,
-      "created_at": "2026-11-17 13:47:05",
-      "club_name": "MAN CLUB",
-      "club_code": "MAN"
+      "club_code": "MAN",
+      "clubs": [
+        3
+      ]
     },
     {
       "id": 59,
@@ -844,77 +878,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "MAN CLUB",
-      "club_code": "MAN"
-    },
-    {
-      "id": 46,
-      "club_id": 3,
-      "stage_name": "Минжин",
-      "real_name": "Минжин",
-      "bank_account": "800005005058955287",
-      "phone": null,
-      "dancer_type": "Үндсэн",
-      "tag": "Aloha",
-      "is_active": 1,
-      "created_at": "2026-11-17 13:47:05",
-      "club_name": "MAN CLUB",
-      "club_code": "MAN"
-    },
-    {
-      "id": 42,
-      "club_id": 3,
-      "stage_name": "Мишээл",
-      "real_name": "Ариунзул",
-      "bank_account": "210015003455185300",
-      "phone": null,
-      "dancer_type": "Үндсэн",
-      "tag": "Aloha",
-      "is_active": 1,
-      "created_at": "2026-11-17 13:47:05",
-      "club_name": "MAN CLUB",
-      "club_code": "MAN"
-    },
-    {
-      "id": 40,
-      "club_id": 3,
-      "stage_name": "Роза",
-      "real_name": "Ролзодмаа",
-      "bank_account": "MN260005005466209304",
-      "phone": null,
-      "dancer_type": "Үндсэн",
-      "tag": "Aloha",
-      "is_active": 1,
-      "created_at": "2026-11-17 13:47:05",
-      "club_name": "MAN CLUB",
-      "club_code": "MAN"
-    },
-    {
-      "id": 39,
-      "club_id": 3,
-      "stage_name": "Сарнай",
-      "real_name": "Жамбалдож Мягмарбаяр",
-      "bank_account": "260005005901290291",
-      "phone": null,
-      "dancer_type": "Үндсэн",
-      "tag": "Aloha",
-      "is_active": 1,
-      "created_at": "2026-11-17 13:47:05",
-      "club_name": "MAN CLUB",
-      "club_code": "MAN"
-    },
-    {
-      "id": 44,
-      "club_id": 3,
-      "stage_name": "Сарнай",
-      "real_name": "Жамбалдож Мягмарбаяр",
-      "bank_account": "260005005901290291",
-      "phone": null,
-      "dancer_type": "Үндсэн",
-      "tag": "Aloha",
-      "is_active": 1,
-      "created_at": "2026-11-17 13:47:05",
-      "club_name": "MAN CLUB",
-      "club_code": "MAN"
+      "club_code": "MAN",
+      "clubs": [
+        3
+      ]
     },
     {
       "id": 54,
@@ -928,7 +895,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "MAN CLUB",
-      "club_code": "MAN"
+      "club_code": "MAN",
+      "clubs": [
+        3
+      ]
     },
     {
       "id": 53,
@@ -942,21 +912,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "MAN CLUB",
-      "club_code": "MAN"
-    },
-    {
-      "id": 47,
-      "club_id": 3,
-      "stage_name": "Хуланжин",
-      "real_name": "Отгонцэцэг хулан",
-      "bank_account": "MN930005005159051390",
-      "phone": null,
-      "dancer_type": "Үндсэн",
-      "tag": "Aloha",
-      "is_active": 1,
-      "created_at": "2026-11-17 13:47:05",
-      "club_name": "MAN CLUB",
-      "club_code": "MAN"
+      "club_code": "MAN",
+      "clubs": [
+        3
+      ]
     },
     {
       "id": 36,
@@ -970,35 +929,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "MAN CLUB",
-      "club_code": "MAN"
-    },
-    {
-      "id": 45,
-      "club_id": 3,
-      "stage_name": "Цэгц",
-      "real_name": "Маралчимид",
-      "bank_account": "040015001805304361",
-      "phone": null,
-      "dancer_type": "Үндсэн",
-      "tag": "Aloha",
-      "is_active": 1,
-      "created_at": "2026-11-17 13:47:05",
-      "club_name": "MAN CLUB",
-      "club_code": "MAN"
-    },
-    {
-      "id": 41,
-      "club_id": 3,
-      "stage_name": "Шүүдэрээ",
-      "real_name": "Мөнхнасан",
-      "bank_account": "430005005517499494",
-      "phone": null,
-      "dancer_type": "Үндсэн",
-      "tag": "Aloha",
-      "is_active": 1,
-      "created_at": "2026-11-17 13:47:05",
-      "club_name": "MAN CLUB",
-      "club_code": "MAN"
+      "club_code": "MAN",
+      "clubs": [
+        3
+      ]
     },
     {
       "id": 43,
@@ -1012,7 +946,10 @@
       "is_active": 1,
       "created_at": "2026-11-17 13:47:05",
       "club_name": "MAN CLUB",
-      "club_code": "MAN"
+      "club_code": "MAN",
+      "clubs": [
+        3
+      ]
     }
   ],
   "tariffs": [
@@ -1358,7 +1295,7 @@
       "id": 9,
       "date": "2026-11-14",
       "club_id": 1,
-      "dancer_id": 71,
+      "dancer_id": 7,
       "tip_qty": 8,
       "tip_amount": 120000,
       "wine_reg_qty": 1,
