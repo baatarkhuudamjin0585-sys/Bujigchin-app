@@ -489,19 +489,34 @@
                             </span>
                         </div>
 
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs text-gray-300 font-medium">Ширхэг (Тоо):</span>
-                            <div class="flex items-center gap-2">
-                                <button type="button" onclick="adjustTaxiQty(-1)" class="w-8 h-8 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-95 text-amber-400 font-bold text-lg flex items-center justify-center border border-dark-700">-</button>
-                                <input type="number" id="bar_taxi_qty" value="1" min="1" oninput="updateTaxiTotal()" class="w-12 h-8 text-center bg-dark-950 border border-dark-700 rounded-lg text-sm font-bold text-gray-100 font-mono">
-                                <button type="button" onclick="adjustTaxiQty(1)" class="w-8 h-8 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-95 text-amber-400 font-bold text-lg flex items-center justify-center border border-dark-700">+</button>
+                        <!-- Driver Name & Account -->
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[11px] text-gray-400 mb-1">Жолоочийн нэр *</label>
+                                <input type="text" id="bar_taxi_driver_name" required placeholder="Жишээ: Д.Батбаяр..."
+                                    class="w-full bg-dark-850 border border-dark-700 rounded-lg px-2.5 py-1.5 text-xs text-gray-100 focus:outline-none focus:border-amber-500">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-gray-400 mb-1">Жолоочийн данс / IBAN *</label>
+                                <input type="text" id="bar_taxi_driver_bank" required placeholder="5005... эсвэл MN..."
+                                    class="w-full bg-dark-850 border border-dark-700 rounded-lg px-2.5 py-1.5 text-xs text-amber-400 font-mono focus:outline-none focus:border-amber-500 uppercase">
                             </div>
                         </div>
 
-                        <div>
-                            <label class="block text-[11px] text-gray-400 mb-1">Жолоочийн тэмдэглэл / Машины дугаар (Сонголттой):</label>
-                            <input type="text" id="bar_taxi_note" placeholder="Жишээ: 1234 УБҮ, Приус 20..."
-                                class="w-full bg-dark-850 border border-dark-700 rounded-lg px-2.5 py-1.5 text-xs text-gray-200 focus:outline-none focus:border-amber-500">
+                        <div class="grid grid-cols-2 gap-2 items-center">
+                            <div>
+                                <label class="block text-[11px] text-gray-400 mb-1">Ширхэг (Тоо):</label>
+                                <div class="flex items-center gap-1.5">
+                                    <button type="button" onclick="adjustTaxiQty(-1)" class="w-8 h-8 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-95 text-amber-400 font-bold text-lg flex items-center justify-center border border-dark-700">-</button>
+                                    <input type="number" id="bar_taxi_qty" value="1" min="1" oninput="updateTaxiTotal()" class="w-12 h-8 text-center bg-dark-950 border border-dark-700 rounded-lg text-sm font-bold text-gray-100 font-mono">
+                                    <button type="button" onclick="adjustTaxiQty(1)" class="w-8 h-8 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-95 text-amber-400 font-bold text-lg flex items-center justify-center border border-dark-700">+</button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-gray-400 mb-1">Машины дугаар / Тэмдэглэл:</label>
+                                <input type="text" id="bar_taxi_note" placeholder="1234 УБҮ..."
+                                    class="w-full bg-dark-850 border border-dark-700 rounded-lg px-2.5 py-1.5 text-xs text-gray-200 focus:outline-none focus:border-amber-500">
+                            </div>
                         </div>
 
                         <div class="flex items-center justify-between pt-1">
@@ -527,6 +542,20 @@
                             <span class="text-[10px] px-2 py-0.5 rounded bg-dark-800 text-purple-300 font-mono border border-dark-700">
                                 Гараар оруулах
                             </span>
+                        </div>
+
+                        <!-- PR Manager Name & Account -->
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[11px] text-gray-400 mb-1">PR Менежерийн нэр *</label>
+                                <input type="text" id="bar_pr_manager_name" required placeholder="Жишээ: Б.Нандин..."
+                                    class="w-full bg-dark-850 border border-dark-700 rounded-lg px-2.5 py-1.5 text-xs text-gray-100 focus:outline-none focus:border-purple-500">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-gray-400 mb-1">Дансны дугаар / IBAN *</label>
+                                <input type="text" id="bar_pr_manager_bank" required placeholder="5200... эсвэл MN..."
+                                    class="w-full bg-dark-850 border border-dark-700 rounded-lg px-2.5 py-1.5 text-xs text-purple-300 font-mono focus:outline-none focus:border-purple-500 uppercase">
+                            </div>
                         </div>
 
                         <div class="grid grid-cols-2 gap-2">
@@ -2623,6 +2652,8 @@
       "club_id": 1,
       "club_name": "ARUM CLUB",
       "bartender_name": "Арум Бармен 1",
+      "driver_name": "Д.Батбаяр",
+      "driver_bank": "5005250242",
       "taxi_qty": 2,
       "rate": 40000,
       "amount": 80000,
@@ -2635,9 +2666,11 @@
       "club_id": 1,
       "club_name": "ARUM CLUB",
       "bartender_name": "Арум Бармен 1",
+      "pr_manager_name": "Б.Нандин-Эрдэнэ",
+      "pr_manager_bank": "5200341890",
       "bill_no": "#1042",
       "amount": 150000,
-      "note": "VIP ширээ PR үйлчилгээ"
+      "note": "VIP ширээний PR (Уух зүйлийн 10%)"
     }
   ]
 };
@@ -3207,10 +3240,10 @@
                     div.innerHTML = `
                         <div class="flex-1 pr-2">
                             <div class="flex items-center gap-1.5">
-                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-400 font-mono font-bold border border-amber-500/30">🚕 Такси</span>
-                                <span class="font-bold text-gray-100 text-xs">${r.taxi_qty} ширхэг (${formatMNT(r.rate)})</span>
+                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-400 font-mono font-bold border border-amber-500/30">🚕 Такси (${r.taxi_qty} ш)</span>
+                                <span class="font-bold text-gray-100 text-xs">${r.driver_name || 'Жолооч'}</span>
                             </div>
-                            <div class="text-[10px] text-gray-400 mt-0.5">${r.note || 'Тэмдэглэлгүй'}</div>
+                            <div class="text-[10px] text-amber-400/90 font-mono mt-0.5">${r.driver_bank || '-'} ${r.note ? '• ' + r.note : ''}</div>
                             <div class="text-[9px] text-gray-500 mt-0.5 flex items-center gap-2">
                                 <span>Бүртгэсэн: ${r.bartender_name || 'Ажилтан'}</span>
                                 <span class="font-mono text-gray-600">${r.date}</span>
@@ -3231,10 +3264,10 @@
                     div.innerHTML = `
                         <div class="flex-1 pr-2">
                             <div class="flex items-center gap-1.5">
-                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/15 text-purple-300 font-mono font-bold border border-purple-500/30">🧾 PR Билл</span>
-                                <span class="font-bold text-gray-100 text-xs font-mono">${r.bill_no}</span>
+                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/15 text-purple-300 font-mono font-bold border border-purple-500/30">🧾 PR (${r.bill_no})</span>
+                                <span class="font-bold text-gray-100 text-xs">${r.pr_manager_name || 'PR Менежер'}</span>
                             </div>
-                            <div class="text-[10px] text-gray-400 mt-0.5">${r.note || 'Тайлбаргүй'}</div>
+                            <div class="text-[10px] text-purple-300 font-mono mt-0.5">${r.pr_manager_bank || '-'} ${r.note ? '• ' + r.note : ''}</div>
                             <div class="text-[9px] text-gray-500 mt-0.5 flex items-center gap-2">
                                 <span>Бүртгэсэн: ${r.bartender_name || 'Ажилтан'}</span>
                                 <span class="font-mono text-gray-600">${r.date}</span>
@@ -3508,11 +3541,11 @@
                     div.innerHTML = `
                         <div class="flex-1 pr-2">
                             <div class="flex items-center gap-1.5">
-                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-400 font-mono font-bold border border-amber-500/30">🚕 Такси</span>
-                                <span class="font-bold text-gray-100 text-xs">${r.taxi_qty} ширхэг (${formatMNT(r.rate)})</span>
+                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-400 font-mono font-bold border border-amber-500/30">🚕 Такси (${r.taxi_qty} ш)</span>
+                                <span class="font-bold text-gray-100 text-xs">${r.driver_name || 'Жолооч'}</span>
                                 <span class="text-[10px] text-gray-400 font-mono">${r.club_name.replace(' CLUB','')}</span>
                             </div>
-                            <div class="text-[10px] text-gray-300 mt-0.5">${r.note || 'Тэмдэглэлгүй'}</div>
+                            <div class="text-[10px] text-amber-400/90 font-mono mt-0.5">${r.driver_bank || '-'} ${r.note ? '• ' + r.note : ''}</div>
                             <div class="text-[9px] text-gray-500 mt-0.5 flex items-center gap-2">
                                 <span>Бүртгэсэн: ${r.bartender_name || 'Ажилтан'}</span>
                                 <span class="font-mono text-gray-600">${r.date}</span>
@@ -3529,11 +3562,11 @@
                     div.innerHTML = `
                         <div class="flex-1 pr-2">
                             <div class="flex items-center gap-1.5">
-                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/15 text-purple-300 font-mono font-bold border border-purple-500/30">🧾 PR</span>
-                                <span class="font-bold text-gray-100 text-xs font-mono">Билл: ${r.bill_no}</span>
+                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/15 text-purple-300 font-mono font-bold border border-purple-500/30">🧾 PR (${r.bill_no})</span>
+                                <span class="font-bold text-gray-100 text-xs">${r.pr_manager_name || 'PR Менежер'}</span>
                                 <span class="text-[10px] text-gray-400 font-mono">${r.club_name.replace(' CLUB','')}</span>
                             </div>
-                            <div class="text-[10px] text-gray-300 mt-0.5">${r.note || 'Тайлбаргүй'}</div>
+                            <div class="text-[10px] text-purple-300 font-mono mt-0.5">${r.pr_manager_bank || '-'} ${r.note ? '• ' + r.note : ''}</div>
                             <div class="text-[9px] text-gray-500 mt-0.5 flex items-center gap-2">
                                 <span>Бүртгэсэн: ${r.bartender_name || 'Ажилтан'}</span>
                                 <span class="font-mono text-gray-600">${r.date}</span>
@@ -3605,9 +3638,23 @@
 
             let newRec = null;
             if (type === 'taxi') {
+                const driverName = (document.getElementById('modal-taxi-driver-name')?.value || '').trim();
+                const driverBank = (document.getElementById('modal-taxi-driver-bank')?.value || '').trim().toUpperCase().replace(/\s+/g, '');
                 const qty = parseInt(document.getElementById('modal-taxi-qty').value || 1);
                 const rate = getTaxiRate(clubId);
                 const note = document.getElementById('modal-taxi-note').value.trim();
+
+                if (!driverName) {
+                    alert('Жолоочийн нэрийг оруулна уу!');
+                    document.getElementById('modal-taxi-driver-name')?.focus();
+                    return;
+                }
+                if (!driverBank) {
+                    alert('Жолоочийн дансны дугаар / IBAN оруулна уу!');
+                    document.getElementById('modal-taxi-driver-bank')?.focus();
+                    return;
+                }
+
                 newRec = {
                     id: Date.now(),
                     type: 'taxi',
@@ -3615,16 +3662,30 @@
                     club_id: clubId,
                     club_name: club?.name || '',
                     bartender_name: currentUser ? currentUser.name : 'Ерөнхий нягтлан',
+                    driver_name: driverName,
+                    driver_bank: driverBank,
                     taxi_qty: qty,
                     rate: rate,
                     amount: qty * rate,
                     note: note
                 };
             } else {
+                const prManagerName = (document.getElementById('modal-pr-manager-name')?.value || '').trim();
+                const prManagerBank = (document.getElementById('modal-pr-manager-bank')?.value || '').trim().toUpperCase().replace(/\s+/g, '');
                 const billNo = document.getElementById('modal-pr-bill').value.trim();
                 const amount = parseInt(document.getElementById('modal-pr-amount').value || 0);
                 const note = document.getElementById('modal-pr-note').value.trim();
 
+                if (!prManagerName) {
+                    alert('PR Менежерийн нэрийг оруулна уу!');
+                    document.getElementById('modal-pr-manager-name')?.focus();
+                    return;
+                }
+                if (!prManagerBank) {
+                    alert('PR Менежерийн дансны дугаар / IBAN оруулна уу!');
+                    document.getElementById('modal-pr-manager-bank')?.focus();
+                    return;
+                }
                 if (!billNo) {
                     alert('Биллийн дугаарыг заавал оруулна уу!');
                     document.getElementById('modal-pr-bill').focus();
@@ -3643,6 +3704,8 @@
                     club_id: clubId,
                     club_name: club?.name || '',
                     bartender_name: currentUser ? currentUser.name : 'Ерөнхий нягтлан',
+                    pr_manager_name: prManagerName,
+                    pr_manager_bank: prManagerBank,
                     bill_no: billNo,
                     amount: amount,
                     note: note
@@ -3900,15 +3963,19 @@
                 ["ТАКСИ БА PR ЗАРДЛЫН ТАЙЛАН"],
                 ["Хугацаа: " + (startDate ? `${startDate} - ${endDate}` : "Бүх хугацаа")],
                 [],
-                ["№", "Огноо", "Салбар", "Төрөл", "Тоо ширхэг / Билл №", "Үнийн дүн", "Тайлбар / Зориулалт", "Бүртгэсэн ажилтан"]
+                ["№", "Огноо", "Салбар", "Төрөл", "Данс эзэмшигч (Жолооч / PR Менежер)", "Дансны дугаар", "Тоо ширхэг / Билл №", "Үнийн дүн", "Тайлбар / Зориулалт", "Бүртгэсэн ажилтан"]
             ];
             let tIdx = 1;
             taxiPrRecords.forEach(r => {
+                const holderName = r.type === 'taxi' ? (r.driver_name || 'Жолооч') : (r.pr_manager_name || 'PR Менежер');
+                const holderBank = r.type === 'taxi' ? (r.driver_bank || '-') : (r.pr_manager_bank || '-');
                 taxiPrSheetData.push([
                     tIdx++,
                     r.date,
                     r.club_name,
                     r.type === 'taxi' ? 'Такси татвар' : 'PR зардал',
+                    holderName,
+                    holderBank,
                     r.type === 'taxi' ? `${r.taxi_qty} такси` : `Билл ${r.bill_no}`,
                     r.amount,
                     r.note || '-',
@@ -4339,6 +4406,18 @@
                 <div id="modal-taxi-fields" class="space-y-2">
                     <div class="grid grid-cols-2 gap-2">
                         <div>
+                            <label class="block text-gray-400 mb-0.5">Жолоочийн нэр *</label>
+                            <input type="text" id="modal-taxi-driver-name" placeholder="Д.Батбаяр..."
+                                class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200">
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 mb-0.5">Жолоочийн данс / IBAN *</label>
+                            <input type="text" id="modal-taxi-driver-bank" placeholder="5005... эсвэл MN..."
+                                class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-amber-400 font-mono uppercase">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
                             <label class="block text-gray-400 mb-0.5">Тоо ширхэг *</label>
                             <input type="number" id="modal-taxi-qty" value="1" min="1" oninput="updateAdminModalTaxiTotal()"
                                 class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200 font-mono">
@@ -4360,12 +4439,24 @@
                 <div id="modal-pr-fields" class="hidden space-y-2">
                     <div class="grid grid-cols-2 gap-2">
                         <div>
+                            <label class="block text-gray-400 mb-0.5">PR Менежерийн нэр *</label>
+                            <input type="text" id="modal-pr-manager-name" placeholder="Б.Нандин..."
+                                class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200">
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 mb-0.5">Дансны дугаар / IBAN *</label>
+                            <input type="text" id="modal-pr-manager-bank" placeholder="5200... эсвэл MN..."
+                                class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-purple-300 font-mono uppercase">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
                             <label class="block text-gray-400 mb-0.5">Биллийн дугаар *</label>
                             <input type="text" id="modal-pr-bill" placeholder="#1042..."
                                 class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200 font-mono">
                         </div>
                         <div>
-                            <label class="block text-gray-400 mb-0.5">Үнийн дүн (₮) *</label>
+                            <label class="block text-gray-400 mb-0.5">Үнийн дүн (₮) * <span class="text-purple-400 text-[10px]">(Уух зүйлийн 10%)</span></label>
                             <input type="number" id="modal-pr-amount" placeholder="50000..." step="1000"
                                 class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-amber-400 font-bold font-mono">
                         </div>
