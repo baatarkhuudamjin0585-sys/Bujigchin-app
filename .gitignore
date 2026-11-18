@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+bar_system.db
+.DS_Store
