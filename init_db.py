@@ -159,7 +159,17 @@ def init_db():
 
         if stage_name:
             cid = club_map[current_club]
-            dancer_rows.append((cid, stage_name, bank_owner, bank_acc, 'Үндсэн', tag))
+            # Normalize bank account and name for deduplication
+            clean_acc = str(bank_acc).strip().upper().replace(' ', '')
+            clean_owner = str(bank_owner).strip().lower()
+            dedup_key = (clean_acc, clean_owner) if clean_acc and clean_owner else (stage_name.lower(), cid)
+            
+            if 'seen_dancer_keys' not in locals():
+                seen_dancer_keys = set()
+            
+            if dedup_key not in seen_dancer_keys:
+                seen_dancer_keys.add(dedup_key)
+                dancer_rows.append((cid, stage_name, bank_owner, bank_acc, 'Үндсэн', tag))
 
     cur.executemany('''
     INSERT INTO dancers (club_id, stage_name, real_name, bank_account, dancer_type, tag)
