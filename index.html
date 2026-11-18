@@ -245,9 +245,15 @@
                             <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
                             <span>Бүжигчин сонгох</span>
                         </label>
-                        <span id="rate-badge" class="text-[10px] px-1.5 py-0.5 rounded bg-dark-800 text-amber-400 font-mono border border-dark-700">
-                            Үндсэн
-                        </span>
+                        <div class="flex items-center gap-2">
+                            <button type="button" onclick="openDancerModal('add')" class="flex items-center gap-1 text-[11px] font-semibold text-amber-400 hover:text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 px-2 py-0.5 rounded border border-amber-500/30 transition-all active:scale-95">
+                                <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+                                <span>+ Бүжигчин нэмэх</span>
+                            </button>
+                            <span id="rate-badge" class="text-[10px] px-1.5 py-0.5 rounded bg-dark-800 text-amber-400 font-mono border border-dark-700">
+                                Үндсэн
+                            </span>
+                        </div>
                     </div>
 
                     <select id="bar-dancer-select" onchange="onDancerSelected()"
@@ -624,22 +630,26 @@
                 <div>
                     <label class="block text-gray-400 mb-0.5">Салбар</label>
                     <select id="modal-dancer-club" required class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200"></select>
+                    <p id="modal-dancer-club-hint" class="hidden text-[10px] text-amber-400 mt-1">Зөвхөн өөрийн харьяа салбар дээр бүртгэх эрхтэй (Түгжигдсэн)</p>
                 </div>
                 <div>
                     <label class="block text-gray-400 mb-0.5">Тайзны нэр *</label>
-                    <input type="text" id="modal-dancer-stagename" required placeholder="Дөк, Роза..."
+                    <input type="text" id="modal-dancer-stagename" required placeholder="Дөк, Роза, Сарнай..."
                         class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200">
                 </div>
                 <div>
-                    <label class="block text-gray-400 mb-0.5">Данс эзэмшигчийн нэр</label>
-                    <input type="text" id="modal-dancer-realname" placeholder="Зориг Нандин-Эрдэнэ..."
+                    <label class="block text-gray-400 mb-0.5">Данс эзэмшигчийн нэр (Заавал кириллээр) *</label>
+                    <input type="text" id="modal-dancer-realname" required placeholder="Жишээ: Зориг Нандин-Эрдэнэ"
                         class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200">
+                    <p class="text-[10px] text-gray-500 mt-0.5">Зөвхөн монгол кирилл үсгээр бичнэ үү</p>
                 </div>
                 <div>
-                    <label class="block text-gray-400 mb-0.5">Дансны дугаар *</label>
-                    <input type="text" id="modal-dancer-bankacc" required placeholder="5200..."
-                        class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200 font-mono">
+                    <label class="block text-gray-400 mb-0.5">Дансны IBAN дугаар (15+ тэмдэгт) *</label>
+                    <input type="text" id="modal-dancer-bankacc" required placeholder="Жишээ: MN020005005250242017"
+                        class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200 font-mono uppercase">
+                    <p class="text-[10px] text-gray-500 mt-0.5">Заавал 15-аас дээш оронтой IBAN дугаар байна</p>
                 </div>
+                <div id="modal-dancer-error" class="hidden text-[11px] text-red-400 font-medium p-2 rounded bg-red-950/40 border border-red-900/50"></div>
                 <div class="pt-2 flex justify-end gap-2 border-t border-dark-800">
                     <button type="button" onclick="closeDancerModal()" class="px-3 py-1.5 rounded bg-dark-800 text-gray-300">Болих</button>
                     <button type="submit" class="px-4 py-1.5 rounded bg-amber-600 text-gray-950 font-bold">Хадгалах</button>
@@ -3076,6 +3086,7 @@
             });
 
             listEl.innerHTML = '';
+            const canDeleteDancer = currentUser && currentUser.role === 'admin';
             filtered.forEach(d => {
                 const div = document.createElement('div');
                 div.className = 'px-3 py-2 flex items-center justify-between hover:bg-dark-850/40';
@@ -3089,12 +3100,13 @@
                         <div class="text-[10px] text-amber-400/90 font-mono">${d.bank_account || '-'} • ${d.real_name || ''}</div>
                     </div>
                     <div class="flex items-center gap-1">
-                        <button onclick="openDancerModal('edit', ${d.id})" class="p-1 text-gray-400 hover:text-amber-400">
+                        <button onclick="openDancerModal('edit', ${d.id})" class="p-1 text-gray-400 hover:text-amber-400" title="Засах">
                             <i data-lucide="edit" class="w-3.5 h-3.5"></i>
                         </button>
-                        <button onclick="deleteDancer(${d.id})" class="p-1 text-gray-400 hover:text-red-400">
+                        ${canDeleteDancer ? `
+                        <button onclick="deleteDancer(${d.id})" class="p-1 text-gray-400 hover:text-red-400" title="Устгах">
                             <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                        </button>
+                        </button>` : ''}
                     </div>
                 `;
                 listEl.appendChild(div);
@@ -3105,22 +3117,44 @@
         function filterDancersTable() { renderDancersTable(); }
 
         function openDancerModal(mode, dancerId = null) {
+            playFeedback("click");
             const modal = document.getElementById('dancer-modal');
             const title = document.getElementById('dancer-modal-title');
             const idInput = document.getElementById('modal-dancer-id');
+            const clubSelect = document.getElementById('modal-dancer-club');
+            const clubHint = document.getElementById('modal-dancer-club-hint');
+            const errEl = document.getElementById('modal-dancer-error');
+            if (errEl) { errEl.textContent = ''; errEl.classList.add('hidden'); }
+
+            const isRestrictedUser = currentUser && currentUser.role !== 'admin' && currentUser.club_id && currentUser.club_id !== 'all';
+            const targetClubId = isRestrictedUser ? parseInt(currentUser.club_id) : currentClubId;
 
             if (mode === 'add') {
-                title.textContent = 'Шинэ бүжигчин нэмэх';
+                title.textContent = isRestrictedUser ? 'Шинэ бүжигчин нэмэх (Өөрийн салбар)' : 'Шинэ бүжигчин нэмэх';
                 idInput.value = '';
                 document.getElementById('dancer-modal-form').reset();
-                document.getElementById('modal-dancer-club').value = currentClubId;
+                clubSelect.value = targetClubId;
+                if (isRestrictedUser) {
+                    clubSelect.disabled = true;
+                    if (clubHint) clubHint.classList.remove('hidden');
+                } else {
+                    clubSelect.disabled = false;
+                    if (clubHint) clubHint.classList.add('hidden');
+                }
             } else {
                 title.textContent = 'Бүжигчин засах';
                 const d = store.dancers.find(x => x.id === dancerId);
                 if (!d) return;
 
                 idInput.value = d.id;
-                document.getElementById('modal-dancer-club').value = d.club_id;
+                clubSelect.value = d.club_id;
+                if (isRestrictedUser) {
+                    clubSelect.disabled = true;
+                    if (clubHint) clubHint.classList.remove('hidden');
+                } else {
+                    clubSelect.disabled = false;
+                    if (clubHint) clubHint.classList.add('hidden');
+                }
                 document.getElementById('modal-dancer-stagename').value = d.stage_name;
                 document.getElementById('modal-dancer-realname').value = d.real_name || '';
                 document.getElementById('modal-dancer-bankacc').value = d.bank_account || '';
@@ -3134,11 +3168,64 @@
         function submitDancerModal(e) {
             e.preventDefault();
             const id = document.getElementById('modal-dancer-id').value;
-            const clubId = parseInt(document.getElementById('modal-dancer-club').value);
+            const isRestrictedUser = currentUser && currentUser.role !== 'admin' && currentUser.club_id && currentUser.club_id !== 'all';
+            const clubId = isRestrictedUser ? parseInt(currentUser.club_id) : parseInt(document.getElementById('modal-dancer-club').value);
+            
             const stageName = document.getElementById('modal-dancer-stagename').value.trim();
             const realName = document.getElementById('modal-dancer-realname').value.trim();
-            const bankAcc = document.getElementById('modal-dancer-bankacc').value.trim();
+            const bankAcc = document.getElementById('modal-dancer-bankacc').value.trim().toUpperCase().replace(/\s+/g, '');
+            const errEl = document.getElementById('modal-dancer-error');
 
+            function showError(msg) {
+                if (errEl) {
+                    errEl.textContent = msg;
+                    errEl.classList.remove('hidden');
+                }
+                alert(msg);
+            }
+
+            // 1. Stage name validation
+            if (!stageName) {
+                showError('Бүжигчний тайзны нэрийг заавал бичнэ үү!');
+                document.getElementById('modal-dancer-stagename').focus();
+                return;
+            }
+
+            // 2. Real name (Account holder) validation - MUST be Cyrillic & cannot be empty
+            if (!realName) {
+                showError('Данс эзэмшигчийн нэрийг заавал бичнэ үү!');
+                document.getElementById('modal-dancer-realname').focus();
+                return;
+            }
+            const cyrillicRegex = /^[а-яА-ЯөӨүҮёЁ\s\-.]+$/;
+            if (!cyrillicRegex.test(realName)) {
+                showError('Данс эзэмшигчийн нэрийг заавал кирилл үсгээр бичнэ үү! (Латин үсэг болон тусгай тэмдэгт ашиглаж болохгүй)');
+                document.getElementById('modal-dancer-realname').focus();
+                return;
+            }
+
+            // 3. Bank Account / IBAN validation
+            if (!bankAcc) {
+                showError('Дансны дугаар (IBAN)-ийг заавал бүртгэж байж хадгалах боломжтой!');
+                document.getElementById('modal-dancer-bankacc').focus();
+                return;
+            }
+
+            // Must be at least 15 characters
+            if (bankAcc.length < 15) {
+                showError('Iban-гүй зөвхөн данс бичсэн байна! Дансны дугаар заавал 15-аас дээш оронтой IBAN дугаар байх ёстой. Iban бичнэ үү.\n(Жишээ: MN020005005250242017 эсвэл 18 оронтой бүтэн IBAN дугаараа бичнэ үү)');
+                document.getElementById('modal-dancer-bankacc').focus();
+                return;
+            }
+
+            // Valid alphanumeric
+            if (!/^[A-Z0-9]+$/.test(bankAcc)) {
+                showError('Дансны IBAN дугаарт зөвхөн тоо болон үсэг (MN...) оруулна уу!');
+                document.getElementById('modal-dancer-bankacc').focus();
+                return;
+            }
+
+            let targetId = null;
             if (id) {
                 const d = store.dancers.find(x => String(x.id) === String(id));
                 if (d) {
@@ -3146,11 +3233,13 @@
                     d.stage_name = stageName;
                     d.real_name = realName;
                     d.bank_account = bankAcc;
+                    targetId = d.id;
                 }
-                showToast('Шинэчлэгдлээ');
+                showToast('Бүжигчний мэдээлэл шинэчлэгдлээ');
             } else {
+                targetId = Date.now();
                 const newDancer = {
-                    id: Date.now(),
+                    id: targetId,
                     club_id: clubId,
                     stage_name: stageName,
                     real_name: realName,
@@ -3159,20 +3248,35 @@
                     is_active: 1
                 };
                 store.dancers.push(newDancer);
-                showToast('Нэмэгдлээ');
+                showToast(`${stageName} бүжигчин амжилттай нэмэгдлээ`);
             }
 
+            playFeedback("success");
             saveStoredData(store);
             closeDancerModal();
             updateBarDancerSelect();
+
+            // Auto-select newly added dancer in bartender view
+            if (targetId) {
+                const sel = document.getElementById('bar-dancer-select');
+                if (sel) {
+                    sel.value = String(targetId);
+                    onDancerSelected();
+                }
+            }
+
             renderDancersTable();
         }
 
         function deleteDancer(id) {
-            if (!confirm('Устгах уу?')) return;
+            if (currentUser && currentUser.role === 'bartender') {
+                alert('Бармен бүжигчин устгах эрхгүй! Зөвхөн ерөнхий нягтлан устгах эрхтэй.');
+                return;
+            }
+            if (!confirm('Энэ бүжигчнийг устгах уу?')) return;
             store.dancers = store.dancers.filter(d => d.id !== id);
             saveStoredData(store);
-            showToast('Устгагдлаа');
+            showToast('Бүжигчин устгагдлаа');
             updateBarDancerSelect();
             renderDancersTable();
         }
