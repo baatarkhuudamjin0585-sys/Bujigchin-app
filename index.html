@@ -172,17 +172,6 @@
                     Нэвтрэх
                 </button>
             </form>
-
-            <!-- Quick Demo Helper Pills (For Fast Testing) -->
-            <div class="pt-2 border-t border-dark-800 text-center">
-                <div class="text-[10px] text-gray-500 mb-2">Туршилтын хэрэглэгч сонгох (Нууц үг: 123):</div>
-                <div class="flex flex-wrap justify-center gap-1.5 text-[10px]">
-                    <button type="button" onclick="quickFillLogin('admin', '123')" class="px-2 py-1 rounded bg-dark-800 hover:bg-dark-700 text-amber-400 border border-dark-700 font-medium">Нягтлан</button>
-                    <button type="button" onclick="quickFillLogin('arum_bar1', '123')" class="px-2 py-1 rounded bg-dark-800 hover:bg-dark-700 text-gray-300 border border-dark-700">Арум Бармен</button>
-                    <button type="button" onclick="quickFillLogin('aloha_bar1', '123')" class="px-2 py-1 rounded bg-dark-800 hover:bg-dark-700 text-gray-300 border border-dark-700">Алоха Бармен</button>
-                    <button type="button" onclick="quickFillLogin('man_bar1', '123')" class="px-2 py-1 rounded bg-dark-800 hover:bg-dark-700 text-gray-300 border border-dark-700">Ман Бармен</button>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -3095,12 +3084,6 @@
             document.getElementById('sticky-bottom-bar').classList.add('hidden');
             document.getElementById('login-error-msg').classList.add('hidden');
             lucide.createIcons();
-        }
-
-        function quickFillLogin(username, password) {
-            document.getElementById('login-username').value = username;
-            document.getElementById('login-password').value = password;
-            handleLoginSubmit(new Event('submit'));
         }
 
         function handleLoginSubmit(e) {
