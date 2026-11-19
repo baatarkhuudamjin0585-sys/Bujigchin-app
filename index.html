@@ -954,10 +954,10 @@
                 <div>
                     <label class="block text-gray-400 mb-0.5">Бүжигчний төрөл *</label>
                     <select id="modal-dancer-type" required class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-amber-400 font-bold focus:outline-none focus:border-amber-500">
-                        <option value="Халтуур" selected>Халтуур (Freelance)</option>
+                        <option value="">-- Төрөл сонгоно уу --</option>
                         <option value="Үндсэн">Үндсэн бүжигчин (Main)</option>
+                        <option value="Халтуур">Халтуур (Freelance)</option>
                     </select>
-                    <p class="text-[10px] text-gray-500 mt-0.5">Шинээр ирж буй бүжигчдийг ихэвчлэн Халтуур гэж бүртгэнэ</p>
                 </div>
                 <div>
                     <label class="block text-gray-400 mb-0.5">Тайзны нэр *</label>
@@ -4501,7 +4501,7 @@
                 document.getElementById('dancer-modal-form').reset();
                 clubSelect.value = targetClubId;
                 const typeSelect = document.getElementById('modal-dancer-type');
-                if (typeSelect) typeSelect.value = 'Халтуур'; // Default to Freelance
+                if (typeSelect) typeSelect.value = ''; // No pre-selected default, user must pick
                 if (isRestrictedUser) {
                     clubSelect.disabled = true;
                     if (clubHint) clubHint.classList.remove('hidden');
@@ -4517,7 +4517,7 @@
                 idInput.value = d.id;
                 clubSelect.value = d.club_id;
                 const typeSelect = document.getElementById('modal-dancer-type');
-                if (typeSelect) typeSelect.value = d.dancer_type || 'Үндсэн';
+                if (typeSelect) typeSelect.value = d.dancer_type || '';
                 if (isRestrictedUser) {
                     clubSelect.disabled = true;
                     if (clubHint) clubHint.classList.remove('hidden');
@@ -4541,10 +4541,10 @@
             const isRestrictedUser = currentUser && currentUser.role !== 'admin' && currentUser.club_id && currentUser.club_id !== 'all';
             const clubId = isRestrictedUser ? parseInt(currentUser.club_id) : parseInt(document.getElementById('modal-dancer-club').value);
             
+            const dancerType = document.getElementById('modal-dancer-type')?.value;
             const stageName = document.getElementById('modal-dancer-stagename').value.trim();
             const realName = document.getElementById('modal-dancer-realname').value.trim();
             const bankAcc = document.getElementById('modal-dancer-bankacc').value.trim().toUpperCase().replace(/\s+/g, '');
-            const dancerType = document.getElementById('modal-dancer-type')?.value || 'Халтуур';
             const errEl = document.getElementById('modal-dancer-error');
 
             function showError(msg) {
@@ -4553,6 +4553,13 @@
                     errEl.classList.remove('hidden');
                 }
                 showToast(msg, true, 'Бүртгэлийн алдаа');
+            }
+
+            // 0. Dancer type validation - MUST be chosen
+            if (!dancerType) {
+                showError('Бүжигчний төрлийг заавал сонгоно уу! (Үндсэн эсвэл Халтуур)');
+                highlightField('modal-dancer-type');
+                return;
             }
 
             // 1. Stage name validation
