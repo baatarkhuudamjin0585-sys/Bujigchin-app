@@ -2,7 +2,7 @@
 <html lang="mn" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
     <title>Bar Dancer Revenue & Bonus System</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -868,11 +868,13 @@
     </div>
 
 
-    <!-- DANCER SEARCH / PICKER MODAL (FAST MOBILE AUTOCOMPLETE) -->
-    <div id="dancer-search-modal" onclick="if(event.target === this) closeDancerSearchModal()" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-sm transition-opacity">
-        <div class="bg-dark-900 border border-dark-700 rounded-t-2xl sm:rounded-2xl max-w-md w-full max-h-[85vh] flex flex-col overflow-hidden shadow-2xl animate-in slide-in-from-bottom duration-200">
+    <!-- DANCER SEARCH / PICKER MODAL (FAST MOBILE AUTOCOMPLETE & KEYBOARD-SAFE) -->
+    <div id="dancer-search-modal" onclick="if(event.target === this) closeDancerSearchModal()"
+        class="hidden fixed inset-0 z-[100] flex items-start justify-center p-2 pt-2 sm:pt-6 bg-black/85 backdrop-blur-md transition-opacity">
+        <div id="dancer-search-modal-box"
+            class="bg-dark-900 border border-dark-700 rounded-2xl max-w-md w-full flex flex-col overflow-hidden shadow-2xl transition-all duration-150 animate-in fade-in zoom-in-95 duration-150">
             <!-- Header -->
-            <div class="px-4 py-3 border-b border-dark-800 flex items-center justify-between shrink-0 bg-dark-950/60">
+            <div class="px-3.5 py-2.5 border-b border-dark-800 flex items-center justify-between shrink-0 bg-dark-950/70">
                 <div class="flex items-center gap-2">
                     <div class="w-6 h-6 rounded-md bg-amber-500/15 flex items-center justify-center text-amber-400">
                         <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
@@ -885,14 +887,16 @@
             </div>
 
             <!-- Search input bar -->
-            <div class="p-3 border-b border-dark-800 space-y-2.5 shrink-0 bg-dark-900">
+            <div class="p-2.5 border-b border-dark-800 space-y-2 shrink-0 bg-dark-900">
                 <div class="relative">
                     <i data-lucide="search" class="w-4 h-4 text-amber-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                    <!-- font size 16px (text-[16px]) strictly prevents iOS Safari viewport zooming! -->
                     <input type="search" id="dancer-search-kw" oninput="renderDancerSearchResults()"
                         placeholder="Нэр, тайзны нэр, дансаар хайх..."
-                        class="w-full bg-dark-850 border border-dark-700 rounded-xl pl-9 pr-8 py-2.5 text-xs text-gray-100 placeholder-gray-500 font-medium focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500">
-                    <button type="button" onclick="document.getElementById('dancer-search-kw').value=''; renderDancerSearchResults();"
-                        class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 p-0.5">
+                        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                        class="w-full bg-dark-850 border border-dark-700 rounded-xl pl-9 pr-8 py-2 text-[16px] sm:text-xs text-gray-100 placeholder-gray-500 font-medium focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500">
+                    <button type="button" onclick="document.getElementById('dancer-search-kw').value=''; renderDancerSearchResults(); document.getElementById('dancer-search-kw').focus();"
+                        class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 p-1">
                         <i data-lucide="x" class="w-3.5 h-3.5"></i>
                     </button>
                 </div>
@@ -915,12 +919,12 @@
             </div>
 
             <!-- Dancers scrollable list -->
-            <div id="dancer-search-results" class="p-3 overflow-y-auto space-y-1.5 flex-1 min-h-[220px]">
+            <div id="dancer-search-results" class="p-2.5 overflow-y-auto space-y-1 flex-1 min-h-[140px] max-h-[360px] overscroll-contain">
                 <!-- Dancers dynamically rendered here -->
             </div>
 
             <!-- Footer: Quick register new dancer -->
-            <div class="p-2.5 border-t border-dark-800 bg-dark-950/80 flex items-center justify-between shrink-0 text-xs">
+            <div class="p-2 border-t border-dark-800 bg-dark-950/80 flex items-center justify-between shrink-0 text-xs">
                 <span class="text-[11px] text-gray-400">Бүжигчин жагсаалтад байхгүй юу?</span>
                 <button type="button" onclick="closeDancerSearchModal(); openDancerModal('add');"
                     class="flex items-center gap-1 text-[11px] font-bold text-amber-400 hover:text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 px-2.5 py-1 rounded-lg border border-amber-500/30">
@@ -3145,24 +3149,54 @@
         // ================= DANCER SEARCH / PICKER (MODAL & INSTANT FILTER) =================
         let currentPickerFilter = 'all';
 
+        function adjustPickerHeightForKeyboard() {
+            const modalBox = document.getElementById('dancer-search-modal-box');
+            const resultsList = document.getElementById('dancer-search-results');
+            if (!modalBox || !resultsList) return;
+
+            if (window.visualViewport) {
+                const vpHeight = window.visualViewport.height;
+                const maxModalH = Math.max(220, Math.floor(vpHeight - 20));
+                modalBox.style.maxHeight = `${maxModalH}px`;
+                const maxListH = Math.max(100, maxModalH - 170);
+                resultsList.style.maxHeight = `${maxListH}px`;
+            }
+        }
+
         function openDancerSearchModal() {
             playFeedback('click');
             const modal = document.getElementById('dancer-search-modal');
             if (!modal) return;
+            document.body.classList.add('overflow-hidden');
             modal.classList.remove('hidden');
             const kwInput = document.getElementById('dancer-search-kw');
             if (kwInput) kwInput.value = '';
             currentPickerFilter = 'all';
             renderDancerSearchResults();
+            adjustPickerHeightForKeyboard();
+
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', adjustPickerHeightForKeyboard);
+                window.visualViewport.addEventListener('scroll', adjustPickerHeightForKeyboard);
+            }
+
             setTimeout(() => {
                 if (kwInput) kwInput.focus();
-            }, 100);
+                adjustPickerHeightForKeyboard();
+            }, 60);
             if (window.lucide) lucide.createIcons();
         }
 
         function closeDancerSearchModal() {
             const modal = document.getElementById('dancer-search-modal');
             if (modal) modal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+            if (window.visualViewport) {
+                window.visualViewport.removeEventListener('resize', adjustPickerHeightForKeyboard);
+                window.visualViewport.removeEventListener('scroll', adjustPickerHeightForKeyboard);
+            }
+            const kwInput = document.getElementById('dancer-search-kw');
+            if (kwInput) kwInput.blur();
         }
 
         function setPickerFilter(filter) {
