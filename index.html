@@ -952,6 +952,14 @@
                     <p id="modal-dancer-club-hint" class="hidden text-[10px] text-amber-400 mt-1">Зөвхөн өөрийн харьяа салбар дээр бүртгэх эрхтэй (Түгжигдсэн)</p>
                 </div>
                 <div>
+                    <label class="block text-gray-400 mb-0.5">Бүжигчний төрөл *</label>
+                    <select id="modal-dancer-type" required class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-amber-400 font-bold focus:outline-none focus:border-amber-500">
+                        <option value="Халтуур" selected>Халтуур (Freelance)</option>
+                        <option value="Үндсэн">Үндсэн бүжигчин (Main)</option>
+                    </select>
+                    <p class="text-[10px] text-gray-500 mt-0.5">Шинээр ирж буй бүжигчдийг ихэвчлэн Халтуур гэж бүртгэнэ</p>
+                </div>
+                <div>
                     <label class="block text-gray-400 mb-0.5">Тайзны нэр *</label>
                     <input type="text" id="modal-dancer-stagename" required placeholder="Дөк, Роза, Сарнай..."
                         class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200">
@@ -3300,7 +3308,7 @@
                             <div class="flex items-center gap-2">
                                 <span class="font-bold text-sm text-gray-100">${d.stage_name}</span>
                                 ${clubBadge}
-                                <span class="text-[9px] px-1 py-0.2 rounded bg-dark-900 text-gray-400 font-mono">${d.dancer_type || 'Үндсэн'}</span>
+                                ${d.dancer_type === 'Халтуур' ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-purple-500/15 text-purple-300 font-semibold border border-purple-500/30">Халтуур</span>' : '<span class="text-[9px] px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-300 font-semibold border border-blue-500/30">Үндсэн</span>'}
                             </div>
                             <div class="text-[11px] text-gray-400 font-mono mt-0.5 flex items-center gap-1.5 truncate">
                                 <span>${d.real_name || 'Нэр бичигдээгүй'}</span>
@@ -4453,6 +4461,7 @@
                         <div class="flex items-center gap-1.5">
                             <span class="font-bold text-gray-100">${d.stage_name}</span>
                             <span class="text-[10px] px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-400 font-mono border border-amber-500/20">${clubBadges}</span>
+                            <span class="text-[9px] px-1.5 py-0.2 rounded font-mono ${d.dancer_type === 'Халтуур' ? 'bg-purple-500/15 text-purple-300 border border-purple-500/30' : 'bg-blue-500/15 text-blue-300 border border-blue-500/30'}">${d.dancer_type || 'Үндсэн'}</span>
                         </div>
                         <div class="text-[10px] text-amber-400/90 font-mono mt-0.5">${d.bank_account || '-'} • ${d.real_name || ''}</div>
                     </div>
@@ -4491,6 +4500,8 @@
                 idInput.value = '';
                 document.getElementById('dancer-modal-form').reset();
                 clubSelect.value = targetClubId;
+                const typeSelect = document.getElementById('modal-dancer-type');
+                if (typeSelect) typeSelect.value = 'Халтуур'; // Default to Freelance
                 if (isRestrictedUser) {
                     clubSelect.disabled = true;
                     if (clubHint) clubHint.classList.remove('hidden');
@@ -4505,6 +4516,8 @@
 
                 idInput.value = d.id;
                 clubSelect.value = d.club_id;
+                const typeSelect = document.getElementById('modal-dancer-type');
+                if (typeSelect) typeSelect.value = d.dancer_type || 'Үндсэн';
                 if (isRestrictedUser) {
                     clubSelect.disabled = true;
                     if (clubHint) clubHint.classList.remove('hidden');
@@ -4531,6 +4544,7 @@
             const stageName = document.getElementById('modal-dancer-stagename').value.trim();
             const realName = document.getElementById('modal-dancer-realname').value.trim();
             const bankAcc = document.getElementById('modal-dancer-bankacc').value.trim().toUpperCase().replace(/\s+/g, '');
+            const dancerType = document.getElementById('modal-dancer-type')?.value || 'Халтуур';
             const errEl = document.getElementById('modal-dancer-error');
 
             function showError(msg) {
@@ -4605,6 +4619,7 @@
                 existing.stage_name = stageName;
                 existing.real_name = realName;
                 existing.bank_account = bankAcc;
+                existing.dancer_type = dancerType;
                 existing.is_active = 1;
 
                 saveStoredData(store);
@@ -4633,6 +4648,7 @@
                     d.stage_name = stageName;
                     d.real_name = realName;
                     d.bank_account = bankAcc;
+                    d.dancer_type = dancerType;
                     targetId = d.id;
                 }
                 showToast('Бүжигчний мэдээлэл шинэчлэгдлээ');
@@ -4645,11 +4661,11 @@
                     stage_name: stageName,
                     real_name: realName,
                     bank_account: bankAcc,
-                    dancer_type: 'Үндсэн',
+                    dancer_type: dancerType,
                     is_active: 1
                 };
                 store.dancers.push(newDancer);
-                showToast(`${stageName} бүжигчин амжилттай нэмэгдлээ`);
+                showToast(`${stageName} бүжигчин (${dancerType}) амжилттай нэмэгдлээ`);
             }
 
             playFeedback("success");
