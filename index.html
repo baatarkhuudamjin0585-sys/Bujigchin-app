@@ -66,6 +66,19 @@
             color: #fbbf24 !important;
             font-weight: 700 !important;
         }
+
+        /* iOS Safe Area Insets (Dynamic Island & Notch & Bottom Bar) */
+        header.app-header-safe {
+            padding-top: max(12px, env(safe-area-inset-top, 0px)) !important;
+            padding-bottom: 10px !important;
+        }
+        #sticky-bottom-bar {
+            padding-bottom: max(12px, env(safe-area-inset-bottom, 0px)) !important;
+        }
+        #login-screen {
+            padding-top: max(20px, env(safe-area-inset-top, 0px)) !important;
+            padding-bottom: max(20px, env(safe-area-inset-bottom, 0px)) !important;
+        }
     </style>
 
     <!-- TACTILE SOUND & HAPTIC SYSTEM -->
@@ -200,7 +213,7 @@
     <!-- ======================================================== -->
     <div id="app-container" class="hidden">
         <!-- Top Navigation Header -->
-        <header class="border-b border-dark-800 bg-dark-900/95 backdrop-blur-md sticky top-0 z-30 w-full px-3 py-2">
+        <header class="border-b border-dark-800 bg-dark-900/95 backdrop-blur-md sticky top-0 z-30 w-full px-3 app-header-safe">
             <div class="max-w-md mx-auto flex items-center justify-between gap-2">
                 <!-- User Profile & Branch Info -->
                 <div class="flex items-center gap-2">
