@@ -3695,6 +3695,11 @@
             const todayStr = new Date().toISOString().split('T')[0];
             let recordDate = document.getElementById('bar-date-input').value;
 
+            if (currentUser && currentUser.role === 'admin') {
+                showToast('Ерөнхий нягтлан зөвхөн хянах (Monitor) горимтой тул өдрийн бичилт үүсгэхгүй. Шаардлагатай бол тухайн бармений эрхээр нэвтэрнэ үү.', true, 'Зөвхөн хянах горим');
+                return;
+            }
+
             // Strict date rule: Bartenders can ONLY record for today
             if (currentUser && currentUser.role === 'bartender') {
                 recordDate = todayStr;
@@ -4270,6 +4275,11 @@
             const rate = getTaxiRate(currentClubId);
             const club = store.clubs.find(c => String(c.id) === String(currentClubId));
 
+            if (currentUser && currentUser.role === 'admin') {
+                showToast('Ерөнхий нягтлан зөвхөн хянах (Monitor) горимтой тул Такси бүртгэхгүй. Шаардлагатай бол тухайн бармений эрхээр нэвтэрнэ үү.', true, 'Зөвхөн хянах горим');
+                return;
+            }
+
             const todayStr = new Date().toISOString().split('T')[0];
             let entryDate = document.getElementById('bar-date-input').value;
             if (currentUser && currentUser.role === 'bartender') {
@@ -4340,6 +4350,11 @@
             if (amount <= 0) {
                 highlightField('bar_pr_amount');
                 showToast('PR зардлын үнийн дүнг заавал оруулна уу (0-ээс их байх)!', true, 'Үнийн дүн дутуу');
+                return;
+            }
+
+            if (currentUser && currentUser.role === 'admin') {
+                showToast('Ерөнхий нягтлан зөвхөн хянах (Monitor) горимтой тул PR бүртгэхгүй. Шаардлагатай бол тухайн бармений эрхээр нэвтэрнэ үү.', true, 'Зөвхөн хянах горим');
                 return;
             }
 
@@ -4492,6 +4507,11 @@
             const amount = parseInt(document.getElementById('staff_tip_amount')?.value || 10000);
             const note = (document.getElementById('staff_tip_note')?.value || '').trim();
             const club = store.clubs.find(c => String(c.id) === String(currentClubId));
+
+            if (currentUser && currentUser.role === 'admin') {
+                showToast('Ерөнхий нягтлан зөвхөн хянах (Monitor) горимтой тул Ажилтны Tip бүртгэхгүй. Шаардлагатай бол тухайн бармений эрхээр нэвтэрнэ үү.', true, 'Зөвхөн хянах горим');
+                return;
+            }
 
             const todayStr = new Date().toISOString().split('T')[0];
             let entryDate = document.getElementById('bar-date-input')?.value || todayStr;
