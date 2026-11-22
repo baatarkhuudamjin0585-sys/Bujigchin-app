@@ -3060,7 +3060,10 @@
             if (!supabaseClient) return;
             try {
                 const { error } = await supabaseClient.from(table).insert([row]);
-                if (error) console.error(`Error inserting into ${table}:`, error);
+                if (error) {
+                    console.error(`Error inserting into ${table}:`, error);
+                    showToast('Үүлэн санд хадгалахад алдаа гарлаа: ' + error.message, true, 'Серверийн алдаа');
+                }
             } catch (e) {
                 console.error(`Exception inserting into ${table}:`, e);
             }
@@ -3167,12 +3170,20 @@
                         handleRealtimePayload('users', payload);
                     })
                     .subscribe((status) => {
+                        console.log('Realtime status:', status);
                         if (status === 'SUBSCRIBED') {
                             updateCloudBadge(true);
                         } else if (status === 'CHANNEL_ERROR' || status === 'CLOSED') {
                             updateCloudBadge(false);
                         }
                     });
+
+                // Auto-sync interval & tab visibility events for bulletproof reliability
+                setInterval(() => syncFromSupabase(), 8000);
+                window.addEventListener('focus', () => syncFromSupabase());
+                document.addEventListener('visibilitychange', () => {
+                    if (!document.hidden) syncFromSupabase();
+                });
             } catch (err) {
                 console.error('Realtime subscription error:', err);
             }
