@@ -5881,33 +5881,53 @@
                     const sheet = workbook.Sheets[sheetName];
                     const jsonRows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
-                    if (!jsonRows || jsonRows.length < 4) {
+                    if (!jsonRows || jsonRows.length < 3) {
                         showToast('Excel файл хоосон эсвэл загвар тохирохгүй байна!', true, 'Алдаа');
                         return;
                     }
 
-                    // Find header row (the row containing 'данс' or 'тайз')
+                    // Find header row (the row containing 'тайз' or 'данс' or 'нэр')
                     let headerIdx = -1;
                     for (let i = 0; i < Math.min(10, jsonRows.length); i++) {
                         const rowStr = (jsonRows[i] || []).join(' ').toLowerCase();
-                        if (rowStr.includes('данс') || rowStr.includes('тайз')) {
+                        if (rowStr.includes('тайз') || (rowStr.includes('данс') && rowStr.includes('нэр'))) {
                             headerIdx = i;
                             break;
                         }
                     }
 
                     if (headerIdx === -1) {
-                        showToast('Excel файлын баганууд олдсонгүй! Загвар файлыг ашиглана уу.', true, 'Загвар буруу');
+                        showToast('Excel файлын баганууд олдсонгүй! Татаж авсан загвар файлыг ашиглана уу.', true, 'Загвар буруу');
                         return;
                     }
 
                     const headers = jsonRows[headerIdx].map(h => String(h || '').trim().toLowerCase());
-                    const colClub = headers.findIndex(h => h.includes('салбар'));
-                    const colStage = headers.findIndex(h => h.includes('тайз'));
-                    const colReal = headers.findIndex(h => h.includes('эзэмшигч') || h.includes('овог') || h.includes('нэр'));
-                    const colBank = headers.findIndex(h => h.includes('данс'));
-                    const colType = headers.findIndex(h => h.includes('төрөл'));
-                    const colPhone = headers.findIndex(h => h.includes('утас'));
+                    let colClub = -1, colStage = -1, colReal = -1, colBank = -1, colType = -1, colPhone = -1;
+
+                    headers.forEach((h, idx) => {
+                        if (h.includes('салбар') || h.includes('club')) {
+                            colClub = idx;
+                        } else if (h.includes('тайз')) {
+                            colStage = idx;
+                        } else if (h.includes('эзэмшигч') || h.includes('овог') || (h.includes('нэр') && !h.includes('тайз') && !h.includes('данс'))) {
+                            colReal = idx;
+                        } else if ((h.includes('данс') && !h.includes('эзэмшигч')) || h.includes('iban')) {
+                            colBank = idx;
+                        } else if (h.includes('төрөл') || h.includes('type')) {
+                            colType = idx;
+                        } else if (h.includes('утас') || h.includes('phone') || h.includes('тел')) {
+                            colPhone = idx;
+                        }
+                    });
+
+                    // Default to standard template indices if any column wasn't matched by keyword
+                    // Standard template: 0=№, 1=Салбар, 2=Тайзны нэр, 3=Данс эзэмшигчийн нэр, 4=Дансны дугаар, 5=Төрөл, 6=Утасны дугаар
+                    if (colStage === -1 && jsonRows[headerIdx].length > 2) colStage = 2;
+                    if (colReal === -1 && jsonRows[headerIdx].length > 3) colReal = 3;
+                    if (colBank === -1 && jsonRows[headerIdx].length > 4) colBank = 4;
+                    if (colType === -1 && jsonRows[headerIdx].length > 5) colType = 5;
+                    if (colPhone === -1 && jsonRows[headerIdx].length > 6) colPhone = 6;
+                    if (colClub === -1 && jsonRows[headerIdx].length > 1) colClub = 1;
 
                     let updatedCount = 0;
                     let addedCount = 0;
@@ -5918,30 +5938,41 @@
 
                         const stageName = colStage >= 0 ? String(row[colStage] || '').trim() : '';
                         const realName = colReal >= 0 ? String(row[colReal] || '').trim() : '';
-                        const bankAcc = colBank >= 0 ? String(row[colBank] || '').trim().toUpperCase().replace(/\s+/g, '') : '';
+                        const rawBank = colBank >= 0 ? String(row[colBank] || '').trim() : '';
+                        const bankAcc = rawBank.toUpperCase().replace(/\s+/g, '');
                         const phone = colPhone >= 0 ? String(row[colPhone] || '').trim().replace(/[^0-9]/g, '') : '';
                         const dancerType = colType >= 0 ? String(row[colType] || '').trim() : 'Үндсэн';
                         const clubStr = colClub >= 0 ? String(row[colClub] || '').trim().toUpperCase() : '';
 
-                        if (!stageName && !bankAcc) continue;
+                        if (!stageName) continue;
 
-                        // Match existing dancer by bank_account or (stage_name + real_name)
+                        // Match existing dancer by Stage Name OR by Bank Account
                         let matched = store.dancers.find(d => {
-                            const dBank = (d.bank_account || '').replace(/\s+/g, '').toUpperCase();
-                            if (bankAcc && dBank && bankAcc === dBank) return true;
-                            if (stageName && d.stage_name && d.stage_name.toLowerCase() === stageName.toLowerCase() &&
-                                realName && d.real_name && d.real_name.toLowerCase() === realName.toLowerCase()) return true;
+                            if (d.stage_name && stageName && d.stage_name.trim().toLowerCase() === stageName.toLowerCase()) {
+                                return true;
+                            }
+                            const cleanBank = bankAcc.replace(/[^A-Z0-9]/g, '');
+                            const dBank = (d.bank_account || '').replace(/[^A-Z0-9]/g, '').toUpperCase();
+                            if (cleanBank.length >= 10 && dBank.length >= 10 && (cleanBank === dBank || dBank.includes(cleanBank) || cleanBank.includes(dBank))) {
+                                return true;
+                            }
                             return false;
                         });
 
                         if (matched) {
                             if (phone) matched.phone = phone;
-                            if (realName && !matched.real_name) matched.real_name = realName;
-                            if (bankAcc && !matched.bank_account) matched.bank_account = bankAcc;
-                            if (dancerType && ['Үндсэн', 'Халтуур'].includes(dancerType)) matched.dancer_type = dancerType;
+                            if (realName && (!matched.real_name || /^[a-zA-Z\s]+$/.test(matched.real_name))) matched.real_name = realName;
+                            // Only update bank_account if the new one looks like a valid account/IBAN (not Cyrillic text)
+                            if (bankAcc && bankAcc.length >= 10 && !/[а-яА-ЯөӨүҮёЁ]/.test(bankAcc)) {
+                                matched.bank_account = bankAcc;
+                            }
+                            if (dancerType && ['Үндсэн', 'Халтуур'].includes(dancerType)) {
+                                matched.dancer_type = dancerType;
+                            }
                             cloudUpsert('dancers', matched);
                             updatedCount++;
-                        } else if (stageName && bankAcc) {
+                        } else {
+                            // Completely new dancer
                             let cid = 1;
                             if (clubStr.includes('ALOHA')) cid = 2;
                             else if (clubStr.includes('MAN')) cid = 3;
@@ -5967,7 +5998,7 @@
                     renderDancersTable();
                     updateBarDancerSelect();
                     playFeedback('success');
-                    showToast(`Амжилттай: ${updatedCount} бүжигчний мэдээлэл шинэчлэгдэж, ${addedCount} шинэ бүжигчин нэмэгдлээ!`, false, 'Импорт амжилттай');
+                    showToast(`Амжилттай: ${updatedCount} бүжигчний утас/мэдээлэл шинэчлэгдэж, ${addedCount} шинэ бүжигчин нэмэгдлээ!`, false, 'Импорт амжилттай');
                 } catch (err) {
                     console.error('Excel parse error:', err);
                     showToast('Excel файлыг боловсруулахад алдаа гарлаа: ' + err.message, true, 'Алдаа');
