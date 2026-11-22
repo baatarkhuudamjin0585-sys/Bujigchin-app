@@ -5246,14 +5246,17 @@
             if (clubId !== 'all') records = records.filter(r => String(r.club_id) === String(clubId));
             if (startDate && endDate) records = records.filter(r => r.date >= startDate && r.date <= endDate);
 
+            // Group by club_id AND dancer_id so each club's expenses and dancer earnings are separated!
             const dancerMap = {};
             records.forEach(r => {
-                if (!dancerMap[r.dancer_id]) {
-                    dancerMap[r.dancer_id] = {
+                const key = `${r.club_id}_${r.dancer_id}`;
+                if (!dancerMap[key]) {
+                    dancerMap[key] = {
+                        club_id: r.club_id,
+                        club_name: r.club_name,
                         stage_name: r.stage_name,
                         real_name: r.real_name,
                         bank_account: r.bank_account,
-                        club_name: r.club_name,
                         shifts_count: 0,
                         total_tip_qty: 0,
                         total_wine_reg_qty: 0,
@@ -5265,7 +5268,7 @@
                         grand_total: 0
                     };
                 }
-                const d = dancerMap[r.dancer_id];
+                const d = dancerMap[key];
                 d.shifts_count += 1;
                 d.total_tip_qty += r.tip_qty || 0;
                 d.total_wine_reg_qty += r.wine_reg_qty || 0;
@@ -5277,7 +5280,10 @@
                 d.grand_total += r.total_amount || 0;
             });
 
-            const rows = Object.values(dancerMap).sort((a, b) => b.grand_total - a.grand_total);
+            const rows = Object.values(dancerMap).sort((a, b) => {
+                if (clubId === 'all' && a.club_id !== b.club_id) return a.club_id - b.club_id;
+                return b.grand_total - a.grand_total;
+            });
 
             const sumTotal = rows.reduce((s, r) => s + r.grand_total, 0);
             const sumTips = rows.reduce((s, r) => s + r.total_tip_qty, 0);
@@ -5300,11 +5306,19 @@
             listEl.innerHTML = '';
             rows.forEach(r => {
                 const div = document.createElement('div');
-                div.className = 'px-3 py-2.5 flex items-center justify-between hover:bg-dark-850/40';
+                div.className = 'px-3 py-2.5 flex items-center justify-between hover:bg-dark-850/40 border-b border-dark-800/40';
+
+                let clubBadge = '';
+                if (r.club_id === 1) clubBadge = '<span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30">ARUM</span>';
+                else if (r.club_id === 2) clubBadge = '<span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-blue-500/15 text-blue-300 border border-blue-500/30">ALOHA</span>';
+                else if (r.club_id === 3) clubBadge = '<span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-purple-500/15 text-purple-300 border border-purple-500/30">MAN</span>';
+                else clubBadge = `<span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-gray-500/15 text-gray-300 border border-gray-500/30">${r.club_name || ''}</span>`;
+
                 div.innerHTML = `
                     <div class="flex-1 pr-2">
-                        <div class="flex items-center gap-1.5">
+                        <div class="flex items-center gap-1.5 flex-wrap">
                             <span class="font-bold text-gray-100">${r.stage_name}</span>
+                            ${clubBadge}
                             <span class="text-[10px] text-gray-400 font-medium">${r.real_name || ''}</span>
                         </div>
                         <div class="text-[10px] text-amber-400/90 font-mono mt-0.5">${r.bank_account || '-'} • ${r.shifts_count} ээлж</div>
@@ -5327,15 +5341,18 @@
             if (clubId !== 'all') records = records.filter(r => String(r.club_id) === String(clubId));
             if (startDate && endDate) records = records.filter(r => r.date >= startDate && r.date <= endDate);
 
+            // 1. Group by club_id AND dancer_id so each club has its own clear breakdown!
             const dancerMap = {};
             records.forEach(r => {
-                if (!dancerMap[r.dancer_id]) {
-                    dancerMap[r.dancer_id] = {
+                const key = `${r.club_id}_${r.dancer_id}`;
+                if (!dancerMap[key]) {
+                    dancerMap[key] = {
+                        club_id: r.club_id,
+                        club_name: r.club_name,
                         stage_name: r.stage_name,
                         real_name: r.real_name,
                         bank_account: r.bank_account,
                         dancer_type: r.dancer_type,
-                        club_name: r.club_name,
                         shifts_count: 0,
                         total_tip_qty: 0,
                         total_wine_reg_qty: 0,
@@ -5347,7 +5364,7 @@
                         grand_total: 0
                     };
                 }
-                const d = dancerMap[r.dancer_id];
+                const d = dancerMap[key];
                 d.shifts_count += 1;
                 d.total_tip_qty += r.tip_qty || 0;
                 d.total_wine_reg_qty += r.wine_reg_qty || 0;
@@ -5359,10 +5376,14 @@
                 d.grand_total += r.total_amount || 0;
             });
 
-            const rows = Object.values(dancerMap).sort((a, b) => b.grand_total - a.grand_total);
+            const rows = Object.values(dancerMap).sort((a, b) => {
+                if (a.club_id !== b.club_id) return a.club_id - b.club_id;
+                return b.grand_total - a.grand_total;
+            });
 
+            // Sheet 1: Per-Club Breakdown (Салбар тус бүрээрх бонус зардал)
             const data = [
-                ["БҮЖИГЧДИЙН ОРЛОГО, БОНУСЫН НЭГДСЭН ТАЙЛАН"],
+                ["БҮЖИГЧДИЙН ОРЛОГО, БОНУСЫН ТАЙЛАН (САЛБАР ТУС БҮРЭЭР)"],
                 ["Хугацаа: " + (startDate ? `${startDate} - ${endDate}` : "Бүх хугацаа")],
                 [],
                 ["№", "Салбар", "Бүжигчний нэр", "Овог нэр", "Дансны дугаар", "Төрөл", "Ээлж", "TIP", "Энгийн Wine", "Үнэтэй Wine", "Энгийн суулт", "Уулттай суулт", "Extra бонус", "Торгууль", "НИЙТ ОЛГОХ БОНУС"]
@@ -5388,9 +5409,53 @@
                 ]);
             });
 
-            const ws = XLSX.utils.aoa_to_sheet(data);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Бонус Тайлан");
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            XLSX.utils.book_append_sheet(wb, ws, "Салбар бүрээр (Бонус)");
+
+            // Sheet 2: Consolidated by Dancer (Банкны шилжүүлэг хийх нэгдсэн жагсаалт)
+            const consolidatedMap = {};
+            records.forEach(r => {
+                if (!consolidatedMap[r.dancer_id]) {
+                    consolidatedMap[r.dancer_id] = {
+                        stage_name: r.stage_name,
+                        real_name: r.real_name,
+                        bank_account: r.bank_account,
+                        dancer_type: r.dancer_type,
+                        shifts_count: 0,
+                        grand_total: 0,
+                        clubsMap: {}
+                    };
+                }
+                const cd = consolidatedMap[r.dancer_id];
+                cd.shifts_count += 1;
+                cd.grand_total += r.total_amount || 0;
+                const cName = r.club_name || 'Салбар';
+                cd.clubsMap[cName] = (cd.clubsMap[cName] || 0) + (r.total_amount || 0);
+            });
+
+            const consolidatedRows = Object.values(consolidatedMap).sort((a, b) => b.grand_total - a.grand_total);
+            const consolidatedData = [
+                ["БҮЖИГЧДИЙН НЭГДСЭН БОНУС (БАНКНЫ ШИЛЖҮҮЛЭГ)"],
+                ["Хугацаа: " + (startDate ? `${startDate} - ${endDate}` : "Бүх хугацаа")],
+                [],
+                ["№", "Бүжигчний нэр", "Овог нэр", "Дансны дугаар (IBAN)", "Төрөл", "Нийт ээлж", "Салбар тус бүрийн задаргаа", "НИЙТ ШИЛЖҮҮЛЭХ ДҮН"]
+            ];
+            consolidatedRows.forEach((r, idx) => {
+                const breakdown = Object.entries(r.clubsMap).map(([cName, amt]) => `${cName}: ${Number(amt).toLocaleString('mn-MN')}₮`).join(', ');
+                consolidatedData.push([
+                    idx + 1,
+                    r.stage_name,
+                    r.real_name || '-',
+                    r.bank_account || '-',
+                    r.dancer_type || 'Үндсэн',
+                    r.shifts_count,
+                    breakdown,
+                    r.grand_total
+                ]);
+            });
+            const wsConsolidated = XLSX.utils.aoa_to_sheet(consolidatedData);
+            XLSX.utils.book_append_sheet(wb, wsConsolidated, "Банк шилжүүлэг (Нэгдсэн)");
 
             // Sheet 2: Taxi & PR Expenses
             let taxiPrRecords = store.taxi_pr_records || [];
