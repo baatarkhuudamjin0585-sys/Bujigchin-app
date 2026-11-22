@@ -3073,7 +3073,10 @@
             if (!supabaseClient) return;
             try {
                 const { error } = await supabaseClient.from(table).upsert([row]);
-                if (error) console.error(`Error upserting into ${table}:`, error);
+                if (error) {
+                    console.error(`Error upserting into ${table}:`, error);
+                    showToast('Үүлэн санд шинэчлэхэд алдаа гарлаа: ' + error.message, true, 'Серверийн алдаа');
+                }
             } catch (e) {
                 console.error(`Exception upserting into ${table}:`, e);
             }
@@ -4193,7 +4196,8 @@
                     banner.classList.remove('hidden');
                     if (bannerDetails && submission) {
                         const timeStr = submission.submitted_at ? new Date(submission.submitted_at).toLocaleTimeString('mn-MN', { hour: '2-digit', minute: '2-digit' }) : '';
-                        bannerDetails.textContent = `Илгээсэн: ${submission.submitted_by} (${submission.submitted_by_role === 'admin' ? 'Нягтлан' : 'Бармен'}) • ${timeStr} • Нийт: ${formatMNT(submission.grand_total || 0)}`;
+                        const sender = submission.bartender_name || submission.submitted_by || 'Ээлжийн ажилтан';
+                        bannerDetails.textContent = `Илгээсэн: ${sender} • ${timeStr} • Нийт: ${formatMNT(submission.grand_total || 0)}`;
                     }
                     if (adminUnlockWrap) {
                         if (currentUser && currentUser.role === 'admin') {
@@ -4324,16 +4328,15 @@
             const grandTotal = dancerTotal + taxiTotal + prTotal + staffTipTotal;
 
             const submission = {
-                id: Date.now(),
+                id: `shift_${currentClubId}_${date}`,
                 club_id: parseInt(currentClubId),
                 club_name: club ? club.name : 'ARUM CLUB',
                 date: date,
-                submitted_by: currentUser ? currentUser.name : 'Ээлжийн ажилтан',
-                submitted_by_role: currentUser ? currentUser.role : 'bartender',
+                bartender_name: currentUser ? currentUser.name : 'Ээлжийн ажилтан',
                 submitted_at: new Date().toISOString(),
                 dancer_count: dancerRecords.length,
                 dancer_total: dancerTotal,
-                taxi_qty: taxiQty,
+                taxi_count: taxiQty,
                 taxi_total: taxiTotal,
                 pr_count: prRecs.length,
                 pr_total: prTotal,
@@ -4344,6 +4347,7 @@
             };
 
             if (!store.submitted_shifts) store.submitted_shifts = [];
+            store.submitted_shifts = store.submitted_shifts.filter(s => !(String(s.club_id) === String(currentClubId) && s.date === date));
             store.submitted_shifts.push(submission);
             saveStoredData(store);
             cloudUpsert('submitted_shifts', submission);
@@ -4370,7 +4374,8 @@
 
             store.submitted_shifts = (store.submitted_shifts || []).filter(s => !(String(s.club_id) === String(currentClubId) && s.date === date));
             saveStoredData(store);
-            cloudDelete('submitted_shifts', 'id', `${currentClubId}_${date}`);
+            cloudDelete('submitted_shifts', 'id', `shift_${currentClubId}_${date}`);
+            if (supabaseClient) supabaseClient.from('submitted_shifts').delete().eq('club_id', currentClubId).eq('date', date).catch(console.error);
 
             playFeedback("success");
             showToast(`[${clubName} • ${date}] тайлангийн түгжээг амжилттай тайллаа!`, false, 'Түгжээ тайлагдлаа');
