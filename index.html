@@ -3327,12 +3327,33 @@
             lucide.createIcons();
         }
 
-        function handleLoginSubmit(e) {
+        async function handleLoginSubmit(e) {
             if (e) e.preventDefault();
             const username = document.getElementById('login-username').value.trim();
             const password = document.getElementById('login-password').value.trim();
 
-            const user = store.users.find(u => u.username.toLowerCase() === username.toLowerCase() && u.password === password);
+            let user = (store.users || []).find(u => u.username.toLowerCase() === username.toLowerCase() && u.password === password);
+
+            // Cloud fallback check
+            if (!user && supabaseClient) {
+                try {
+                    const { data: dbUser } = await supabaseClient
+                        .from('users')
+                        .select('*')
+                        .ilike('username', username)
+                        .eq('password', password)
+                        .maybeSingle();
+                    if (dbUser) {
+                        user = dbUser;
+                        if (!store.users) store.users = [];
+                        const exists = store.users.some(x => x.id === dbUser.id);
+                        if (!exists) store.users.push(dbUser);
+                        saveStoredData(store);
+                    }
+                } catch (err) {
+                    console.error('Login db check error:', err);
+                }
+            }
 
             if (!user) {
                 document.getElementById('login-error-msg').textContent = 'Нэвтрэх нэр эсвэл нууц үг буруу байна!';
