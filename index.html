@@ -880,11 +880,22 @@
 
                 <!-- SECTION B: DANCERS CRUD -->
                 <div id="admin-sec-dancers" class="hidden space-y-3">
-                    <div class="flex items-center gap-2">
-                        <input type="text" id="dancer-search-input" oninput="filterDancersTable()" placeholder="Нэрээр хайх..."
-                            class="flex-1 bg-dark-900 border border-dark-800 rounded-lg px-3 py-2 text-xs text-gray-200">
-                        <button onclick="openDancerModal('add')"
-                            class="px-3 py-2 rounded-lg bg-amber-600 text-gray-950 font-bold text-xs flex items-center gap-1 shrink-0">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <input type="text" id="dancer-search-input" oninput="filterDancersTable()" placeholder="Нэр, данс, утсаар хайх..."
+                            class="flex-1 min-w-[140px] bg-dark-900 border border-dark-800 rounded-lg px-3 py-2 text-xs text-gray-200">
+                        <button type="button" onclick="downloadDancersTemplateExcel()"
+                            class="px-2.5 py-2 rounded-lg bg-dark-800 hover:bg-dark-750 text-emerald-400 border border-emerald-500/30 font-bold text-xs flex items-center gap-1.5 shrink-0 active:scale-95 transition-all shadow-sm" title="Одоогийн бүжигчдийн жагсаалттай Excel загвар татах">
+                            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                            <span>Загвар татах</span>
+                        </button>
+                        <button type="button" onclick="document.getElementById('dancer-excel-file-input').click()"
+                            class="px-2.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-gray-950 font-bold text-xs flex items-center gap-1.5 shrink-0 active:scale-95 transition-all shadow-sm" title="Утасны дугаартай Excel файлаа оруулж шинэчлэх">
+                            <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                            <span>Excel-ээр оруулах</span>
+                        </button>
+                        <input type="file" id="dancer-excel-file-input" accept=".xlsx, .xls" class="hidden" onchange="handleDancerExcelUpload(event)">
+                        <button type="button" onclick="openDancerModal('add')"
+                            class="px-3 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-gray-950 font-bold text-xs flex items-center gap-1 shrink-0 active:scale-95 transition-all">
                             <i data-lucide="plus" class="w-3.5 h-3.5"></i>
                             <span>Нэмэх</span>
                         </button>
@@ -1152,6 +1163,12 @@
                     <input type="text" id="modal-dancer-bankacc" required placeholder="Жишээ: MN020005005250242017"
                         class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200 font-mono uppercase">
                     <p class="text-[10px] text-gray-500 mt-0.5">Заавал 15-аас дээш оронтой IBAN дугаар байна</p>
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-0.5">Утасны дугаар (Заавал биш)</label>
+                    <input type="tel" id="modal-dancer-phone" placeholder="Жишээ: 99112233"
+                        class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200 font-mono">
+                    <p class="text-[10px] text-gray-500 mt-0.5">8 оронтой гар утасны дугаар оруулна уу</p>
                 </div>
                 <div id="modal-dancer-error" class="hidden text-[11px] text-red-400 font-medium p-2 rounded bg-red-950/40 border border-red-900/50"></div>
                 <div class="pt-2 flex justify-end gap-2 border-t border-dark-800">
@@ -3661,7 +3678,8 @@
                     const sName = (d.stage_name || '').toLowerCase();
                     const rName = (d.real_name || '').toLowerCase();
                     const bank = (d.bank_account || '').toLowerCase();
-                    return sName.includes(kw) || rName.includes(kw) || bank.includes(kw);
+                    const ph = (d.phone || '').toLowerCase();
+                    return sName.includes(kw) || rName.includes(kw) || bank.includes(kw) || ph.includes(kw);
                 });
             }
 
@@ -3740,6 +3758,7 @@
                                 <span>${d.real_name || 'Нэр бичигдээгүй'}</span>
                                 <span class="text-gray-600">•</span>
                                 <span class="text-amber-400/90">${d.bank_account || '-'}</span>
+                                ${d.phone ? `<span class="text-gray-600">•</span><span class="text-emerald-400 font-bold">📞 ${d.phone}</span>` : ''}
                             </div>
                         </div>
                         <div class="shrink-0">
@@ -5531,7 +5550,8 @@
                 return !search || 
                     (d.stage_name || '').toLowerCase().includes(search) ||
                     (d.real_name || '').toLowerCase().includes(search) ||
-                    (d.bank_account || '').includes(search);
+                    (d.bank_account || '').includes(search) ||
+                    (d.phone || '').includes(search);
             });
 
             listEl.innerHTML = '';
@@ -5546,12 +5566,17 @@
 
                 div.innerHTML = `
                     <div>
-                        <div class="flex items-center gap-1.5">
+                        <div class="flex items-center gap-1.5 flex-wrap">
                             <span class="font-bold text-gray-100">${d.stage_name}</span>
                             <span class="text-[10px] px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-400 font-mono border border-amber-500/20">${clubBadges}</span>
                             <span class="text-[9px] px-1.5 py-0.2 rounded font-mono ${d.dancer_type === 'Халтуур' ? 'bg-purple-500/15 text-purple-300 border border-purple-500/30' : 'bg-blue-500/15 text-blue-300 border border-blue-500/30'}">${d.dancer_type || 'Үндсэн'}</span>
                         </div>
-                        <div class="text-[10px] text-amber-400/90 font-mono mt-0.5">${d.bank_account || '-'} • ${d.real_name || ''}</div>
+                        <div class="text-[10px] text-amber-400/90 font-mono mt-0.5 flex items-center gap-1.5 flex-wrap">
+                            <span>${d.bank_account || '-'}</span>
+                            <span class="text-gray-500">•</span>
+                            <span class="text-gray-300">${d.real_name || ''}</span>
+                            ${d.phone ? `<span class="text-gray-500">•</span><span class="text-emerald-400 font-bold">📞 ${d.phone}</span>` : ''}
+                        </div>
                     </div>
                     <div class="flex items-center gap-1">
                         <button onclick="openDancerModal('edit', ${d.id})" class="p-1 text-gray-400 hover:text-amber-400" title="Засах">
@@ -5590,6 +5615,8 @@
                 clubSelect.value = targetClubId;
                 const typeSelect = document.getElementById('modal-dancer-type');
                 if (typeSelect) typeSelect.value = ''; // No pre-selected default, user must pick
+                const phoneInput = document.getElementById('modal-dancer-phone');
+                if (phoneInput) phoneInput.value = '';
                 if (isRestrictedUser) {
                     clubSelect.disabled = true;
                     if (clubHint) clubHint.classList.remove('hidden');
@@ -5616,6 +5643,8 @@
                 document.getElementById('modal-dancer-stagename').value = d.stage_name;
                 document.getElementById('modal-dancer-realname').value = d.real_name || '';
                 document.getElementById('modal-dancer-bankacc').value = d.bank_account || '';
+                const phoneInput = document.getElementById('modal-dancer-phone');
+                if (phoneInput) phoneInput.value = d.phone || '';
             }
             modal.classList.remove('hidden');
             lucide.createIcons();
@@ -5633,6 +5662,7 @@
             const stageName = document.getElementById('modal-dancer-stagename').value.trim();
             const realName = document.getElementById('modal-dancer-realname').value.trim();
             const bankAcc = document.getElementById('modal-dancer-bankacc').value.trim().toUpperCase().replace(/\s+/g, '');
+            const phone = (document.getElementById('modal-dancer-phone')?.value || '').trim().replace(/[^0-9]/g, '');
             const errEl = document.getElementById('modal-dancer-error');
 
             function showError(msg) {
@@ -5714,6 +5744,7 @@
                 existing.stage_name = stageName;
                 existing.real_name = realName;
                 existing.bank_account = bankAcc;
+                if (phone) existing.phone = phone;
                 existing.dancer_type = dancerType;
                 existing.is_active = 1;
 
@@ -5744,6 +5775,7 @@
                     d.stage_name = stageName;
                     d.real_name = realName;
                     d.bank_account = bankAcc;
+                    d.phone = phone;
                     d.dancer_type = dancerType;
                     targetId = d.id;
                 }
@@ -5757,6 +5789,7 @@
                     stage_name: stageName,
                     real_name: realName,
                     bank_account: bankAcc,
+                    phone: phone,
                     dancer_type: dancerType,
                     is_active: 1
                 };
@@ -5795,6 +5828,154 @@
             showToast('Бүжигчин устгагдлаа');
             updateBarDancerSelect();
             renderDancersTable();
+        }
+
+        // ================= DANCERS EXCEL TEMPLATE DOWNLOAD & IMPORT =================
+        function downloadDancersTemplateExcel() {
+            const data = [
+                ["БҮЖИГЧДИЙН МЭДЭЭЛЭЛ, УТАСНЫ ДУГААР БҮРТГЭХ ЗАГВАР"],
+                ["Санамж: 'Утасны дугаар' баганад дугаарыг нь бичээд энэ файлаа шууд апп руу 'Excel-ээр оруулах' товчоор оруулна уу."],
+                [],
+                ["№", "Салбар", "Тайзны нэр", "Данс эзэмшигчийн нэр", "Дансны дугаар (IBAN)", "Төрөл", "Утасны дугаар"]
+            ];
+
+            const sorted = [...store.dancers].filter(d => d.is_active !== 0).sort((a, b) => {
+                if (a.club_id !== b.club_id) return (a.club_id || 0) - (b.club_id || 0);
+                return (a.stage_name || '').localeCompare(b.stage_name || '', 'mn');
+            });
+
+            sorted.forEach((d, idx) => {
+                const clubNames = (d.clubs && d.clubs.length > 0) ?
+                    d.clubs.map(cid => store.clubs.find(c => c.id === cid)?.name.replace(' CLUB', '')).filter(Boolean).join(', ') :
+                    (store.clubs.find(c => c.id === d.club_id)?.name.replace(' CLUB', '') || 'ARUM');
+
+                data.push([
+                    idx + 1,
+                    clubNames,
+                    d.stage_name,
+                    d.real_name || '',
+                    d.bank_account || '',
+                    d.dancer_type || 'Үндсэн',
+                    d.phone || ''
+                ]);
+            });
+
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            XLSX.utils.book_append_sheet(wb, ws, "Бүжигчид");
+            XLSX.writeFile(wb, `Bujigchid_Zagvar_Template.xlsx`);
+            playFeedback('success');
+            showToast('Бүжигчдийн загвар Excel амжилттай татагдлаа!');
+        }
+
+        function handleDancerExcelUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const sheetName = workbook.SheetNames[0];
+                    const sheet = workbook.Sheets[sheetName];
+                    const jsonRows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+                    if (!jsonRows || jsonRows.length < 4) {
+                        showToast('Excel файл хоосон эсвэл загвар тохирохгүй байна!', true, 'Алдаа');
+                        return;
+                    }
+
+                    // Find header row (the row containing 'данс' or 'тайз')
+                    let headerIdx = -1;
+                    for (let i = 0; i < Math.min(10, jsonRows.length); i++) {
+                        const rowStr = (jsonRows[i] || []).join(' ').toLowerCase();
+                        if (rowStr.includes('данс') || rowStr.includes('тайз')) {
+                            headerIdx = i;
+                            break;
+                        }
+                    }
+
+                    if (headerIdx === -1) {
+                        showToast('Excel файлын баганууд олдсонгүй! Загвар файлыг ашиглана уу.', true, 'Загвар буруу');
+                        return;
+                    }
+
+                    const headers = jsonRows[headerIdx].map(h => String(h || '').trim().toLowerCase());
+                    const colClub = headers.findIndex(h => h.includes('салбар'));
+                    const colStage = headers.findIndex(h => h.includes('тайз'));
+                    const colReal = headers.findIndex(h => h.includes('эзэмшигч') || h.includes('овог') || h.includes('нэр'));
+                    const colBank = headers.findIndex(h => h.includes('данс'));
+                    const colType = headers.findIndex(h => h.includes('төрөл'));
+                    const colPhone = headers.findIndex(h => h.includes('утас'));
+
+                    let updatedCount = 0;
+                    let addedCount = 0;
+
+                    for (let r = headerIdx + 1; r < jsonRows.length; r++) {
+                        const row = jsonRows[r];
+                        if (!row || row.length === 0) continue;
+
+                        const stageName = colStage >= 0 ? String(row[colStage] || '').trim() : '';
+                        const realName = colReal >= 0 ? String(row[colReal] || '').trim() : '';
+                        const bankAcc = colBank >= 0 ? String(row[colBank] || '').trim().toUpperCase().replace(/\s+/g, '') : '';
+                        const phone = colPhone >= 0 ? String(row[colPhone] || '').trim().replace(/[^0-9]/g, '') : '';
+                        const dancerType = colType >= 0 ? String(row[colType] || '').trim() : 'Үндсэн';
+                        const clubStr = colClub >= 0 ? String(row[colClub] || '').trim().toUpperCase() : '';
+
+                        if (!stageName && !bankAcc) continue;
+
+                        // Match existing dancer by bank_account or (stage_name + real_name)
+                        let matched = store.dancers.find(d => {
+                            const dBank = (d.bank_account || '').replace(/\s+/g, '').toUpperCase();
+                            if (bankAcc && dBank && bankAcc === dBank) return true;
+                            if (stageName && d.stage_name && d.stage_name.toLowerCase() === stageName.toLowerCase() &&
+                                realName && d.real_name && d.real_name.toLowerCase() === realName.toLowerCase()) return true;
+                            return false;
+                        });
+
+                        if (matched) {
+                            if (phone) matched.phone = phone;
+                            if (realName && !matched.real_name) matched.real_name = realName;
+                            if (bankAcc && !matched.bank_account) matched.bank_account = bankAcc;
+                            if (dancerType && ['Үндсэн', 'Халтуур'].includes(dancerType)) matched.dancer_type = dancerType;
+                            cloudUpsert('dancers', matched);
+                            updatedCount++;
+                        } else if (stageName && bankAcc) {
+                            let cid = 1;
+                            if (clubStr.includes('ALOHA')) cid = 2;
+                            else if (clubStr.includes('MAN')) cid = 3;
+
+                            const newD = {
+                                id: Date.now() + Math.floor(Math.random() * 1000),
+                                club_id: cid,
+                                clubs: [cid],
+                                stage_name: stageName,
+                                real_name: realName,
+                                bank_account: bankAcc,
+                                phone: phone,
+                                dancer_type: ['Үндсэн', 'Халтуур'].includes(dancerType) ? dancerType : 'Үндсэн',
+                                is_active: 1
+                            };
+                            store.dancers.push(newD);
+                            cloudUpsert('dancers', newD);
+                            addedCount++;
+                        }
+                    }
+
+                    saveStoredData(store);
+                    renderDancersTable();
+                    updateBarDancerSelect();
+                    playFeedback('success');
+                    showToast(`Амжилттай: ${updatedCount} бүжигчний мэдээлэл шинэчлэгдэж, ${addedCount} шинэ бүжигчин нэмэгдлээ!`, false, 'Импорт амжилттай');
+                } catch (err) {
+                    console.error('Excel parse error:', err);
+                    showToast('Excel файлыг боловсруулахад алдаа гарлаа: ' + err.message, true, 'Алдаа');
+                } finally {
+                    event.target.value = '';
+                }
+            };
+            reader.readAsArrayBuffer(file);
         }
 
         // ================= TARIFFS =================
