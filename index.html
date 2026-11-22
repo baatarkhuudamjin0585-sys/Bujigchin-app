@@ -21,6 +21,8 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- SheetJS for Client-side Excel Export on Vercel -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- Supabase JS Client v2 for Cloud Realtime Database -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -229,7 +231,13 @@
                     </div>
                     <div class="leading-tight">
                         <div id="header-user-name" class="font-bold text-xs text-gray-100 truncate max-w-[130px]">Хэрэглэгч</div>
-                        <div id="header-user-role" class="text-[10px] text-amber-400/90 font-mono">-</div>
+                        <div class="flex items-center gap-1.5 mt-0.5">
+                            <span id="header-user-role" class="text-[10px] text-amber-400/90 font-mono">-</span>
+                            <span id="cloud-status-badge" class="inline-flex items-center gap-1 text-[9px] text-emerald-400 font-mono bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20" title="Supabase Cloud Real-time холбогдсон">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                <span>Live Cloud</span>
+                            </span>
+                        </div>
                     </div>
                 </div>
 
@@ -3036,6 +3044,178 @@
             } catch (e) { console.error(e); }
         }
 
+        // ================= SUPABASE CLOUD & REAL-TIME SYSTEM =================
+        const SUPABASE_URL = 'https://vlrzkzklmpvuozeodhuh.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZscnpremtsbXB2dW96ZW9kaHVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUzNDk4OTcsImV4cCI6MjExMDkyNTg5N30.0ZsoFhCEbPdgB1IrDA60sRazOXGFOqfuj1YxrD-b08w';
+        let supabaseClient = null;
+        try {
+            if (window.supabase && typeof window.supabase.createClient === 'function') {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            }
+        } catch (e) {
+            console.error('Failed to init Supabase client:', e);
+        }
+
+        async function cloudInsert(table, row) {
+            if (!supabaseClient) return;
+            try {
+                const { error } = await supabaseClient.from(table).insert([row]);
+                if (error) console.error(`Error inserting into ${table}:`, error);
+            } catch (e) {
+                console.error(`Exception inserting into ${table}:`, e);
+            }
+        }
+
+        async function cloudUpsert(table, row) {
+            if (!supabaseClient) return;
+            try {
+                const { error } = await supabaseClient.from(table).upsert([row]);
+                if (error) console.error(`Error upserting into ${table}:`, error);
+            } catch (e) {
+                console.error(`Exception upserting into ${table}:`, e);
+            }
+        }
+
+        async function cloudDelete(table, idCol, idVal) {
+            if (!supabaseClient) return;
+            try {
+                const { error } = await supabaseClient.from(table).delete().eq(idCol, idVal);
+                if (error) console.error(`Error deleting from ${table}:`, error);
+            } catch (e) {
+                console.error(`Exception deleting from ${table}:`, e);
+            }
+        }
+
+        function updateCloudBadge(isOnline) {
+            const badge = document.getElementById('cloud-status-badge');
+            if (!badge) return;
+            if (isOnline) {
+                badge.className = 'inline-flex items-center gap-1 text-[9px] text-emerald-400 font-mono bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20';
+                badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span><span>Live Cloud</span>';
+                badge.title = 'Supabase Cloud-той Real-time шууд холбогдсон';
+            } else {
+                badge.className = 'inline-flex items-center gap-1 text-[9px] text-amber-400 font-mono bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20';
+                badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span><span>Offline</span>';
+                badge.title = 'Сүлжээгүй (Local горимд ажиллаж байна)';
+            }
+        }
+
+        async function syncFromSupabase() {
+            if (!supabaseClient) return;
+            try {
+                const [
+                    { data: recs },
+                    { data: taxiprs },
+                    { data: tips },
+                    { data: shifts },
+                    { data: dancersList },
+                    { data: tariffsList },
+                    { data: usersList }
+                ] = await Promise.all([
+                    supabaseClient.from('records').select('*').order('id', { ascending: false }),
+                    supabaseClient.from('taxi_pr_records').select('*').order('id', { ascending: false }),
+                    supabaseClient.from('staff_tips').select('*').order('id', { ascending: false }),
+                    supabaseClient.from('submitted_shifts').select('*'),
+                    supabaseClient.from('dancers').select('*').order('stage_name', { ascending: true }),
+                    supabaseClient.from('tariffs').select('*'),
+                    supabaseClient.from('users').select('*')
+                ]);
+
+                let changed = false;
+                if (recs) { store.records = recs; changed = true; }
+                if (taxiprs) { store.taxi_pr_records = taxiprs; changed = true; }
+                if (tips) { store.staff_tips = tips; changed = true; }
+                if (shifts) { store.submitted_shifts = shifts; changed = true; }
+                if (dancersList && dancersList.length > 0) { store.dancers = dancersList; changed = true; }
+                if (tariffsList && tariffsList.length > 0) { store.tariffs = tariffsList; changed = true; }
+                if (usersList && usersList.length > 0) { store.users = usersList; changed = true; }
+
+                if (changed) {
+                    saveStoredData(store);
+                    refreshAllUI();
+                }
+                updateCloudBadge(true);
+            } catch (err) {
+                console.error('Supabase fetch error:', err);
+                updateCloudBadge(false);
+            }
+        }
+
+        function initSupabaseRealtime() {
+            if (!supabaseClient) return;
+            try {
+                supabaseClient.channel('public-db-realtime')
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'records' }, (payload) => {
+                        handleRealtimePayload('records', payload);
+                    })
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'taxi_pr_records' }, (payload) => {
+                        handleRealtimePayload('taxi_pr_records', payload);
+                    })
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'staff_tips' }, (payload) => {
+                        handleRealtimePayload('staff_tips', payload);
+                    })
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'submitted_shifts' }, (payload) => {
+                        handleRealtimePayload('submitted_shifts', payload);
+                    })
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'dancers' }, (payload) => {
+                        handleRealtimePayload('dancers', payload);
+                    })
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'tariffs' }, (payload) => {
+                        handleRealtimePayload('tariffs', payload);
+                    })
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, (payload) => {
+                        handleRealtimePayload('users', payload);
+                    })
+                    .subscribe((status) => {
+                        if (status === 'SUBSCRIBED') {
+                            updateCloudBadge(true);
+                        } else if (status === 'CHANNEL_ERROR' || status === 'CLOSED') {
+                            updateCloudBadge(false);
+                        }
+                    });
+            } catch (err) {
+                console.error('Realtime subscription error:', err);
+            }
+        }
+
+        function handleRealtimePayload(table, payload) {
+            if (!store[table]) store[table] = [];
+
+            if (payload.eventType === 'INSERT') {
+                const exists = store[table].some(x => String(x.id) === String(payload.new.id));
+                if (!exists) {
+                    store[table].unshift(payload.new);
+                }
+            } else if (payload.eventType === 'UPDATE') {
+                const idx = store[table].findIndex(x => String(x.id) === String(payload.new.id));
+                if (idx !== -1) {
+                    store[table][idx] = payload.new;
+                } else {
+                    store[table].unshift(payload.new);
+                }
+            } else if (payload.eventType === 'DELETE') {
+                const oldId = payload.old ? payload.old.id : null;
+                if (oldId) {
+                    store[table] = store[table].filter(x => String(x.id) !== String(oldId));
+                }
+            }
+
+            saveStoredData(store);
+            refreshAllUI();
+        }
+
+        function refreshAllUI() {
+            if (typeof loadDailyRecords === 'function') loadDailyRecords();
+            if (typeof updateBarDancerSelect === 'function') updateBarDancerSelect();
+            if (typeof activeAdminSubtab !== 'undefined') {
+                if (activeAdminSubtab === 'report' && typeof loadAdminReport === 'function') loadAdminReport();
+                if (activeAdminSubtab === 'dancers' && typeof renderDancersTable === 'function') renderDancersTable();
+                if (activeAdminSubtab === 'taxipr' && typeof renderTaxiPrSection === 'function') renderTaxiPrSection();
+                if (activeAdminSubtab === 'tariffs' && typeof renderTariffs === 'function') renderTariffs();
+                if (activeAdminSubtab === 'users' && typeof renderUsersTable === 'function') renderUsersTable();
+            }
+        }
+
         let store = getStoredData();
         let currentUser = null;
         let currentClubId = store.clubs[0]?.id || 1;
@@ -3244,6 +3424,8 @@
             if (document.getElementById('taxipr-end-date')) document.getElementById('taxipr-end-date').value = shiftDate;
 
             checkSession();
+            syncFromSupabase();
+            initSupabaseRealtime();
         }
 
         function renderClubChips() {
@@ -3755,6 +3937,7 @@
 
             store.records.unshift(newRecord);
             saveStoredData(store);
+            cloudInsert('records', newRecord);
 
             playFeedback('success');
             showToast('Бүртгэл амжилттай хадгалагдлаа!');
@@ -3948,6 +4131,7 @@
             if (!confirm(`Энэ бичилтийг устгах уу? (${rec.stage_name} - ${formatMNT(rec.total_amount)})`)) return;
             store.records = store.records.filter(r => r.id !== id);
             saveStoredData(store);
+            cloudDelete('records', 'id', id);
             showToast('Бүртгэл устгагдлаа');
             loadDailyRecords();
         }
@@ -4130,6 +4314,7 @@
             if (!store.submitted_shifts) store.submitted_shifts = [];
             store.submitted_shifts.push(submission);
             saveStoredData(store);
+            cloudUpsert('submitted_shifts', submission);
 
             closeSubmitShiftModal();
             playFeedback("success");
@@ -4153,6 +4338,7 @@
 
             store.submitted_shifts = (store.submitted_shifts || []).filter(s => !(String(s.club_id) === String(currentClubId) && s.date === date));
             saveStoredData(store);
+            cloudDelete('submitted_shifts', 'id', `${currentClubId}_${date}`);
 
             playFeedback("success");
             showToast(`[${clubName} • ${date}] тайлангийн түгжээг амжилттай тайллаа!`, false, 'Түгжээ тайлагдлаа');
@@ -4323,6 +4509,7 @@
             if (!store.taxi_pr_records) store.taxi_pr_records = [];
             store.taxi_pr_records.unshift(newRec);
             saveStoredData(store);
+            cloudInsert('taxi_pr_records', newRec);
 
             showToast(`🚕 Такси (${driverName} • ${qty} такси • ${formatMNT(newRec.amount)}) амжилттай бүртгэгдлээ!`, false, 'Амжилттай бүртгэгдлээ');
             document.getElementById('bar_taxi_driver_name').value = '';
@@ -4400,6 +4587,7 @@
             if (!store.taxi_pr_records) store.taxi_pr_records = [];
             store.taxi_pr_records.unshift(newRec);
             saveStoredData(store);
+            cloudInsert('taxi_pr_records', newRec);
 
             showToast(`🧾 PR Билл #${billNo} (${managerName} • ${formatMNT(amount)}) амжилттай бүртгэгдлээ!`, false, 'Амжилттай бүртгэгдлээ');
             document.getElementById('bar_pr_manager_name').value = '';
@@ -4431,6 +4619,7 @@
 
             store.taxi_pr_records = store.taxi_pr_records.filter(r => r.id !== id);
             saveStoredData(store);
+            cloudDelete('taxi_pr_records', 'id', id);
             showToast('Бүртгэл устгагдлаа', false, 'Амжилттай');
             loadDailyRecords();
             renderTaxiPrSection();
@@ -4572,6 +4761,7 @@
             if (!store.staff_tips) store.staff_tips = [];
             store.staff_tips.unshift(newTip);
             saveStoredData(store);
+            cloudInsert('staff_tips', newTip);
 
             playFeedback('success');
             showToast(`Ажилтны Tip (${name} • ${role} • ${formatMNT(amount)}) амжилттай бүртгэгдлээ!`, false, 'Амжилттай бүртгэгдлээ');
@@ -4609,6 +4799,7 @@
 
             store.staff_tips = store.staff_tips.filter(r => r.id !== id);
             saveStoredData(store);
+            cloudDelete('staff_tips', 'id', id);
             showToast('Ажилтны Tip бүртгэл устгагдлаа', false, 'Амжилттай');
             loadDailyRecords();
             if (typeof renderTaxiPrSection === 'function') renderTaxiPrSection();
@@ -4895,6 +5086,7 @@
             if (!store.taxi_pr_records) store.taxi_pr_records = [];
             store.taxi_pr_records.unshift(newRec);
             saveStoredData(store);
+            cloudInsert('taxi_pr_records', newRec);
 
             playFeedback("success");
             showToast('Такси/PR бүртгэл амжилттай нэмэгдлээ!');
@@ -5442,6 +5634,8 @@
 
             playFeedback("success");
             saveStoredData(store);
+            const savedDancer = store.dancers.find(x => x.id === targetId);
+            if (savedDancer) cloudUpsert('dancers', savedDancer);
             closeDancerModal();
             updateBarDancerSelect();
 
@@ -5465,6 +5659,7 @@
             if (!confirm('Энэ бүжигчнийг устгах уу?')) return;
             store.dancers = store.dancers.filter(d => d.id !== id);
             saveStoredData(store);
+            cloudDelete('dancers', 'id', id);
             showToast('Бүжигчин устгагдлаа');
             updateBarDancerSelect();
             renderDancersTable();
@@ -5544,6 +5739,9 @@
             });
 
             saveStoredData(store);
+            if (supabaseClient && Array.isArray(store.tariffs)) {
+                supabaseClient.from('tariffs').upsert(store.tariffs).catch(console.error);
+            }
             showToast('Ханш амжилттай хадгалагдлаа!');
             const dtype = selectedDancer ? (selectedDancer.dancer_type || 'Үндсэн') : 'Үндсэн';
             updateRateLabels(dtype);
@@ -5602,6 +5800,7 @@
             if (!u) return;
             u.is_blocked = u.is_blocked ? 0 : 1;
             saveStoredData(store);
+            cloudUpsert('users', u);
             showToast(`${u.name} ${u.is_blocked ? 'блок хийгдлээ' : 'идэвхжлээ'}`);
             renderUsersTable();
         }
@@ -5674,9 +5873,19 @@
             }
 
             saveStoredData(store);
+            const savedUser = store.users.find(x => String(x.id) === String(id || newUser?.id));
+            if (savedUser) cloudUpsert('users', savedUser);
             closeUserModal();
             renderUsersTable();
         }
+
+        window.addEventListener('online', () => {
+            syncFromSupabase();
+            updateCloudBadge(true);
+        });
+        window.addEventListener('offline', () => {
+            updateCloudBadge(false);
+        });
 
         window.addEventListener('DOMContentLoaded', initApp);
     </script>
