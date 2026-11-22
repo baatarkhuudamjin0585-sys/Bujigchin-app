@@ -3128,13 +3128,13 @@
                 ]);
 
                 let changed = false;
-                if (recs) { store.records = recs; changed = true; }
-                if (taxiprs) { store.taxi_pr_records = taxiprs; changed = true; }
-                if (tips) { store.staff_tips = tips; changed = true; }
-                if (shifts) { store.submitted_shifts = shifts; changed = true; }
-                if (dancersList && dancersList.length > 0) { store.dancers = dancersList; changed = true; }
-                if (tariffsList && tariffsList.length > 0) { store.tariffs = tariffsList; changed = true; }
-                if (usersList && usersList.length > 0) { store.users = usersList; changed = true; }
+                if (recs && JSON.stringify(recs) !== JSON.stringify(store.records)) { store.records = recs; changed = true; }
+                if (taxiprs && JSON.stringify(taxiprs) !== JSON.stringify(store.taxi_pr_records)) { store.taxi_pr_records = taxiprs; changed = true; }
+                if (tips && JSON.stringify(tips) !== JSON.stringify(store.staff_tips)) { store.staff_tips = tips; changed = true; }
+                if (shifts && JSON.stringify(shifts) !== JSON.stringify(store.submitted_shifts)) { store.submitted_shifts = shifts; changed = true; }
+                if (dancersList && dancersList.length > 0 && JSON.stringify(dancersList) !== JSON.stringify(store.dancers)) { store.dancers = dancersList; changed = true; }
+                if (tariffsList && tariffsList.length > 0 && JSON.stringify(tariffsList) !== JSON.stringify(store.tariffs)) { store.tariffs = tariffsList; changed = true; }
+                if (usersList && usersList.length > 0 && JSON.stringify(usersList) !== JSON.stringify(store.users)) { store.users = usersList; changed = true; }
 
                 if (changed) {
                     saveStoredData(store);
@@ -3508,6 +3508,8 @@
 
         function updateBarDancerSelect() {
             const select = document.getElementById('bar-dancer-select');
+            if (!select) return;
+            const curSelectedId = select.value || (selectedDancer ? String(selectedDancer.id) : '');
             select.innerHTML = '<option value="">-- Бүжигчнийг энд дарж сонгоно уу --</option>';
 
             const curClubIdNum = parseInt(currentClubId);
@@ -3515,13 +3517,13 @@
 
             // 1. Dancers currently working at this club
             const localDancers = store.dancers.filter(d => 
-                (d.club_id === curClubIdNum || (d.clubs && d.clubs.includes(curClubIdNum))) && 
+                (parseInt(d.club_id) === curClubIdNum || (d.clubs && d.clubs.includes(curClubIdNum))) && 
                 d.is_active !== 0
             );
 
             // 2. Dancers from other clubs who can shift to this club tonight
             const otherDancers = store.dancers.filter(d => 
-                d.club_id !== curClubIdNum && 
+                parseInt(d.club_id) !== curClubIdNum && 
                 (!d.clubs || !d.clubs.includes(curClubIdNum)) && 
                 d.is_active !== 0
             );
@@ -3531,7 +3533,7 @@
                 grpLocal.label = `📍 ${curClub?.name || 'Манай салбар'} (${localDancers.length})`;
                 localDancers.sort((a, b) => a.stage_name.localeCompare(b.stage_name, 'mn')).forEach(d => {
                     const opt = document.createElement('option');
-                    opt.value = d.id;
+                    opt.value = String(d.id);
                     opt.textContent = `${d.stage_name} • ${d.real_name || ''}`;
                     grpLocal.appendChild(opt);
                 });
@@ -3543,13 +3545,18 @@
                 grpOther.label = `🔄 Бусад салбараас шилжиж ирсэн бүжигчид (${otherDancers.length})`;
                 otherDancers.sort((a, b) => a.stage_name.localeCompare(b.stage_name, 'mn')).forEach(d => {
                     const opt = document.createElement('option');
-                    opt.value = d.id;
-                    const origClub = store.clubs.find(c => c.id === d.club_id);
+                    opt.value = String(d.id);
+                    const origClub = store.clubs.find(c => c.id === parseInt(d.club_id));
                     const clubTag = origClub ? origClub.name.replace(' CLUB', '') : '';
                     opt.textContent = `${d.stage_name} [${clubTag}-аас] • ${d.real_name || ''}`;
                     grpOther.appendChild(opt);
                 });
                 select.appendChild(grpOther);
+            }
+
+            // If a dancer was previously selected, restore their selection so it is never lost!
+            if (curSelectedId) {
+                select.value = String(curSelectedId);
             }
         }
 
@@ -3742,27 +3749,44 @@
         }
 
         function selectDancerFromPicker(dancerId) {
+            const dancer = store.dancers.find(d => String(d.id) === String(dancerId));
+            selectedDancer = dancer || null;
+
             const sel = document.getElementById('bar-dancer-select');
             if (sel) {
+                let opt = sel.querySelector(`option[value="${dancerId}"]`);
+                if (!opt && dancer) {
+                    opt = document.createElement('option');
+                    opt.value = String(dancer.id);
+                    opt.textContent = `${dancer.stage_name} • ${dancer.real_name || ''}`;
+                    sel.appendChild(opt);
+                }
                 sel.value = String(dancerId);
-                onDancerSelected();
             }
+            onDancerSelected();
             playFeedback('click');
             closeDancerSearchModal();
         }
 
         function clearSelectedDancer() {
+            selectedDancer = null;
             const sel = document.getElementById('bar-dancer-select');
             if (sel) {
                 sel.value = '';
-                onDancerSelected();
             }
+            onDancerSelected();
             playFeedback('click');
         }
 
         function onDancerSelected() {
-            const dId = document.getElementById('bar-dancer-select').value;
-            selectedDancer = store.dancers.find(d => String(d.id) === String(dId));
+            const sel = document.getElementById('bar-dancer-select');
+            const dId = sel ? sel.value : '';
+
+            if (dId) {
+                selectedDancer = store.dancers.find(d => String(d.id) === String(dId)) || selectedDancer;
+            } else if (selectedDancer && sel) {
+                sel.value = String(selectedDancer.id);
+            }
 
             const strip = document.getElementById('dancer-info-strip');
             const realNameEl = document.getElementById('auto-real-name');
@@ -3894,14 +3918,15 @@
         }
 
         function submitEntryRecord() {
-            const dancerId = document.getElementById('bar-dancer-select').value;
+            const sel = document.getElementById('bar-dancer-select');
+            const dancerId = (sel && sel.value) ? sel.value : (selectedDancer ? String(selectedDancer.id) : '');
             if (!dancerId) {
                 highlightField('bar-dancer-picker-btn');
                 showToast('Бүжигчнээ заавал сонгоно уу!', true, 'Сонголт дутуу');
                 return;
             }
 
-            const dancer = store.dancers.find(d => String(d.id) === String(dancerId));
+            const dancer = store.dancers.find(d => String(d.id) === String(dancerId)) || selectedDancer;
             const rates = getRatesForClubAndType(currentClubId, dancer?.dancer_type || 'Үндсэн');
 
             const tipQty = parseInt(document.getElementById('tip_qty').value || 0);
