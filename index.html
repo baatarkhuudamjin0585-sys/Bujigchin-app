@@ -5619,6 +5619,7 @@
                 existing.is_active = 1;
 
                 saveStoredData(store);
+                cloudUpsert('dancers', existing);
                 closeDancerModal();
                 updateBarDancerSelect();
 
