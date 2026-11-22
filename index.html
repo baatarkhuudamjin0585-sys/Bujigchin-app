@@ -273,7 +273,7 @@
                             <span id="club-select-label">Салбар сонгох:</span>
                         </span>
                         <div class="flex items-center gap-1">
-                            <span id="bar-date-lock-badge" class="hidden text-[10px] text-amber-400 font-mono bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">🔒 Өнөөдөр</span>
+                            <span id="bar-date-lock-badge" class="hidden text-[10px] text-amber-400 font-mono bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">🔒 Ээлж</span>
                             <input type="date" id="bar-date-input" onchange="onClubOrDateChange()"
                                 class="bg-dark-850 border border-dark-700 rounded px-2 py-0.5 text-[11px] text-gray-200 font-mono focus:outline-none focus:border-amber-500">
                         </div>
@@ -3047,6 +3047,20 @@
             return Number(num).toLocaleString('mn-MN') + ' ₮';
         }
 
+        // ================= BUSINESS SHIFT LOGIC (CUTOFF AT 12:00 NOON) =================
+        // Night clubs operate overnight (e.g. 20:00 to 12:00 next day).
+        // Any time before 12:00 noon belongs to the shift that started the previous evening.
+        function getBusinessDateStr(dateObj) {
+            const d = dateObj ? new Date(dateObj) : new Date();
+            if (d.getHours() < 12) {
+                d.setDate(d.getDate() - 1);
+            }
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
         function highlightField(id) {
             const el = document.getElementById(id);
             if (!el) return;
@@ -3185,7 +3199,7 @@
             const clubSelectLabel = document.getElementById('club-select-label');
             const dateInput = document.getElementById('bar-date-input');
             const dateLockBadge = document.getElementById('bar-date-lock-badge');
-            const todayStr = new Date().toISOString().split('T')[0];
+            const shiftDateStr = getBusinessDateStr();
 
             if (user.role === 'admin') {
                 // Admin has access to both tabs and all branches, and can pick ANY date
@@ -3197,13 +3211,13 @@
                 dateInput.classList.remove('opacity-60', 'cursor-not-allowed');
                 if (dateLockBadge) dateLockBadge.classList.add('hidden');
             } else {
-                // Bartender or Manager: ONLY bartender tab, branch locked, date strictly locked to today
+                // Bartender or Manager: ONLY bartender tab, branch locked, date strictly locked to active shift date
                 adminTabs.classList.add('hidden');
                 currentClubId = parseInt(user.club_id) || 1;
                 clubSelectLabel.textContent = 'Таны харьяа салбар:';
 
-                // Bartender is locked strictly to today's date
-                dateInput.value = todayStr;
+                // Bartender is locked strictly to active business shift date (cutoff 12:00 noon)
+                dateInput.value = shiftDateStr;
                 dateInput.disabled = true;
                 dateInput.classList.add('opacity-60', 'cursor-not-allowed');
                 if (dateLockBadge) dateLockBadge.classList.remove('hidden');
@@ -3222,12 +3236,12 @@
 
         // ================= APP INITIALIZATION =================
         function initApp() {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('bar-date-input').value = today;
-            document.getElementById('report-start-date').value = today;
-            document.getElementById('report-end-date').value = today;
-            if (document.getElementById('taxipr-start-date')) document.getElementById('taxipr-start-date').value = today;
-            if (document.getElementById('taxipr-end-date')) document.getElementById('taxipr-end-date').value = today;
+            const shiftDate = getBusinessDateStr();
+            document.getElementById('bar-date-input').value = shiftDate;
+            document.getElementById('report-start-date').value = shiftDate;
+            document.getElementById('report-end-date').value = shiftDate;
+            if (document.getElementById('taxipr-start-date')) document.getElementById('taxipr-start-date').value = shiftDate;
+            if (document.getElementById('taxipr-end-date')) document.getElementById('taxipr-end-date').value = shiftDate;
 
             checkSession();
         }
@@ -3323,12 +3337,12 @@
         }
 
         function onClubOrDateChange() {
-            const todayStr = new Date().toISOString().split('T')[0];
+            const shiftDateStr = getBusinessDateStr();
             const dateInput = document.getElementById('bar-date-input');
             if (currentUser && currentUser.role === 'bartender') {
-                if (dateInput.value !== todayStr) {
-                    dateInput.value = todayStr;
-                    showToast('Бармен зөвхөн өнөөдрийн огноогоор бүртгэл хийх эрхтэй');
+                if (dateInput.value !== shiftDateStr) {
+                    dateInput.value = shiftDateStr;
+                    showToast('Бармен зөвхөн одоогийн идэвхтэй ээлжийн огноогоор бүртгэл хийх эрхтэй');
                 }
             }
             updateBarDancerSelect();
@@ -3692,7 +3706,7 @@
                           (sitRegQty * rates.sit_reg) + (sitDrinkQty * rates.sit_drink) + extraAmount - penalty;
 
             const club = store.clubs.find(c => String(c.id) === String(currentClubId));
-            const todayStr = new Date().toISOString().split('T')[0];
+            const shiftDateStr = getBusinessDateStr();
             let recordDate = document.getElementById('bar-date-input').value;
 
             if (currentUser && currentUser.role === 'admin') {
@@ -3700,9 +3714,9 @@
                 return;
             }
 
-            // Strict date rule: Bartenders can ONLY record for today
+            // Strict date rule: Bartenders can ONLY record for the active business shift
             if (currentUser && currentUser.role === 'bartender') {
-                recordDate = todayStr;
+                recordDate = shiftDateStr;
             }
 
             if (currentUser && currentUser.role === 'bartender' && isShiftLocked(currentClubId, recordDate)) {
@@ -3774,7 +3788,7 @@
                 return;
             }
 
-            const todayStr = new Date().toISOString().split('T')[0];
+            const shiftDateStr = getBusinessDateStr();
             listEl.innerHTML = '';
 
             // 1. Render Dancer Records
@@ -3790,7 +3804,7 @@
                 if (r.sit_drink_qty > 0) details.push(`У.Суу:${r.sit_drink_qty}`);
                 if (r.extra_qty > 0) details.push(`Ext:${r.extra_qty}`);
 
-                const isPastRecord = r.date !== todayStr;
+                const isPastRecord = r.date !== shiftDateStr;
                 const canDeleteThisRecord = currentUser && (currentUser.role === 'admin' || (currentUser.role === 'bartender' && !isPastRecord && !isLocked));
 
                 div.innerHTML = `
@@ -3823,7 +3837,7 @@
             taxiPrRecords.forEach((r) => {
                 const div = document.createElement('div');
                 div.className = 'px-3 py-2 flex items-center justify-between hover:bg-dark-850/40 bg-dark-950/20';
-                const isPastRecord = r.date !== todayStr;
+                const isPastRecord = r.date !== shiftDateStr;
                 const canDeleteThisRecord = currentUser && (currentUser.role === 'admin' || (currentUser.role === 'bartender' && !isPastRecord && !isLocked));
 
                 if (r.type === 'taxi') {
@@ -3882,7 +3896,7 @@
             staffTipRecords.forEach((r) => {
                 const div = document.createElement('div');
                 div.className = 'px-3 py-2 flex items-center justify-between hover:bg-dark-850/40 bg-emerald-950/15 border-l-2 border-emerald-500/70';
-                const isPastRecord = r.date !== todayStr;
+                const isPastRecord = r.date !== shiftDateStr;
                 const canDeleteThisRecord = currentUser && (currentUser.role === 'admin' || (currentUser.role === 'bartender' && !isPastRecord && !isLocked));
 
                 div.innerHTML = `
@@ -3918,11 +3932,11 @@
             const rec = store.records.find(r => r.id === id);
             if (!rec) return;
 
-            const todayStr = new Date().toISOString().split('T')[0];
+            const shiftDateStr = getBusinessDateStr();
 
             if (currentUser && currentUser.role === 'bartender') {
-                if (rec.date !== todayStr) {
-                    showToast('Бармен өнгөрсөн өдрийн мэдээллийг устгах эрхгүй! Зөвхөн Ерөнхий нягтлан засах эрхтэй.', true, 'Хандах эрхгүй');
+                if (rec.date !== shiftDateStr) {
+                    showToast('Бармен өнгөрсөн ээлжийн мэдээллийг устгах эрхгүй! Зөвхөн Ерөнхий нягтлан засах эрхтэй.', true, 'Хандах эрхгүй');
                     return;
                 }
                 if (isShiftLocked(rec.club_id, rec.date)) {
@@ -4280,10 +4294,10 @@
                 return;
             }
 
-            const todayStr = new Date().toISOString().split('T')[0];
+            const shiftDateStr = getBusinessDateStr();
             let entryDate = document.getElementById('bar-date-input').value;
             if (currentUser && currentUser.role === 'bartender') {
-                entryDate = todayStr;
+                entryDate = shiftDateStr;
             }
 
             if (currentUser && currentUser.role === 'bartender' && isShiftLocked(currentClubId, entryDate)) {
@@ -4358,10 +4372,10 @@
                 return;
             }
 
-            const todayStr = new Date().toISOString().split('T')[0];
+            const shiftDateStr = getBusinessDateStr();
             let entryDate = document.getElementById('bar-date-input').value;
             if (currentUser && currentUser.role === 'bartender') {
-                entryDate = todayStr;
+                entryDate = shiftDateStr;
             }
 
             if (currentUser && currentUser.role === 'bartender' && isShiftLocked(currentClubId, entryDate)) {
@@ -4400,10 +4414,10 @@
             const rec = (store.taxi_pr_records || []).find(r => r.id === id);
             if (!rec) return;
 
-            const todayStr = new Date().toISOString().split('T')[0];
+            const shiftDateStr = getBusinessDateStr();
             if (currentUser && currentUser.role === 'bartender') {
-                if (rec.date !== todayStr) {
-                    showToast('Бармен өнгөрсөн өдрийн Такси/PR бүртгэлийг устгах эрхгүй! Зөвхөн Ерөнхий нягтлан устгах эрхтэй.', true, 'Хандах эрхгүй');
+                if (rec.date !== shiftDateStr) {
+                    showToast('Бармен өнгөрсөн ээлжийн Такси/PR бүртгэлийг устгах эрхгүй! Зөвхөн Ерөнхий нягтлан устгах эрхтэй.', true, 'Хандах эрхгүй');
                     return;
                 }
                 if (isShiftLocked(rec.club_id, rec.date)) {
@@ -4513,10 +4527,10 @@
                 return;
             }
 
-            const todayStr = new Date().toISOString().split('T')[0];
-            let entryDate = document.getElementById('bar-date-input')?.value || todayStr;
+            const shiftDateStr = getBusinessDateStr();
+            let entryDate = document.getElementById('bar-date-input')?.value || shiftDateStr;
             if (currentUser && currentUser.role === 'bartender') {
-                entryDate = todayStr;
+                entryDate = shiftDateStr;
             }
 
             if (currentUser && currentUser.role === 'bartender' && isShiftLocked(currentClubId, entryDate)) {
@@ -4579,10 +4593,10 @@
             const rec = (store.staff_tips || []).find(r => r.id === id);
             if (!rec) return;
 
-            const todayStr = new Date().toISOString().split('T')[0];
+            const shiftDateStr = getBusinessDateStr();
             if (currentUser && currentUser.role === 'bartender') {
-                if (rec.date !== todayStr) {
-                    showToast('Бармен өнгөрсөн өдрийн Ажилтны Tip бүртгэлийг устгах эрхгүй! Зөвхөн Ерөнхий нягтлан устгах эрхтэй.', true, 'Хандах эрхгүй');
+                if (rec.date !== shiftDateStr) {
+                    showToast('Бармен өнгөрсөн ээлжийн Ажилтны Tip бүртгэлийг устгах эрхгүй! Зөвхөн Ерөнхий нягтлан устгах эрхтэй.', true, 'Хандах эрхгүй');
                     return;
                 }
                 if (isShiftLocked(rec.club_id, rec.date)) {
@@ -4607,7 +4621,7 @@
             const today = new Date();
 
             if (type === 'today') {
-                const d = today.toISOString().split('T')[0];
+                const d = getBusinessDateStr();
                 startInput.value = d;
                 endInput.value = d;
             } else if (type === 'week') {
@@ -4746,9 +4760,9 @@
         function openAdminTaxiPrModal() {
             playFeedback("click");
             const modal = document.getElementById('admin-taxipr-modal');
-            const todayStr = new Date().toISOString().split('T')[0];
+            const shiftDateStr = getBusinessDateStr();
             document.getElementById('admin-taxipr-form').reset();
-            document.getElementById('modal-taxipr-date').value = todayStr;
+            document.getElementById('modal-taxipr-date').value = shiftDateStr;
             document.getElementById('modal-taxipr-club').value = currentClubId;
             onAdminTaxiPrTypeChange();
             modal.classList.remove('hidden');
@@ -4949,7 +4963,7 @@
             const today = new Date();
 
             if (type === 'today') {
-                const d = today.toISOString().split('T')[0];
+                const d = getBusinessDateStr();
                 startInput.value = d;
                 endInput.value = d;
             } else if (type === 'week') {
