@@ -3132,7 +3132,11 @@
                 if (taxiprs && JSON.stringify(taxiprs) !== JSON.stringify(store.taxi_pr_records)) { store.taxi_pr_records = taxiprs; changed = true; }
                 if (tips && JSON.stringify(tips) !== JSON.stringify(store.staff_tips)) { store.staff_tips = tips; changed = true; }
                 if (shifts && JSON.stringify(shifts) !== JSON.stringify(store.submitted_shifts)) { store.submitted_shifts = shifts; changed = true; }
-                if (dancersList && dancersList.length > 0 && JSON.stringify(dancersList) !== JSON.stringify(store.dancers)) { store.dancers = dancersList; changed = true; }
+                if (dancersList && dancersList.length > 0 && JSON.stringify(dancersList) !== JSON.stringify(store.dancers)) {
+                    store.dancers = dancersList;
+                    deduplicateDancersList(store);
+                    changed = true;
+                }
                 if (tariffsList && tariffsList.length > 0 && JSON.stringify(tariffsList) !== JSON.stringify(store.tariffs)) { store.tariffs = tariffsList; changed = true; }
                 if (usersList && usersList.length > 0 && JSON.stringify(usersList) !== JSON.stringify(store.users)) { store.users = usersList; changed = true; }
 
