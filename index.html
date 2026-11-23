@@ -240,10 +240,6 @@
                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                                 <span>Live Cloud</span>
                             </span>
-                            <button type="button" onclick="forceHardRefreshApp()" class="inline-flex items-center gap-1 text-[9px] text-cyan-300 bg-cyan-500/10 hover:bg-cyan-500/20 active:scale-95 px-1.5 py-0.5 rounded border border-cyan-500/30 font-mono transition-all" title="Аппликейшнийг шинэчлэх (Кэш арилгах)">
-                                <i data-lucide="rotate-cw" class="w-2.5 h-2.5"></i>
-                                <span>Шинэчлэх</span>
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -3634,16 +3630,6 @@
             console.error('Failed to init Supabase client:', e);
         }
 
-        function forceHardRefreshApp() {
-            playFeedback("click");
-            showToast('Апп шинэчлэгдэж байна...', false, 'Шинэчлэх');
-            setTimeout(() => {
-                const url = new URL(window.location.href);
-                url.searchParams.set('v', Date.now());
-                window.location.href = url.toString();
-            }, 300);
-        }
-
         function repairNullStageNames(data) {
             if (!data || !data.records || !Array.isArray(data.records) || !data.dancers) return;
             data.records.forEach(r => {
@@ -6980,7 +6966,7 @@
                     dancerMap[key] = {
                         club_id: r.club_id,
                         club_name: r.club_name,
-                        stage_name: r.stage_name,
+                        stage_name: (r.stage_name && r.stage_name !== 'null' && r.stage_name !== 'undefined') ? r.stage_name : (((store.dancers || []).find(x => String(x.id) === String(r.dancer_id))?.stage_name) || r.dancer_name || 'Бүжигчин'),
                         real_name: r.real_name,
                         bank_account: r.bank_account,
                         shifts_count: 0,
@@ -7161,7 +7147,7 @@
                     dancerMap[key] = {
                         club_id: r.club_id,
                         club_name: r.club_name,
-                        stage_name: r.stage_name,
+                        stage_name: (r.stage_name && r.stage_name !== 'null' && r.stage_name !== 'undefined') ? r.stage_name : (((store.dancers || []).find(x => String(x.id) === String(r.dancer_id))?.stage_name) || r.dancer_name || 'Бүжигчин'),
                         real_name: r.real_name,
                         bank_account: r.bank_account,
                         dancer_type: r.dancer_type,
