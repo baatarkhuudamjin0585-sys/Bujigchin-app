@@ -3482,6 +3482,26 @@
             return data;
         }
 
+        function normalizeTariff(t) {
+            if (!t) return t;
+            const key = t.service_key || t.item_key || '';
+            const defaultNames = {
+                tip: 'TIP (Тип)',
+                wine_reg: 'WINE /энгийн/',
+                wine_exp: 'WINE /үнэтэй/',
+                sit_reg: 'TABLE SERVICE (Энгийн)',
+                sit_drink: 'DRINKABLE TABLE SERVICE',
+                extra: 'Extra',
+                taxi: 'TAXI TAX (Такси татвар)'
+            };
+            const name = (key === 'extra') ? 'Extra' : (t.item_name || t.service_name || defaultNames[key] || key);
+            t.item_key = key;
+            t.service_key = key;
+            t.item_name = name;
+            t.service_name = name;
+            return t;
+        }
+
         function getStoredData() {
             let data = null;
             try {
@@ -3527,27 +3547,30 @@
             if (!data.taxi_drivers) {
                 data.taxi_drivers = window.INITIAL_DATA?.taxi_drivers || [];
             }
-            if (data.tariffs) {
+            if (data.tariffs && Array.isArray(data.tariffs)) {
+                data.tariffs.forEach(normalizeTariff);
                 // Ensure all default tariffs (both Үндсэн and Халтуур) exist in stored data
                 if (window.INITIAL_DATA && window.INITIAL_DATA.tariffs) {
                     window.INITIAL_DATA.tariffs.forEach(initT => {
-                        const exists = data.tariffs.some(t => String(t.club_id) === String(initT.club_id) && t.dancer_type === initT.dancer_type && t.item_key === initT.item_key);
+                        const exists = data.tariffs.some(t => String(t.club_id) === String(initT.club_id) && t.dancer_type === initT.dancer_type && (t.item_key || t.service_key) === (initT.item_key || initT.service_key));
                         if (!exists) {
-                            data.tariffs.push({ ...initT });
+                            data.tariffs.push(normalizeTariff({ ...initT }));
                         }
                     });
                 }
                 [1, 2, 3].forEach(cid => {
-                    const hasTaxi = data.tariffs.some(t => String(t.club_id) === String(cid) && t.item_key === 'taxi');
+                    const hasTaxi = data.tariffs.some(t => String(t.club_id) === String(cid) && (t.item_key || t.service_key) === 'taxi');
                     if (!hasTaxi) {
-                        data.tariffs.push({
+                        data.tariffs.push(normalizeTariff({
                             id: 100 + cid,
                             club_id: cid,
                             dancer_type: 'Үндсэн',
                             item_key: 'taxi',
-                            item_name: 'Такси татвар (1 такси)',
+                            service_key: 'taxi',
+                            item_name: 'TAXI TAX (Такси татвар)',
+                            service_name: 'TAXI TAX (Такси татвар)',
                             rate: 40000
-                        });
+                        }));
                     }
                 });
             }
@@ -3675,7 +3698,13 @@
                     deduplicateDancersList(store);
                     changed = true;
                 }
-                if (tariffsList && tariffsList.length > 0 && JSON.stringify(tariffsList) !== JSON.stringify(store.tariffs)) { store.tariffs = tariffsList; changed = true; }
+                if (tariffsList && tariffsList.length > 0) {
+                    tariffsList.forEach(normalizeTariff);
+                    if (JSON.stringify(tariffsList) !== JSON.stringify(store.tariffs)) {
+                        store.tariffs = tariffsList;
+                        changed = true;
+                    }
+                }
                 if (usersList && usersList.length > 0 && JSON.stringify(usersList) !== JSON.stringify(store.users)) { store.users = usersList; changed = true; }
 
                 try {
@@ -4425,12 +4454,15 @@
         }
 
         function getRatesForClubAndType(clubId, dancerType) {
-            const filtered = store.tariffs.filter(t => String(t.club_id) === String(clubId) && t.dancer_type === dancerType);
+            const filtered = (store.tariffs || []).filter(t => String(t.club_id) === String(clubId) && t.dancer_type === dancerType);
             const isFreelance = dancerType === 'Халтуур';
             const map = isFreelance ? 
                 { tip: 15000, wine_reg: 90000, wine_exp: 130000, sit_reg: 50000, sit_drink: 110000, extra: 200000, taxi: 40000 } :
                 { tip: 15000, wine_reg: 110000, wine_exp: 180000, sit_reg: 70000, sit_drink: 130000, extra: 200000, taxi: 40000 };
-            filtered.forEach(t => { map[t.item_key] = t.rate; });
+            filtered.forEach(t => {
+                const k = t.item_key || t.service_key;
+                if (k) map[k] = t.rate;
+            });
             return map;
         }
 
@@ -5153,7 +5185,7 @@
         }
 
         function getTaxiRate(clubId) {
-            const t = store.tariffs.find(x => String(x.club_id) === String(clubId) && x.item_key === 'taxi');
+            const t = (store.tariffs || []).find(x => String(x.club_id) === String(clubId) && ((x.item_key === 'taxi') || (x.service_key === 'taxi')));
             return t ? t.rate : 40000;
         }
 
@@ -7680,24 +7712,41 @@
         // ================= TARIFFS =================
         function renderTariffs() {
             const grid = document.getElementById('tariffs-grid');
+            if (!grid) return;
             grid.innerHTML = '';
 
             const itemOrder = ['tip', 'wine_reg', 'wine_exp', 'sit_reg', 'sit_drink', 'extra', 'taxi'];
+            const defaultNames = {
+                tip: 'TIP (Тип)',
+                wine_reg: 'WINE /энгийн/',
+                wine_exp: 'WINE /үнэтэй/',
+                sit_reg: 'TABLE SERVICE (Энгийн)',
+                sit_drink: 'DRINKABLE TABLE SERVICE',
+                extra: 'Extra',
+                taxi: 'TAXI TAX (Такси татвар)'
+            };
 
             store.clubs.forEach(c => {
                 const card = document.createElement('div');
                 card.className = 'bg-dark-900 border border-dark-800 rounded-xl p-3.5 space-y-3';
 
                 const renderTypeSection = (typeName, badgeBg, badgeText, badgeBorder, dotColor) => {
-                    const tariffs = store.tariffs
+                    const tariffs = (store.tariffs || [])
+                        .map(t => normalizeTariff(t))
                         .filter(t => String(t.club_id) === String(c.id) && t.dancer_type === typeName)
-                        .sort((a, b) => itemOrder.indexOf(a.item_key) - itemOrder.indexOf(b.item_key));
+                        .sort((a, b) => {
+                            const keyA = a.item_key || a.service_key;
+                            const keyB = b.item_key || b.service_key;
+                            return itemOrder.indexOf(keyA) - itemOrder.indexOf(keyB);
+                        });
                     
                     let rowsHtml = '';
                     tariffs.forEach(t => {
+                        const key = t.item_key || t.service_key;
+                        const name = (key === 'extra') ? 'Extra' : (t.item_name || t.service_name || defaultNames[key] || key);
                         rowsHtml += `
                             <div class="flex items-center justify-between gap-2 text-xs py-0.5">
-                                <span class="text-gray-300 text-[11px]">${t.item_name}</span>
+                                <span class="text-gray-300 text-[11px]">${name}</span>
                                 <div class="flex items-center gap-1 shrink-0">
                                     <input type="number" step="5000" data-tariff-id="${t.id}" value="${t.rate}"
                                         class="tariff-rate-input w-24 bg-dark-950 border border-dark-700 rounded px-2 py-1 text-right font-mono font-bold text-amber-400 focus:outline-none focus:border-amber-500 text-xs">
@@ -7746,13 +7795,26 @@
             const inputs = document.querySelectorAll('.tariff-rate-input');
             inputs.forEach(inp => {
                 const tid = parseInt(inp.dataset.tariffId);
-                const t = store.tariffs.find(x => x.id === tid);
-                if (t) t.rate = parseInt(inp.value || 0);
+                const t = (store.tariffs || []).find(x => x.id === tid);
+                if (t) {
+                    t.rate = parseInt(inp.value || 0);
+                    normalizeTariff(t);
+                }
             });
 
             saveStoredData(store);
             if (supabaseClient && Array.isArray(store.tariffs)) {
-                supabaseClient.from('tariffs').upsert(store.tariffs).catch(console.error);
+                const dbTariffs = store.tariffs.map(t => ({
+                    id: t.id,
+                    club_id: t.club_id,
+                    dancer_type: t.dancer_type,
+                    service_key: t.service_key || t.item_key,
+                    service_name: (t.service_key === 'extra' || t.item_key === 'extra') ? 'Extra' : (t.service_name || t.item_name),
+                    rate: t.rate
+                }));
+                supabaseClient.from('tariffs').upsert(dbTariffs).then(({ error }) => {
+                    if (error) console.warn('Supabase tariffs upsert error:', error);
+                }).catch(console.error);
             }
             showToast('Ханш амжилттай хадгалагдлаа!');
             const dtype = selectedDancer ? (selectedDancer.dancer_type || 'Үндсэн') : 'Үндсэн';
