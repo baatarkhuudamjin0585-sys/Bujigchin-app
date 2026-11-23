@@ -14,6 +14,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="Bujigchin">
     <meta name="theme-color" content="#07090d">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -237,6 +240,10 @@
                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                                 <span>Live Cloud</span>
                             </span>
+                            <button type="button" onclick="forceHardRefreshApp()" class="inline-flex items-center gap-1 text-[9px] text-cyan-300 bg-cyan-500/10 hover:bg-cyan-500/20 active:scale-95 px-1.5 py-0.5 rounded border border-cyan-500/30 font-mono transition-all" title="Аппликейшнийг шинэчлэх (Кэш арилгах)">
+                                <i data-lucide="rotate-cw" class="w-2.5 h-2.5"></i>
+                                <span>Шинэчлэх</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -3531,6 +3538,7 @@
                             if (oldData.users && oldData.users.length > 0) data.users = oldData.users;
                             if (oldData.dancers && oldData.dancers.length > 0) data.dancers = oldData.dancers;
                             data = deduplicateDancersList(data);
+                            repairNullStageNames(data);
                             saveStoredData(data);
                         } catch (err) { console.error(err); }
                     }
@@ -3626,12 +3634,37 @@
             console.error('Failed to init Supabase client:', e);
         }
 
+        function forceHardRefreshApp() {
+            playFeedback("click");
+            showToast('Апп шинэчлэгдэж байна...', false, 'Шинэчлэх');
+            setTimeout(() => {
+                const url = new URL(window.location.href);
+                url.searchParams.set('v', Date.now());
+                window.location.href = url.toString();
+            }, 300);
+        }
+
+        function repairNullStageNames(data) {
+            if (!data || !data.records || !Array.isArray(data.records) || !data.dancers) return;
+            data.records.forEach(r => {
+                if (!r.stage_name || r.stage_name === 'null' || r.stage_name === 'undefined') {
+                    if (r.dancer_name && r.dancer_name !== 'null' && r.dancer_name !== 'undefined') {
+                        r.stage_name = r.dancer_name;
+                    } else if (r.dancer_id) {
+                        const d = data.dancers.find(x => String(x.id) === String(r.dancer_id));
+                        if (d && d.stage_name) r.stage_name = d.stage_name;
+                    }
+                }
+            });
+        }
+
         const TABLE_ALLOWED_COLUMNS = {
             'records': [
-                'id', 'club_id', 'club_name', 'dancer_id', 'dancer_name', 'dancer_type',
-                'real_name', 'bank_account', 'tip_qty', 'wine_reg_qty', 'wine_exp_qty',
-                'sit_reg_qty', 'sit_drink_qty', 'extra_qty', 'penalty_amount', 'manual_extra_amount',
-                'grand_total', 'note', 'date', 'bartender_name', 'is_submitted', 'created_at'
+                'id', 'date', 'club_id', 'club_name', 'club_code', 'dancer_id',
+                'stage_name', 'real_name', 'bank_account', 'dancer_type',
+                'tip_qty', 'wine_reg_qty', 'wine_exp_qty', 'sit_reg_qty',
+                'sit_drink_qty', 'extra_qty', 'extra_amount', 'penalty_amount',
+                'total_amount', 'bartender_name', 'note', 'created_at'
             ],
             'taxi_pr_records': [
                 'id', 'type', 'date', 'club_id', 'club_name', 'bartender_name',
@@ -3649,8 +3682,8 @@
                 'is_locked', 'status', 'created_at'
             ],
             'dancers': [
-                'id', 'stage_name', 'real_name', 'bank_account', 'phone', 'type',
-                'club_id', 'club_name', 'is_active', 'created_at'
+                'id', 'stage_name', 'real_name', 'bank_account', 'phone', 'dancer_type',
+                'club_id', 'clubs', 'club_name', 'is_active', 'created_at'
             ],
             'taxi_drivers': [
                 'id', 'name', 'bank_account', 'phone', 'is_active', 'club_id', 'created_at'
@@ -3673,10 +3706,23 @@
             if (!allowed) return row;
             const clean = {};
             allowed.forEach(col => {
-                if (row[col] !== undefined) {
+                if (row[col] !== undefined && row[col] !== null) {
                     clean[col] = row[col];
                 }
             });
+            // Auto fallback for records stage_name
+            if (table === 'records') {
+                if (!clean.stage_name) {
+                    clean.stage_name = row.stage_name || row.dancer_name || '';
+                }
+                if (!clean.stage_name && row.dancer_id) {
+                    const d = (store.dancers || []).find(x => String(x.id) === String(row.dancer_id));
+                    if (d && d.stage_name) clean.stage_name = d.stage_name;
+                }
+                if (clean.total_amount === undefined && row.grand_total !== undefined) {
+                    clean.total_amount = row.grand_total;
+                }
+            }
             return clean;
         }
 
@@ -3754,7 +3800,19 @@
                 ]);
 
                 let changed = false;
-                if (recs && JSON.stringify(recs) !== JSON.stringify(store.records)) { store.records = recs; changed = true; }
+                if (recs && JSON.stringify(recs) !== JSON.stringify(store.records)) {
+                    recs.forEach(r => {
+                        if (!r.stage_name || r.stage_name === 'null') {
+                            if (r.dancer_name && r.dancer_name !== 'null') r.stage_name = r.dancer_name;
+                            else if (r.dancer_id) {
+                                const d = (store.dancers || []).find(x => String(x.id) === String(r.dancer_id));
+                                if (d && d.stage_name) r.stage_name = d.stage_name;
+                            }
+                        }
+                    });
+                    store.records = recs;
+                    changed = true;
+                }
                 if (taxiprs && JSON.stringify(taxiprs) !== JSON.stringify(store.taxi_pr_records)) { store.taxi_pr_records = taxiprs; changed = true; }
                 if (tips && JSON.stringify(tips) !== JSON.stringify(store.staff_tips)) { store.staff_tips = tips; changed = true; }
                 if (shifts && JSON.stringify(shifts) !== JSON.stringify(store.submitted_shifts)) { store.submitted_shifts = shifts; changed = true; }
@@ -4608,7 +4666,13 @@
             }
 
             const dancer = store.dancers.find(d => String(d.id) === String(dancerId)) || selectedDancer;
-            const rates = getRatesForClubAndType(currentClubId, dancer?.dancer_type || 'Үндсэн');
+            const stageName = (dancer?.stage_name || selectedDancer?.stage_name || '').trim();
+            if (!stageName) {
+                highlightField('bar-dancer-picker-btn');
+                showToast('Бүжигчний тайзны нэр олдсонгүй! Бүжигчнээ дахин сонгоно уу.', true, 'Сонголт дутуу');
+                return;
+            }
+            const rates = getRatesForClubAndType(currentClubId, dancer?.dancer_type || selectedDancer?.dancer_type || 'Үндсэн');
 
             const tipQty = parseInt(document.getElementById('tip_qty').value || 0);
             const wineRegQty = parseInt(document.getElementById('wine_reg_qty').value || 0);
@@ -4653,11 +4717,12 @@
                 club_id: parseInt(currentClubId),
                 club_name: club?.name || '',
                 club_code: club?.code || '',
-                dancer_id: parseInt(dancerId),
-                stage_name: dancer?.stage_name || '',
-                real_name: dancer?.real_name || '',
-                bank_account: dancer?.bank_account || '',
-                dancer_type: dancer?.dancer_type || 'Үндсэн',
+                dancer_id: parseInt(dancerId) || (dancer ? dancer.id : 0),
+                stage_name: stageName,
+                dancer_name: stageName,
+                real_name: dancer?.real_name || selectedDancer?.real_name || '',
+                bank_account: dancer?.bank_account || selectedDancer?.bank_account || '',
+                dancer_type: dancer?.dancer_type || selectedDancer?.dancer_type || 'Үндсэн',
                 tip_qty: tipQty,
                 tip_amount: tipQty * rates.tip,
                 wine_reg_qty: wineRegQty,
@@ -4772,10 +4837,12 @@
                 const isPastRecord = r.date !== shiftDateStr;
                 const canDeleteThisRecord = currentUser && (currentUser.role === 'admin' || (currentUser.role === 'bartender' && !isPastRecord && !isLocked));
 
+                const displayName = (r.stage_name && r.stage_name !== 'null' && r.stage_name !== 'undefined') ? r.stage_name : ((store.dancers || []).find(d => String(d.id) === String(r.dancer_id))?.stage_name || r.dancer_name || 'Бүжигчин');
+
                 div.innerHTML = `
                     <div class="flex-1 pr-2">
                         <div class="flex items-center gap-1.5">
-                            <span class="font-bold text-gray-100">${r.stage_name}</span>
+                            <span class="font-bold text-gray-100">${displayName}</span>
                             <span class="text-[10px] text-gray-400 font-mono">${r.bank_account || ''}</span>
                         </div>
                         <div class="text-[10px] text-gray-400 mt-0.5">${details.join(' • ') || 'Үзүүлбэргүй'}</div>
