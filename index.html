@@ -570,20 +570,20 @@
                     </div>
                 </div>
 
-                <!-- Collapsible Staff Tip Section (Ажилтанд Tip оруулах) -->
+                <!-- Collapsible Staff Tip Section (Ажилтанд Tip & Service charge оруулах) -->
                 <div class="bg-dark-900 border border-dark-800 rounded-xl overflow-hidden shadow-sm">
                     <button type="button" onclick="toggleStaffTipDrawer()" class="w-full px-3 py-2 text-left text-xs text-gray-300 hover:text-gray-100 flex items-center justify-between transition-colors">
                         <span class="flex items-center gap-1.5">
                             <i data-lucide="coins" class="w-3.5 h-3.5 text-emerald-400"></i>
-                            <span class="font-bold text-gray-200">Ажилтанд Tip оруулах</span>
-                            <span class="text-[10px] px-1.5 py-0.2 rounded bg-emerald-950/60 text-emerald-400 border border-emerald-800/50 font-mono">10k / 8k</span>
+                            <span class="font-bold text-gray-200">Ажилтанд Tip & Service charge</span>
+                            <span class="text-[10px] px-1.5 py-0.2 rounded bg-emerald-950/60 text-emerald-400 border border-emerald-800/50 font-mono">Tip 10k • Service 8k</span>
                         </span>
                         <i id="staff-tip-chevron" data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400 transition-transform duration-200"></i>
                     </button>
                     <div id="staff-tip-drawer" class="hidden p-3 border-t border-dark-800 space-y-2.5 bg-dark-950/60 text-xs">
                         <div class="flex items-center justify-between text-[11px] text-gray-400 pb-1 border-b border-dark-800">
-                            <span>Бармен болон менежерүүдэд нэмэгдэл олгох</span>
-                            <span class="text-emerald-400 font-mono font-bold">10,000₮ & 8,000₮ тоолуураар</span>
+                            <span>Бармен болон ажилтнуудын нэмэгдэл олгох</span>
+                            <span class="text-emerald-400 font-mono font-bold">Tip 10,000₮ • Service 8,000₮</span>
                         </div>
 
                         <!-- 1. Employee Name -->
@@ -629,16 +629,16 @@
 
                         <!-- 4. Staff Tip Counter Rows (10,000₮ & 8,000₮ тоо ширхэг сонгох) -->
                         <div>
-                            <label class="block text-[11px] text-gray-400 mb-1">Tip тоо ширхэг *</label>
+                            <label class="block text-[11px] text-gray-400 mb-1">Tip & Service charge тоо ширхэг *</label>
                             <div class="bg-dark-900 border border-dark-800 rounded-xl divide-y divide-dark-800 overflow-hidden shadow-sm">
                                 <!-- 10,000₮ Tip row -->
                                 <div class="flex items-center justify-between px-3 py-2 hover:bg-dark-850/40">
-                                    <div class="w-32 sm:w-36">
+                                    <div class="w-36 sm:w-44">
                                         <div class="text-xs font-bold text-gray-100 flex items-center gap-1.5">
                                             <i data-lucide="coins" class="w-3.5 h-3.5 text-emerald-400"></i>
-                                            <span>10,000 TIP</span>
+                                            <span>TIP (Тип)</span>
                                         </div>
-                                        <div class="text-[10px] text-emerald-400/80 font-mono">10,000 ₮</div>
+                                        <div class="text-[10px] text-emerald-400/80 font-mono">10,000 ₮ • Ажилтны тип</div>
                                     </div>
 
                                     <div class="flex items-center gap-1">
@@ -657,14 +657,14 @@
                                     <div class="w-20 text-right font-mono text-xs text-gray-300 font-medium" id="subtotal-staff-10k">0 ₮</div>
                                 </div>
 
-                                <!-- 8,000₮ Tip row -->
+                                <!-- 8,000₮ Service charge row -->
                                 <div class="flex items-center justify-between px-3 py-2 hover:bg-dark-850/40">
-                                    <div class="w-32 sm:w-36">
+                                    <div class="w-36 sm:w-44">
                                         <div class="text-xs font-bold text-gray-100 flex items-center gap-1.5">
-                                            <i data-lucide="coins" class="w-3.5 h-3.5 text-emerald-400"></i>
-                                            <span>8,000 TIP</span>
+                                            <i data-lucide="clock" class="w-3.5 h-3.5 text-cyan-400"></i>
+                                            <span>Service charge</span>
                                         </div>
-                                        <div class="text-[10px] text-emerald-400/80 font-mono">8,000 ₮</div>
+                                        <div class="text-[10px] text-cyan-400/90 font-mono">8,000 ₮ • Суналтын нэмэгдэл</div>
                                     </div>
 
                                     <div class="flex items-center gap-1">
@@ -673,7 +673,7 @@
                                             -
                                         </button>
                                         <input type="number" id="staff_tip_8k_qty" value="0" min="0" oninput="calculateStaffTipTotal()"
-                                            class="w-12 h-9 text-center bg-dark-950 border border-dark-700 rounded-lg font-mono font-bold text-gray-100 text-sm focus:outline-none focus:border-emerald-500">
+                                            class="w-12 h-9 text-center bg-dark-950 border border-dark-700 rounded-lg font-mono font-bold text-gray-100 text-sm focus:outline-none focus:border-cyan-500">
                                         <button type="button" onclick="adjustStaffTipQty('staff_tip_8k_qty', 1)"
                                             class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-90 text-gray-100 border border-dark-700 font-bold text-base flex items-center justify-center">
                                             +
@@ -686,7 +686,7 @@
 
                             <!-- Total Display Strip -->
                             <div class="mt-2 px-3 py-2 rounded-xl bg-dark-900 border border-emerald-500/30 flex items-center justify-between text-xs shadow-inner">
-                                <span class="text-gray-400 font-medium">Олгох нийт Tip:</span>
+                                <span class="text-gray-400 font-medium">Олгох нийт дүн:</span>
                                 <span id="staff-tip-total-display" class="font-mono font-bold text-emerald-400 text-sm">0 ₮</span>
                             </div>
                         </div>
@@ -703,7 +703,7 @@
                             <button type="button" onclick="submitStaffTip()"
                                 class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-gray-950 font-bold text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-600/20 transition-all">
                                 <i data-lucide="check" class="w-4 h-4"></i>
-                                <span>Ажилтны Tip хадгалах</span>
+                                <span>Ажилтны нэмэгдэл хадгалах</span>
                             </button>
                         </div>
                     </div>
@@ -4226,10 +4226,17 @@
                 const isPastRecord = r.date !== shiftDateStr;
                 const canDeleteThisRecord = currentUser && (currentUser.role === 'admin' || (currentUser.role === 'bartender' && !isPastRecord && !isLocked));
 
+                let tagLabel = '👤 ' + (r.role || 'Ажилтан') + ' • Tip';
+                if (r.note && r.note.includes('Service charge') && !r.note.includes('Tip:')) {
+                    tagLabel = '👤 ' + (r.role || 'Ажилтан') + ' • Service charge';
+                } else if (r.note && r.note.includes('Service charge') && r.note.includes('Tip:')) {
+                    tagLabel = '👤 ' + (r.role || 'Ажилтан') + ' • Tip & Service';
+                }
+
                 div.innerHTML = `
                     <div class="flex-1 pr-2">
-                        <div class="flex items-center gap-1.5">
-                            <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold border border-emerald-500/40">👤 ${r.role || 'Ажилтан'} Tip</span>
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold border border-emerald-500/40">${tagLabel}</span>
                             <span class="font-bold text-gray-100 text-xs">${r.employee_name}</span>
                         </div>
                         <div class="text-[10px] text-emerald-400 font-mono mt-0.5">${r.bank_account || '-'} ${r.note ? '• ' + r.note : ''}</div>
@@ -4888,14 +4895,14 @@
             const { qty10k, qty8k, total } = calculateStaffTipTotal();
 
             if (total <= 0) {
-                showToast('Tip-ийн тоо ширхэгийг дор хаяж 1-ийг сонгоно уу!', true, 'Тоо ширхэг сонгоогүй');
+                showToast('Tip эсвэл Service charge тоо ширхэгийг сонгоно уу!', true, 'Тоо ширхэг сонгоогүй');
                 return;
             }
 
             // Build clear breakdown note
             const parts = [];
-            if (qty10k > 0) parts.push(`10k: ${qty10k}ш`);
-            if (qty8k > 0) parts.push(`8k: ${qty8k}ш`);
+            if (qty10k > 0) parts.push(`Tip(10k): ${qty10k}ш`);
+            if (qty8k > 0) parts.push(`Service charge(8k): ${qty8k}ш`);
             const breakdownStr = parts.join(', ');
             const finalNote = note ? `${breakdownStr} • ${note}` : breakdownStr;
 
@@ -4919,7 +4926,7 @@
             cloudInsert('staff_tips', newTip);
 
             playFeedback('success');
-            showToast(`Ажилтны Tip (${name} • ${breakdownStr} • ${formatMNT(total)}) амжилттай бүртгэгдлээ!`, false, 'Амжилттай бүртгэгдлээ');
+            showToast(`Ажилтны нэмэгдэл (${name} • ${breakdownStr} • ${formatMNT(total)}) амжилттай бүртгэгдлээ!`, false, 'Амжилттай бүртгэгдлээ');
 
             document.getElementById('staff_tip_name').value = '';
             document.getElementById('staff_tip_bank').value = '';
