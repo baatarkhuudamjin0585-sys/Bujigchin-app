@@ -1448,22 +1448,6 @@
                         <i data-lucide="x" class="w-3.5 h-3.5"></i>
                     </button>
                 </div>
-
-                <!-- Filter Chips -->
-                <div class="flex items-center gap-1.5 overflow-x-auto pb-0.5 no-scrollbar text-xs">
-                    <button type="button" id="emp-picker-tab-all" onclick="setEmployeePickerFilter('all')"
-                        class="px-2.5 py-1 rounded-lg font-semibold whitespace-nowrap bg-emerald-500 text-gray-950 shadow">
-                        Бүгд
-                    </button>
-                    <button type="button" id="emp-picker-tab-local" onclick="setEmployeePickerFilter('local')"
-                        class="px-2.5 py-1 rounded-lg font-semibold whitespace-nowrap bg-dark-800 text-gray-400 hover:text-gray-200">
-                        📍 Манай салбар
-                    </button>
-                    <button type="button" id="emp-picker-tab-other" onclick="setEmployeePickerFilter('other')"
-                        class="px-2.5 py-1 rounded-lg font-semibold whitespace-nowrap bg-dark-800 text-gray-400 hover:text-gray-200">
-                        🔄 Бусад салбар
-                    </button>
-                </div>
             </div>
 
             <!-- Employees scrollable list -->
@@ -1512,22 +1496,6 @@
                     <button type="button" onclick="document.getElementById('taxi-driver-search-kw').value=''; renderTaxiDriverSearchResults(); document.getElementById('taxi-driver-search-kw').focus();"
                         class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 p-1">
                         <i data-lucide="x" class="w-3.5 h-3.5"></i>
-                    </button>
-                </div>
-
-                <!-- Filter Chips -->
-                <div class="flex items-center gap-1.5 overflow-x-auto pb-0.5 no-scrollbar text-xs">
-                    <button type="button" id="driver-picker-tab-all" onclick="setTaxiDriverPickerFilter('all')"
-                        class="px-2.5 py-1 rounded-lg font-semibold whitespace-nowrap bg-amber-500 text-gray-950 shadow">
-                        Бүгд
-                    </button>
-                    <button type="button" id="driver-picker-tab-local" onclick="setTaxiDriverPickerFilter('local')"
-                        class="px-2.5 py-1 rounded-lg font-semibold whitespace-nowrap bg-dark-800 text-gray-400 hover:text-gray-200">
-                        📍 Манай салбар
-                    </button>
-                    <button type="button" id="driver-picker-tab-other" onclick="setTaxiDriverPickerFilter('other')"
-                        class="px-2.5 py-1 rounded-lg font-semibold whitespace-nowrap bg-dark-800 text-gray-400 hover:text-gray-200">
-                        🔄 Бусад салбар
                     </button>
                 </div>
             </div>
@@ -1624,11 +1592,6 @@
             </div>
             <form id="employee-modal-form" onsubmit="submitEmployeeModal(event)" class="p-4 space-y-2.5 text-xs">
                 <input type="hidden" id="modal-employee-id">
-                
-                <div>
-                    <label class="block text-gray-400 mb-0.5">Салбар *</label>
-                    <select id="modal-employee-club" required class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200 focus:outline-none focus:border-emerald-500"></select>
-                </div>
 
                 <div>
                     <label class="block text-gray-400 mb-0.5">Ажилтны нэр (Заавал кириллээр) *</label>
@@ -1694,11 +1657,6 @@
             </div>
             <form id="taxi-driver-modal-form" onsubmit="submitTaxiDriverModal(event)" class="p-4 space-y-2.5 text-xs">
                 <input type="hidden" id="modal-driver-id">
-                
-                <div>
-                    <label class="block text-gray-400 mb-0.5">Салбар *</label>
-                    <select id="modal-driver-club" required class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200 focus:outline-none focus:border-amber-500"></select>
-                </div>
 
                 <div>
                     <label class="block text-gray-400 mb-0.5">Жолоочийн нэр (Заавал кириллээр) *</label>
@@ -4207,7 +4165,7 @@
                 const padTop = modalOverlay ? (parseFloat(getComputedStyle(modalOverlay).paddingTop) || 12) : 12;
                 const maxModalH = Math.max(200, Math.floor(vpHeight - padTop - 12));
                 modalBox.style.maxHeight = `${maxModalH}px`;
-                const maxListH = Math.max(100, maxModalH - 170);
+                const maxListH = Math.max(100, maxModalH - 120);
                 resultsList.style.maxHeight = `${maxListH}px`;
             }
         }
@@ -5231,7 +5189,7 @@
                 const padTop = modalOverlay ? (parseFloat(getComputedStyle(modalOverlay).paddingTop) || 12) : 12;
                 const maxModalH = Math.max(200, Math.floor(vpHeight - padTop - 12));
                 modalBox.style.maxHeight = `${maxModalH}px`;
-                const maxListH = Math.max(100, maxModalH - 170);
+                const maxListH = Math.max(100, maxModalH - 120);
                 resultsList.style.maxHeight = `${maxListH}px`;
             }
         }
@@ -5286,18 +5244,8 @@
             const listEl = document.getElementById('taxi-driver-search-results');
             if (!listEl) return;
             const kw = (document.getElementById('taxi-driver-search-kw')?.value || '').trim().toLowerCase();
-            const curClubIdNum = parseInt(currentClubId);
-            const curClub = store.clubs.find(c => c.id === curClubIdNum);
-
-            const isLocal = (d) => (!d.club_id || String(d.club_id) === 'all' || d.club_id === curClubIdNum);
 
             let filtered = (store.taxi_drivers || []).filter(d => d.is_active !== 0);
-
-            if (currentTaxiDriverPickerFilter === 'local') {
-                filtered = filtered.filter(isLocal);
-            } else if (currentTaxiDriverPickerFilter === 'other') {
-                filtered = filtered.filter(d => !isLocal(d));
-            }
 
             if (kw) {
                 filtered = filtered.filter(d => {
@@ -5308,37 +5256,8 @@
                 });
             }
 
-            // Sort: local club drivers first, then alphabetical by name
-            filtered.sort((a, b) => {
-                const aLocal = isLocal(a);
-                const bLocal = isLocal(b);
-                if (aLocal && !bLocal) return -1;
-                if (!aLocal && bLocal) return 1;
-                return (a.name || '').localeCompare(b.name || '', 'mn');
-            });
-
-            // Update tab badges
-            const allActive = (store.taxi_drivers || []).filter(d => d.is_active !== 0);
-            const allCount = allActive.length;
-            const localCount = allActive.filter(isLocal).length;
-            const otherCount = allCount - localCount;
-
-            const tabAll = document.getElementById('driver-picker-tab-all');
-            const tabLocal = document.getElementById('driver-picker-tab-local');
-            const tabOther = document.getElementById('driver-picker-tab-other');
-
-            if (tabAll) {
-                tabAll.textContent = `Бүгд (${allCount})`;
-                tabAll.className = `px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${currentTaxiDriverPickerFilter === 'all' ? 'bg-amber-500 text-gray-950 shadow' : 'bg-dark-800 text-gray-400 hover:text-gray-200'}`;
-            }
-            if (tabLocal) {
-                tabLocal.textContent = `📍 Манай салбар (${localCount})`;
-                tabLocal.className = `px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${currentTaxiDriverPickerFilter === 'local' ? 'bg-amber-500 text-gray-950 shadow' : 'bg-dark-800 text-gray-400 hover:text-gray-200'}`;
-            }
-            if (tabOther) {
-                tabOther.textContent = `🔄 Бусад салбар (${otherCount})`;
-                tabOther.className = `px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${currentTaxiDriverPickerFilter === 'other' ? 'bg-amber-500 text-gray-950 shadow' : 'bg-dark-800 text-gray-400 hover:text-gray-200'}`;
-            }
+            // Sort alphabetical by name
+            filtered.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'mn'));
 
             if (filtered.length === 0) {
                 listEl.innerHTML = `
@@ -5359,17 +5278,7 @@
             const curSelectedId = document.getElementById('bar_taxi_selected_id')?.value;
 
             listEl.innerHTML = filtered.map((d, idx) => {
-                const local = isLocal(d);
                 const isSel = String(d.id) === String(curSelectedId);
-
-                let clubBadge = '';
-                if (local) {
-                    clubBadge = `<span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 font-mono border border-amber-500/30">📍 ${curClub?.name.replace(' CLUB', '') || 'Манайх'}</span>`;
-                } else {
-                    const origClub = store.clubs.find(c => c.id === d.club_id);
-                    const cName = origClub ? origClub.name.replace(' CLUB', '') : 'Өөр';
-                    clubBadge = `<span class="text-[9px] px-1.5 py-0.5 rounded bg-purple-500/15 text-purple-300 font-mono border border-purple-500/30">🔄 ${cName}-аас</span>`;
-                }
 
                 return `
                     <div onclick="selectTaxiDriverFromPicker(${d.id})"
@@ -5382,7 +5291,6 @@
                                 <div class="flex items-center gap-1.5 flex-wrap">
                                     <span class="font-bold text-sm text-gray-100">${d.name}</span>
                                     <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-950/70 text-amber-300 font-semibold border border-amber-800/60">Такси жолооч</span>
-                                    ${clubBadge}
                                 </div>
                                 <div class="text-[11px] text-gray-400 font-mono mt-0.5 flex items-center gap-1.5 truncate">
                                     <span class="text-amber-400/90 font-bold">${d.bank_account || '-'}</span>
@@ -5480,40 +5388,18 @@
             const modal = document.getElementById('taxi-driver-modal');
             const title = document.getElementById('taxi-driver-modal-title');
             const idInput = document.getElementById('modal-driver-id');
-            const clubSelect = document.getElementById('modal-driver-club');
             const errEl = document.getElementById('modal-driver-error');
             if (errEl) { errEl.textContent = ''; errEl.classList.add('hidden'); }
-
-            if (clubSelect) {
-                clubSelect.innerHTML = '';
-                store.clubs.forEach(c => {
-                    const opt = document.createElement('option');
-                    opt.value = c.id;
-                    opt.textContent = c.name;
-                    clubSelect.appendChild(opt);
-                });
-            }
-
-            const isRestrictedUser = currentUser && currentUser.role !== 'admin' && currentUser.club_id && currentUser.club_id !== 'all';
-            const targetClubId = isRestrictedUser ? parseInt(currentUser.club_id) : currentClubId;
 
             if (mode === 'add') {
                 title.textContent = 'Шинэ такси жолооч бүртгэх';
                 idInput.value = '';
                 document.getElementById('taxi-driver-modal-form').reset();
-                if (clubSelect) {
-                    clubSelect.value = targetClubId;
-                    clubSelect.disabled = isRestrictedUser;
-                }
             } else {
                 title.textContent = 'Жолоочийн мэдээлэл засах';
                 const driver = (store.taxi_drivers || []).find(d => String(d.id) === String(driverId));
                 if (!driver) return;
                 idInput.value = driver.id;
-                if (clubSelect) {
-                    clubSelect.value = driver.club_id || targetClubId;
-                    clubSelect.disabled = isRestrictedUser;
-                }
                 document.getElementById('modal-driver-name').value = driver.name || '';
                 document.getElementById('modal-driver-bankacc').value = driver.bank_account || '';
                 document.getElementById('modal-driver-phone').value = driver.phone || '';
@@ -5534,9 +5420,6 @@
         function submitTaxiDriverModal(e) {
             e.preventDefault();
             const id = document.getElementById('modal-driver-id').value;
-            const isRestrictedUser = currentUser && currentUser.role !== 'admin' && currentUser.club_id && currentUser.club_id !== 'all';
-            const clubId = isRestrictedUser ? parseInt(currentUser.club_id) : parseInt(document.getElementById('modal-driver-club').value);
-            
             const name = document.getElementById('modal-driver-name').value.trim();
             const bankAcc = document.getElementById('modal-driver-bankacc').value.trim().toUpperCase().replace(/\s+/g, '');
             const phone = (document.getElementById('modal-driver-phone')?.value || '').trim().replace(/[^0-9]/g, '');
@@ -5591,7 +5474,6 @@
             if (id) {
                 const driver = store.taxi_drivers.find(x => String(x.id) === String(id));
                 if (driver) {
-                    driver.club_id = clubId;
                     driver.name = name;
                     driver.bank_account = bankAcc;
                     driver.phone = phone;
@@ -5603,7 +5485,7 @@
                 targetId = Date.now();
                 targetDriver = {
                     id: targetId,
-                    club_id: clubId,
+                    club_id: null,
                     name: name,
                     bank_account: bankAcc,
                     phone: phone,
@@ -5683,15 +5565,12 @@
                 const div = document.createElement('div');
                 div.className = 'px-3 py-2.5 flex items-center justify-between hover:bg-dark-850/40 transition-colors';
 
-                const club = store.clubs.find(c => String(c.id) === String(d.club_id))?.name.replace(' CLUB', '') || 'Бүх салбар';
-
                 div.innerHTML = `
                     <div class="flex-1 pr-2 min-w-0">
                         <div class="flex items-center gap-1.5 flex-wrap">
                             <span class="text-[10px] text-gray-500 font-mono">#${idx + 1}</span>
                             <span class="font-bold text-gray-100 text-xs">${d.name}</span>
                             <span class="text-[9px] px-1.5 py-0.2 rounded border bg-amber-950/70 text-amber-300 border-amber-800/60 font-semibold">Такси жолооч</span>
-                            <span class="text-[9px] px-1.5 py-0.2 rounded bg-dark-800 text-amber-400 border border-dark-700 font-mono">📍 ${club}</span>
                         </div>
                         <div class="text-[11px] text-gray-400 mt-1 flex flex-wrap items-center gap-3 font-mono">
                             <span class="flex items-center gap-1">
@@ -5905,7 +5784,7 @@
                 const padTop = modalOverlay ? (parseFloat(getComputedStyle(modalOverlay).paddingTop) || 12) : 12;
                 const maxModalH = Math.max(200, Math.floor(vpHeight - padTop - 12));
                 modalBox.style.maxHeight = `${maxModalH}px`;
-                const maxListH = Math.max(100, maxModalH - 170);
+                const maxListH = Math.max(100, maxModalH - 120);
                 resultsList.style.maxHeight = `${maxListH}px`;
             }
         }
@@ -5960,18 +5839,8 @@
             const listEl = document.getElementById('employee-search-results');
             if (!listEl) return;
             const kw = (document.getElementById('employee-search-kw')?.value || '').trim().toLowerCase();
-            const curClubIdNum = parseInt(currentClubId);
-            const curClub = store.clubs.find(c => c.id === curClubIdNum);
-
-            const isLocal = (e) => (!e.club_id || String(e.club_id) === 'all' || e.club_id === curClubIdNum);
 
             let filtered = (store.employees || []).filter(e => e.is_active !== 0);
-
-            if (currentEmployeePickerFilter === 'local') {
-                filtered = filtered.filter(isLocal);
-            } else if (currentEmployeePickerFilter === 'other') {
-                filtered = filtered.filter(e => !isLocal(e));
-            }
 
             if (kw) {
                 filtered = filtered.filter(e => {
@@ -5983,37 +5852,8 @@
                 });
             }
 
-            // Sort: local club employees first, then alphabetical by name
-            filtered.sort((a, b) => {
-                const aLocal = isLocal(a);
-                const bLocal = isLocal(b);
-                if (aLocal && !bLocal) return -1;
-                if (!aLocal && bLocal) return 1;
-                return (a.name || '').localeCompare(b.name || '', 'mn');
-            });
-
-            // Update tab badges
-            const allActive = (store.employees || []).filter(e => e.is_active !== 0);
-            const allCount = allActive.length;
-            const localCount = allActive.filter(isLocal).length;
-            const otherCount = allCount - localCount;
-
-            const tabAll = document.getElementById('emp-picker-tab-all');
-            const tabLocal = document.getElementById('emp-picker-tab-local');
-            const tabOther = document.getElementById('emp-picker-tab-other');
-
-            if (tabAll) {
-                tabAll.textContent = `Бүгд (${allCount})`;
-                tabAll.className = `px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${currentEmployeePickerFilter === 'all' ? 'bg-emerald-500 text-gray-950 shadow' : 'bg-dark-800 text-gray-400 hover:text-gray-200'}`;
-            }
-            if (tabLocal) {
-                tabLocal.textContent = `📍 Манай салбар (${localCount})`;
-                tabLocal.className = `px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${currentEmployeePickerFilter === 'local' ? 'bg-emerald-500 text-gray-950 shadow' : 'bg-dark-800 text-gray-400 hover:text-gray-200'}`;
-            }
-            if (tabOther) {
-                tabOther.textContent = `🔄 Бусад салбар (${otherCount})`;
-                tabOther.className = `px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${currentEmployeePickerFilter === 'other' ? 'bg-emerald-500 text-gray-950 shadow' : 'bg-dark-800 text-gray-400 hover:text-gray-200'}`;
-            }
+            // Sort alphabetical by name
+            filtered.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'mn'));
 
             if (filtered.length === 0) {
                 listEl.innerHTML = `
@@ -6034,17 +5874,7 @@
             const curSelectedId = document.getElementById('staff_tip_selected_id')?.value;
 
             listEl.innerHTML = filtered.map((e, idx) => {
-                const local = isLocal(e);
                 const isSel = String(e.id) === String(curSelectedId);
-
-                let clubBadge = '';
-                if (local) {
-                    clubBadge = `<span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 font-mono border border-emerald-500/30">📍 ${curClub?.name.replace(' CLUB', '') || 'Манайх'}</span>`;
-                } else {
-                    const origClub = store.clubs.find(c => c.id === e.club_id);
-                    const cName = origClub ? origClub.name.replace(' CLUB', '') : 'Өөр';
-                    clubBadge = `<span class="text-[9px] px-1.5 py-0.5 rounded bg-purple-500/15 text-purple-300 font-mono border border-purple-500/30">🔄 ${cName}-аас</span>`;
-                }
 
                 return `
                     <div onclick="selectEmployeeFromPicker(${e.id})"
@@ -6057,7 +5887,6 @@
                                 <div class="flex items-center gap-1.5 flex-wrap">
                                     <span class="font-bold text-sm text-gray-100">${e.name}</span>
                                     <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-950/70 text-emerald-300 font-semibold border border-emerald-800/60">${e.role || 'Ажилтан'}</span>
-                                    ${clubBadge}
                                 </div>
                                 <div class="text-[11px] text-gray-400 font-mono mt-0.5 flex items-center gap-1.5 truncate">
                                     <span class="text-amber-400/90 font-bold">${e.bank_account || '-'}</span>
@@ -6199,42 +6028,20 @@
             const modal = document.getElementById('employee-modal');
             const title = document.getElementById('employee-modal-title');
             const idInput = document.getElementById('modal-employee-id');
-            const clubSelect = document.getElementById('modal-employee-club');
             const roleSelect = document.getElementById('modal-employee-role');
             const errEl = document.getElementById('modal-employee-error');
             if (errEl) { errEl.textContent = ''; errEl.classList.add('hidden'); }
-
-            if (clubSelect) {
-                clubSelect.innerHTML = '';
-                store.clubs.forEach(c => {
-                    const opt = document.createElement('option');
-                    opt.value = c.id;
-                    opt.textContent = c.name;
-                    clubSelect.appendChild(opt);
-                });
-            }
-
-            const isRestrictedUser = currentUser && currentUser.role !== 'admin' && currentUser.club_id && currentUser.club_id !== 'all';
-            const targetClubId = isRestrictedUser ? parseInt(currentUser.club_id) : currentClubId;
 
             if (mode === 'add') {
                 title.textContent = 'Шинэ ажилтан бүртгэх';
                 idInput.value = '';
                 document.getElementById('employee-modal-form').reset();
-                if (clubSelect) {
-                    clubSelect.value = targetClubId;
-                    clubSelect.disabled = isRestrictedUser;
-                }
                 if (roleSelect) roleSelect.value = 'Бармен';
             } else {
                 title.textContent = 'Ажилтны мэдээлэл засах';
                 const emp = (store.employees || []).find(e => String(e.id) === String(empId));
                 if (!emp) return;
                 idInput.value = emp.id;
-                if (clubSelect) {
-                    clubSelect.value = emp.club_id || targetClubId;
-                    clubSelect.disabled = isRestrictedUser;
-                }
                 document.getElementById('modal-employee-name').value = emp.name || '';
                 if (roleSelect) roleSelect.value = emp.role || 'Бармен';
                 document.getElementById('modal-employee-bankacc').value = emp.bank_account || '';
@@ -6256,9 +6063,6 @@
         function submitEmployeeModal(e) {
             e.preventDefault();
             const id = document.getElementById('modal-employee-id').value;
-            const isRestrictedUser = currentUser && currentUser.role !== 'admin' && currentUser.club_id && currentUser.club_id !== 'all';
-            const clubId = isRestrictedUser ? parseInt(currentUser.club_id) : parseInt(document.getElementById('modal-employee-club').value);
-            
             const name = document.getElementById('modal-employee-name').value.trim();
             const role = document.getElementById('modal-employee-role').value;
             const bankAcc = document.getElementById('modal-employee-bankacc').value.trim().toUpperCase().replace(/\s+/g, '');
@@ -6325,7 +6129,6 @@
             if (id) {
                 const emp = store.employees.find(x => String(x.id) === String(id));
                 if (emp) {
-                    emp.club_id = clubId;
                     emp.name = name;
                     emp.role = role;
                     emp.bank_account = bankAcc;
@@ -6338,7 +6141,7 @@
                 targetId = Date.now();
                 targetEmp = {
                     id: targetId,
-                    club_id: clubId,
+                    club_id: null,
                     name: name,
                     role: role,
                     bank_account: bankAcc,
@@ -6397,7 +6200,6 @@
                 const div = document.createElement('div');
                 div.className = 'px-3 py-2.5 flex items-center justify-between hover:bg-dark-850/40';
 
-                const club = store.clubs.find(c => String(c.id) === String(e.club_id))?.name.replace(' CLUB', '') || 'Бүх салбар';
                 const roleBadge = 'bg-emerald-950/60 text-emerald-300 border-emerald-800/60';
 
                 div.innerHTML = `
@@ -6406,7 +6208,6 @@
                             <span class="text-[10px] text-gray-500 font-mono">#${idx + 1}</span>
                             <span class="font-bold text-gray-100">${e.name}</span>
                             <span class="text-[9px] px-1.5 py-0.2 rounded border ${roleBadge}">${e.role || 'Ажилтан'}</span>
-                            <span class="text-[9px] px-1 py-0.2 rounded bg-dark-800 text-amber-400 border border-dark-700 font-mono">${club}</span>
                         </div>
                         <div class="text-[11px] text-gray-400 mt-1 flex flex-wrap items-center gap-3 font-mono">
                             <span class="flex items-center gap-1">
