@@ -1301,7 +1301,7 @@
             <form id="dancer-modal-form" onsubmit="submitDancerModal(event)" class="p-4 space-y-2.5 text-xs">
                 <input type="hidden" id="modal-dancer-id">
                 <div>
-                    <label class="block text-gray-400 mb-0.5">Салбар</label>
+                    <label class="block text-gray-400 mb-0.5">Салбар *</label>
                     <select id="modal-dancer-club" required class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200"></select>
                     <p id="modal-dancer-club-hint" class="hidden text-[10px] text-amber-400 mt-1">Зөвхөн өөрийн харьяа салбар дээр бүртгэх эрхтэй (Түгжигдсэн)</p>
                 </div>
@@ -1331,10 +1331,12 @@
                     <p class="text-[10px] text-gray-500 mt-0.5">Заавал 15-аас дээш оронтой IBAN дугаар байна</p>
                 </div>
                 <div>
-                    <label class="block text-gray-400 mb-0.5">Утасны дугаар (Заавал биш)</label>
-                    <input type="tel" id="modal-dancer-phone" placeholder="Жишээ: 99112233"
+                    <label class="block text-gray-400 mb-0.5">Утасны дугаар (8 оронтой) *</label>
+                    <input type="tel" id="modal-dancer-phone" required maxlength="8" pattern="[0-9]{8}"
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                        placeholder="Жишээ: 99112233"
                         class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200 font-mono">
-                    <p class="text-[10px] text-gray-500 mt-0.5">8 оронтой гар утасны дугаар оруулна уу</p>
+                    <p class="text-[10px] text-gray-500 mt-0.5">Заавал 8 оронтой гар утасны дугаар оруулна уу</p>
                 </div>
                 <div id="modal-dancer-error" class="hidden text-[11px] text-red-400 font-medium p-2 rounded bg-red-950/40 border border-red-900/50"></div>
                 <div class="pt-2 flex justify-end gap-2 border-t border-dark-800">
@@ -6062,6 +6064,7 @@
             // 1. Stage name validation
             if (!stageName) {
                 showError('Бүжигчний тайзны нэрийг заавал бичнэ үү!');
+                highlightField('modal-dancer-stagename');
                 document.getElementById('modal-dancer-stagename').focus();
                 return;
             }
@@ -6069,12 +6072,14 @@
             // 2. Real name (Account holder) validation - MUST be Cyrillic & cannot be empty
             if (!realName) {
                 showError('Данс эзэмшигчийн нэрийг заавал бичнэ үү!');
+                highlightField('modal-dancer-realname');
                 document.getElementById('modal-dancer-realname').focus();
                 return;
             }
             const cyrillicRegex = /^[а-яА-ЯөӨүҮёЁ\s\-.]+$/;
             if (!cyrillicRegex.test(realName)) {
                 showError('Данс эзэмшигчийн нэрийг заавал кирилл үсгээр бичнэ үү! (Латин үсэг болон тусгай тэмдэгт ашиглаж болохгүй)');
+                highlightField('modal-dancer-realname');
                 document.getElementById('modal-dancer-realname').focus();
                 return;
             }
@@ -6082,6 +6087,7 @@
             // 3. Bank Account / IBAN validation
             if (!bankAcc) {
                 showError('Дансны дугаар (IBAN)-ийг заавал бүртгэж байж хадгалах боломжтой!');
+                highlightField('modal-dancer-bankacc');
                 document.getElementById('modal-dancer-bankacc').focus();
                 return;
             }
@@ -6089,6 +6095,7 @@
             // Must be at least 15 characters
             if (bankAcc.length < 15) {
                 showError('Iban-гүй зөвхөн данс бичсэн байна! Дансны дугаар заавал 15-аас дээш оронтой IBAN дугаар байх ёстой. Iban бичнэ үү.\n(Жишээ: MN020005005250242017 эсвэл 18 оронтой бүтэн IBAN дугаараа бичнэ үү)');
+                highlightField('modal-dancer-bankacc');
                 document.getElementById('modal-dancer-bankacc').focus();
                 return;
             }
@@ -6096,7 +6103,22 @@
             // Valid alphanumeric
             if (!/^[A-Z0-9]+$/.test(bankAcc)) {
                 showError('Дансны IBAN дугаарт зөвхөн тоо болон үсэг (MN...) оруулна уу!');
+                highlightField('modal-dancer-bankacc');
                 document.getElementById('modal-dancer-bankacc').focus();
+                return;
+            }
+
+            // 4. Phone number validation - MUST be 8 digits
+            if (!phone) {
+                showError('Бүжигчний утасны дугаарыг заавал оруулж байж хадгална уу!');
+                highlightField('modal-dancer-phone');
+                document.getElementById('modal-dancer-phone').focus();
+                return;
+            }
+            if (phone.length !== 8) {
+                showError('Утасны дугаар заавал 8 оронтой тоо байх ёстой! (Жишээ: 99112233)');
+                highlightField('modal-dancer-phone');
+                document.getElementById('modal-dancer-phone').focus();
                 return;
             }
 
