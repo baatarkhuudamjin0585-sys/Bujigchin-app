@@ -311,22 +311,32 @@
                     </div>
                 </div>
 
-                <!-- Bartender Entry Mode Switcher (Dancer vs Taxi/PR) -->
-                <div class="flex items-center bg-dark-900 border border-dark-800 p-1 rounded-xl text-xs shadow-sm">
-                    <button type="button" id="bar-mode-btn-dancer" onclick="switchBartenderEntryMode('dancer')"
-                        class="flex-1 py-1.5 rounded-lg font-bold flex items-center justify-center gap-1.5 transition-all bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                <!-- Bartender 4-Tab Navigation Bar -->
+                <div class="grid grid-cols-4 gap-1 bg-dark-900 border border-dark-800 p-1 rounded-xl text-xs shadow-sm">
+                    <button type="button" id="bar-tab-btn-dancer" onclick="switchBartenderTab('dancer')"
+                        class="py-2 px-1 rounded-lg font-bold flex flex-col sm:flex-row items-center justify-center gap-1 transition-all bg-amber-500/15 text-amber-400 border border-amber-500/40 shadow-sm">
                         <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
-                        <span>Бүжигчний орлого</span>
+                        <span class="text-[11px] truncate">Бүжигчин</span>
                     </button>
-                    <button type="button" id="bar-mode-btn-taxipr" onclick="switchBartenderEntryMode('taxipr')"
-                        class="flex-1 py-1.5 rounded-lg font-medium flex items-center justify-center gap-1.5 transition-all text-gray-400 hover:text-gray-200">
+                    <button type="button" id="bar-tab-btn-staff" onclick="switchBartenderTab('staff')"
+                        class="py-2 px-1 rounded-lg font-medium flex flex-col sm:flex-row items-center justify-center gap-1 transition-all text-gray-400 hover:text-gray-200 border border-transparent">
+                        <i data-lucide="users" class="w-3.5 h-3.5"></i>
+                        <span class="text-[11px] truncate">Ажилтан</span>
+                    </button>
+                    <button type="button" id="bar-tab-btn-taxipr" onclick="switchBartenderTab('taxipr')"
+                        class="py-2 px-1 rounded-lg font-medium flex flex-col sm:flex-row items-center justify-center gap-1 transition-all text-gray-400 hover:text-gray-200 border border-transparent">
                         <i data-lucide="car" class="w-3.5 h-3.5"></i>
-                        <span>Такси & PR бүртгэх</span>
+                        <span class="text-[11px] truncate">Такси/PR</span>
+                    </button>
+                    <button type="button" id="bar-tab-btn-summary" onclick="switchBartenderTab('summary')"
+                        class="py-2 px-1 rounded-lg font-medium flex flex-col sm:flex-row items-center justify-center gap-1 transition-all text-gray-400 hover:text-gray-200 border border-transparent">
+                        <i data-lucide="clipboard-check" class="w-3.5 h-3.5"></i>
+                        <span class="text-[11px] truncate">Тулгалт</span>
                     </button>
                 </div>
 
                 <!-- SECTION 1: DANCER ENTRY -->
-                <div id="bar-mode-dancer-section" class="space-y-3">
+                <div id="bar-section-dancer" class="space-y-3">
                 <!-- Dancer Quick Selector Card -->
                 <div class="bg-dark-900 border border-dark-800 rounded-xl p-3 shadow-md space-y-2">
                     <div class="flex items-center justify-between">
@@ -569,21 +579,19 @@
                         </div>
                     </div>
                 </div>
+                </div><!-- /bar-section-dancer -->
 
-                <!-- Collapsible Staff Tip Section (Ажилтанд Tip & Service charge оруулах) -->
-                <div class="bg-dark-900 border border-dark-800 rounded-xl overflow-hidden shadow-sm">
-                    <button type="button" onclick="toggleStaffTipDrawer()" class="w-full px-3 py-2 text-left text-xs text-gray-300 hover:text-gray-100 flex items-center justify-between transition-colors">
-                        <span class="flex items-center gap-1.5">
-                            <i data-lucide="coins" class="w-3.5 h-3.5 text-emerald-400"></i>
-                            <span class="font-bold text-gray-200">Ажилтанд Tip & Service charge</span>
-                            <span class="text-[10px] px-1.5 py-0.2 rounded bg-emerald-950/60 text-emerald-400 border border-emerald-800/50 font-mono">Tip 10k • Service 8k</span>
-                        </span>
-                        <i id="staff-tip-chevron" data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400 transition-transform duration-200"></i>
-                    </button>
-                    <div id="staff-tip-drawer" class="hidden p-3 border-t border-dark-800 space-y-2.5 bg-dark-950/60 text-xs">
-                        <div class="flex items-center justify-between text-[11px] text-gray-400 pb-1 border-b border-dark-800">
-                            <span>Бармен болон ажилтнуудын нэмэгдэл олгох</span>
-                            <span class="text-emerald-400 font-mono font-bold">Tip 10,000₮ • Service 8,000₮</span>
+                <!-- SECTION 2: STAFF TIP & SERVICE CHARGE ENTRY -->
+                <div id="bar-section-staff" class="hidden space-y-3">
+                    <div class="bg-dark-900 border border-dark-800 rounded-xl p-3 shadow-md space-y-2.5 text-xs">
+                        <div class="flex items-center justify-between text-[11px] text-gray-400 pb-2 border-b border-dark-800">
+                            <div class="flex items-center gap-1.5 font-bold text-xs text-emerald-400">
+                                <i data-lucide="users" class="w-4 h-4"></i>
+                                <span>Ажилтанд Tip & Service charge олгох</span>
+                            </div>
+                            <span class="text-[10px] px-2 py-0.5 rounded bg-dark-800 text-emerald-300 font-mono border border-dark-700">
+                                Tip 10,000₮ • Service 8,000₮
+                            </span>
                         </div>
 
                         <!-- 1. Employee Search & Selector & "+ Ажилтан нэмэх" button -->
@@ -661,9 +669,9 @@
                         <!-- 4. Staff Tip Counter Rows (10,000₮ & 8,000₮ тоо ширхэг сонгох) -->
                         <div>
                             <label class="block text-[11px] text-gray-400 mb-1">Tip & Service charge тоо ширхэг *</label>
-                            <div class="bg-dark-900 border border-dark-800 rounded-xl divide-y divide-dark-800 overflow-hidden shadow-sm">
+                            <div class="bg-dark-850 border border-dark-750 rounded-xl divide-y divide-dark-800 overflow-hidden shadow-sm">
                                 <!-- 10,000₮ Tip row -->
-                                <div class="flex items-center justify-between px-3 py-2 hover:bg-dark-850/40">
+                                <div class="flex items-center justify-between px-3 py-2 hover:bg-dark-800/40">
                                     <div class="w-36 sm:w-44">
                                         <div class="text-xs font-bold text-gray-100 flex items-center gap-1.5">
                                             <i data-lucide="coins" class="w-3.5 h-3.5 text-emerald-400"></i>
@@ -689,7 +697,7 @@
                                 </div>
 
                                 <!-- 8,000₮ Service charge row -->
-                                <div class="flex items-center justify-between px-3 py-2 hover:bg-dark-850/40">
+                                <div class="flex items-center justify-between px-3 py-2 hover:bg-dark-800/40">
                                     <div class="w-36 sm:w-44">
                                         <div class="text-xs font-bold text-gray-100 flex items-center gap-1.5">
                                             <i data-lucide="clock" class="w-3.5 h-3.5 text-cyan-400"></i>
@@ -716,7 +724,7 @@
                             </div>
 
                             <!-- Total Display Strip -->
-                            <div class="mt-2 px-3 py-2 rounded-xl bg-dark-900 border border-emerald-500/30 flex items-center justify-between text-xs shadow-inner">
+                            <div class="mt-2 px-3 py-2 rounded-xl bg-dark-950 border border-emerald-500/30 flex items-center justify-between text-xs shadow-inner">
                                 <span class="text-gray-400 font-medium">Олгох нийт дүн:</span>
                                 <span id="staff-tip-total-display" class="font-mono font-bold text-emerald-400 text-sm">0 ₮</span>
                             </div>
@@ -738,12 +746,10 @@
                             </button>
                         </div>
                     </div>
-                </div>
+                </div><!-- /bar-section-staff -->
 
-                </div><!-- /bar-mode-dancer-section -->
-
-                <!-- SECTION 2: TAXI & PR ENTRY (FAST 1-TAP FOR BARTENDER) -->
-                <div id="bar-mode-taxipr-section" class="hidden space-y-3">
+                <!-- SECTION 3: TAXI & PR ENTRY (FAST 1-TAP FOR BARTENDER) -->
+                <div id="bar-section-taxipr" class="hidden space-y-3">
                     <!-- 1. TAXI REGISTRATION CARD -->
                     <div class="bg-dark-900 border border-dark-800 rounded-xl p-3 shadow-md space-y-2.5">
                         <div class="flex items-center justify-between border-b border-dark-800 pb-2">
@@ -899,9 +905,11 @@
                             </button>
                         </div>
                     </div>
-                </div><!-- /bar-mode-taxipr-section -->
+                </div><!-- /bar-section-taxipr -->
 
-                <!-- 3. SHIFT RECONCILIATION SUMMARY (Баар хаах тулгалт) -->
+                <!-- SECTION 4: SHIFT RECONCILIATION SUMMARY & DAILY LIST -->
+                <div id="bar-section-summary" class="hidden space-y-3">
+                    <!-- 3. SHIFT RECONCILIATION SUMMARY (Баар хаах тулгалт) -->
                 <div class="bg-dark-900 border border-dark-800 rounded-xl overflow-hidden shadow-sm">
                     <div class="px-3 py-2 bg-dark-950/70 border-b border-dark-800 flex items-center justify-between text-xs">
                         <div class="flex items-center gap-1.5 font-bold text-gray-200">
@@ -986,6 +994,7 @@
                         </button>
                     </div>
                 </div>
+                </div><!-- /bar-section-summary -->
             </section>
 
             <!-- ======================================================== -->
@@ -5155,33 +5164,51 @@
             document.body.removeChild(ta);
         }
 
-                // ================= TAXI & PR HANDLERS =================
+                // ================= BARTENDER 4-TAB NAVIGATION =================
+        let currentBartenderTab = 'dancer';
         let currentBartenderEntryMode = 'dancer';
 
-        function switchBartenderEntryMode(mode) {
+        function switchBartenderTab(tab) {
             playFeedback("tab");
-            currentBartenderEntryMode = mode;
-            const btnDancer = document.getElementById('bar-mode-btn-dancer');
-            const btnTaxiPr = document.getElementById('bar-mode-btn-taxipr');
-            const secDancer = document.getElementById('bar-mode-dancer-section');
-            const secTaxiPr = document.getElementById('bar-mode-taxipr-section');
-            const stickyBar = document.getElementById('sticky-bottom-bar');
+            currentBartenderTab = tab;
+            currentBartenderEntryMode = tab;
+            const tabs = ['dancer', 'staff', 'taxipr', 'summary'];
 
-            if (mode === 'dancer') {
-                btnDancer.className = 'flex-1 py-1.5 rounded-lg font-bold flex items-center justify-center gap-1.5 transition-all bg-amber-500/10 text-amber-400 border border-amber-500/30';
-                btnTaxiPr.className = 'flex-1 py-1.5 rounded-lg font-medium flex items-center justify-center gap-1.5 transition-all text-gray-400 hover:text-gray-200';
-                secDancer.classList.remove('hidden');
-                secTaxiPr.classList.add('hidden');
-                stickyBar.classList.remove('hidden');
-            } else {
-                btnTaxiPr.className = 'flex-1 py-1.5 rounded-lg font-bold flex items-center justify-center gap-1.5 transition-all bg-amber-500/10 text-amber-400 border border-amber-500/30';
-                btnDancer.className = 'flex-1 py-1.5 rounded-lg font-medium flex items-center justify-center gap-1.5 transition-all text-gray-400 hover:text-gray-200';
-                secDancer.classList.add('hidden');
-                secTaxiPr.classList.remove('hidden');
-                stickyBar.classList.add('hidden');
-                updateTaxiTotal();
+            tabs.forEach(t => {
+                const btn = document.getElementById(`bar-tab-btn-${t}`);
+                const sec = document.getElementById(`bar-section-${t}`);
+                if (t === tab) {
+                    if (btn) btn.className = 'py-2 px-1 rounded-lg font-bold flex flex-col sm:flex-row items-center justify-center gap-1 transition-all bg-amber-500/15 text-amber-400 border border-amber-500/40 shadow-sm';
+                    if (sec) sec.classList.remove('hidden');
+                } else {
+                    if (btn) btn.className = 'py-2 px-1 rounded-lg font-medium flex flex-col sm:flex-row items-center justify-center gap-1 transition-all text-gray-400 hover:text-gray-200 border border-transparent';
+                    if (sec) sec.classList.add('hidden');
+                }
+            });
+
+            const stickyBar = document.getElementById('sticky-bottom-bar');
+            if (stickyBar) {
+                if (tab === 'dancer') {
+                    stickyBar.classList.remove('hidden');
+                } else {
+                    stickyBar.classList.add('hidden');
+                }
             }
-            lucide.createIcons();
+
+            if (tab === 'taxipr') {
+                updateTaxiTotal();
+            } else if (tab === 'staff') {
+                calculateStaffTipTotal();
+            } else if (tab === 'summary') {
+                updateShiftReconciliationSummary();
+                loadDailyRecords();
+            }
+
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function switchBartenderEntryMode(mode) {
+            switchBartenderTab(mode);
         }
 
         function getTaxiRate(clubId) {
@@ -6748,7 +6775,11 @@
                 btnAdmin.className = 'text-gray-400 hover:text-gray-200 px-2.5 py-1 rounded-md transition-all flex items-center gap-1';
                 viewBartender.classList.remove('hidden');
                 viewAdmin.classList.add('hidden');
-                stickyBar.classList.remove('hidden');
+                if (currentBartenderTab === 'dancer') {
+                    stickyBar.classList.remove('hidden');
+                } else {
+                    stickyBar.classList.add('hidden');
+                }
                 loadDailyRecords();
             } else {
                 btnAdmin.className = 'tab-btn-active px-2.5 py-1 rounded-md transition-all flex items-center gap-1';
