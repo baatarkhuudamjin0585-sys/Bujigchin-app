@@ -897,22 +897,64 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-2">
-                        <div class="bg-dark-900 border border-dark-800 rounded-xl p-3">
-                            <div class="text-[10px] text-gray-400">Нийт олгох бонус</div>
-                            <div id="stat-grand-total" class="text-lg font-bold font-mono text-amber-400 mt-1">0 ₮</div>
+                    <!-- Summary Stats Section -->
+                    <div class="space-y-2">
+                        <!-- 1. Grand Total Card -->
+                        <div class="bg-dark-900 border border-dark-800 rounded-xl p-3 flex items-center justify-between shadow-sm">
+                            <div>
+                                <div class="text-[10px] text-gray-400 font-medium">Нийт олгох бонус (Бүжигчид + Ажилчид)</div>
+                                <div id="stat-grand-total" class="text-lg sm:text-xl font-bold font-mono text-amber-400 mt-0.5">0 ₮</div>
+                                <div id="stat-grand-sub" class="text-[9px] text-gray-500 font-mono mt-0.5"></div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-[10px] text-gray-400 font-medium">Нийт бүх TIP тоо</div>
+                                <div id="stat-tips-all" class="text-sm sm:text-base font-bold font-mono text-gray-200 mt-0.5">0 ш</div>
+                            </div>
                         </div>
-                        <div class="bg-dark-900 border border-dark-800 rounded-xl p-3">
-                            <div class="text-[10px] text-gray-400">Нийт TIP тоо</div>
-                            <div id="stat-tips" class="text-lg font-bold font-mono text-gray-100 mt-1">0</div>
+
+                        <!-- 2. The 3 TIP Types Breakdown (Бүжигчин Tip, Ажилтан Tip, Service charge) -->
+                        <div class="grid grid-cols-3 gap-2">
+                            <!-- 1. Dancer Tip -->
+                            <div class="bg-dark-900 border border-dark-800 rounded-xl p-2.5 text-center shadow-sm">
+                                <div class="text-[10px] text-amber-400 font-medium truncate flex items-center justify-center gap-1">
+                                    <i data-lucide="sparkles" class="w-3 h-3 text-amber-400 shrink-0"></i>
+                                    <span class="truncate">Бүжигчин TIP</span>
+                                </div>
+                                <div id="stat-dancer-tips" class="text-base sm:text-lg font-bold font-mono text-amber-300 mt-1">0 ш</div>
+                                <div id="stat-dancer-tips-amt" class="text-[9px] text-gray-400 font-mono mt-0.5">0 ₮</div>
+                            </div>
+
+                            <!-- 2. Staff Tip -->
+                            <div class="bg-dark-900 border border-dark-800 rounded-xl p-2.5 text-center shadow-sm">
+                                <div class="text-[10px] text-emerald-400 font-medium truncate flex items-center justify-center gap-1">
+                                    <i data-lucide="coins" class="w-3 h-3 text-emerald-400 shrink-0"></i>
+                                    <span class="truncate">Ажилтан TIP</span>
+                                </div>
+                                <div id="stat-staff-tips" class="text-base sm:text-lg font-bold font-mono text-emerald-300 mt-1">0 ш</div>
+                                <div id="stat-staff-tips-amt" class="text-[9px] text-gray-400 font-mono mt-0.5">0 ₮</div>
+                            </div>
+
+                            <!-- 3. Service Charge -->
+                            <div class="bg-dark-900 border border-dark-800 rounded-xl p-2.5 text-center shadow-sm">
+                                <div class="text-[10px] text-cyan-400 font-medium truncate flex items-center justify-center gap-1">
+                                    <i data-lucide="clock" class="w-3 h-3 text-cyan-400 shrink-0"></i>
+                                    <span class="truncate">Service charge</span>
+                                </div>
+                                <div id="stat-service-charges" class="text-base sm:text-lg font-bold font-mono text-cyan-300 mt-1">0 ш</div>
+                                <div id="stat-service-charges-amt" class="text-[9px] text-gray-400 font-mono mt-0.5">0 ₮</div>
+                            </div>
                         </div>
-                        <div class="bg-dark-900 border border-dark-800 rounded-xl p-3">
-                            <div class="text-[10px] text-gray-400">Wine (Энг / Үнэтэй)</div>
-                            <div id="stat-wines" class="text-base font-bold font-mono text-purple-300 mt-1">0 / 0</div>
-                        </div>
-                        <div class="bg-dark-900 border border-dark-800 rounded-xl p-3">
-                            <div class="text-[10px] text-gray-400">Суулт / Extra</div>
-                            <div id="stat-sits" class="text-base font-bold font-mono text-emerald-400 mt-1">0 / 0</div>
+
+                        <!-- 3. Wine & Sit Stats -->
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="bg-dark-900 border border-dark-800 rounded-xl p-2.5 shadow-sm">
+                                <div class="text-[10px] text-purple-300 font-medium">Wine (Энг / Үнэтэй)</div>
+                                <div id="stat-wines" class="text-sm sm:text-base font-bold font-mono text-purple-300 mt-0.5">0 / 0</div>
+                            </div>
+                            <div class="bg-dark-900 border border-dark-800 rounded-xl p-2.5 shadow-sm">
+                                <div class="text-[10px] text-emerald-400 font-medium">Суулт / Extra</div>
+                                <div id="stat-sits" class="text-sm sm:text-base font-bold font-mono text-emerald-400 mt-0.5">0 / 0</div>
+                            </div>
                         </div>
                     </div>
 
@@ -5392,10 +5434,96 @@
             const sumSits = rows.reduce((s, r) => s + r.total_sit_reg_qty + r.total_sit_drink_qty, 0);
             const sumExtras = records.reduce((s, r) => s + (r.extra_qty || 0), 0);
 
-            document.getElementById('stat-grand-total').textContent = formatMNT(sumTotal);
-            document.getElementById('stat-tips').textContent = sumTips;
-            document.getElementById('stat-wines').textContent = `${sumWineReg} / ${sumWineExp}`;
-            document.getElementById('stat-sits').textContent = `${sumSits} / ${sumExtras}`;
+            // Filter Staff Tips according to current club & date range
+            let staffTips = store.staff_tips || [];
+            if (clubId !== 'all') staffTips = staffTips.filter(r => String(r.club_id) === String(clubId));
+            if (startDate && endDate) staffTips = staffTips.filter(r => r.date >= startDate && r.date <= endDate);
+
+            let staffTipQty = 0;
+            let staffTipAmt = 0;
+            let serviceChargeQty = 0;
+            let serviceChargeAmt = 0;
+
+            staffTips.forEach(r => {
+                const note = r.note || '';
+                let tQty = r.tip_10k_qty || 0;
+                let sQty = r.service_charge_qty || 0;
+
+                if (!tQty && !sQty) {
+                    const mTip = note.match(/(?:Tip\(10k\)|Tip|10k):\s*(\d+)ш?/i);
+                    const mServ = note.match(/(?:Service charge\(8k\)|Service charge|Service|8k):\s*(\d+)ш?/i);
+                    if (mTip) tQty = parseInt(mTip[1]) || 0;
+                    if (mServ) sQty = parseInt(mServ[1]) || 0;
+
+                    if (!tQty && !sQty) {
+                        if (r.amount === 10000) tQty = 1;
+                        else if (r.amount === 8000) sQty = 1;
+                        else if (r.amount > 0 && r.amount % 10000 === 0) tQty = Math.floor(r.amount / 10000);
+                        else if (r.amount > 0 && r.amount % 8000 === 0) sQty = Math.floor(r.amount / 8000);
+                    }
+                }
+
+                staffTipQty += tQty;
+                staffTipAmt += tQty * 10000;
+                serviceChargeQty += sQty;
+                serviceChargeAmt += sQty * 8000;
+            });
+
+            // Dancer tip calculations
+            const dancerTipQty = sumTips;
+            const dancerTipAmt = records.reduce((s, r) => s + (r.tip_amount || 0), 0);
+
+            // Combined stats
+            const allTipsCount = dancerTipQty + staffTipQty + serviceChargeQty;
+            const staffTotalAmt = staffTips.reduce((s, r) => s + (r.amount || 0), 0);
+            const combinedGrandTotal = sumTotal + staffTotalAmt;
+
+            // 1. Grand Total Card
+            const elGrandTotal = document.getElementById('stat-grand-total');
+            if (elGrandTotal) elGrandTotal.textContent = formatMNT(combinedGrandTotal);
+
+            const elGrandSub = document.getElementById('stat-grand-sub');
+            if (elGrandSub) {
+                if (staffTotalAmt > 0) {
+                    elGrandSub.textContent = `Бүжигчид: ${formatMNT(sumTotal)} • Ажилчид: ${formatMNT(staffTotalAmt)}`;
+                } else {
+                    elGrandSub.textContent = `Бүжигчдийн нийт бонус: ${formatMNT(sumTotal)}`;
+                }
+            }
+
+            const elTipsAll = document.getElementById('stat-tips-all');
+            if (elTipsAll) elTipsAll.textContent = `${allTipsCount} ш`;
+
+            // Backward compatibility
+            const elLegacyTips = document.getElementById('stat-tips');
+            if (elLegacyTips) elLegacyTips.textContent = allTipsCount;
+
+            // 2. The 3 TIP Breakdown Cards
+            // 2.1 Dancer Tip
+            const elDancerTips = document.getElementById('stat-dancer-tips');
+            if (elDancerTips) elDancerTips.textContent = `${dancerTipQty} ш`;
+            const elDancerTipsAmt = document.getElementById('stat-dancer-tips-amt');
+            if (elDancerTipsAmt) elDancerTipsAmt.textContent = formatMNT(dancerTipAmt);
+
+            // 2.2 Staff Tip
+            const elStaffTips = document.getElementById('stat-staff-tips');
+            if (elStaffTips) elStaffTips.textContent = `${staffTipQty} ш`;
+            const elStaffTipsAmt = document.getElementById('stat-staff-tips-amt');
+            if (elStaffTipsAmt) elStaffTipsAmt.textContent = formatMNT(staffTipAmt);
+
+            // 2.3 Service Charge
+            const elServiceCharges = document.getElementById('stat-service-charges');
+            if (elServiceCharges) elServiceCharges.textContent = `${serviceChargeQty} ш`;
+            const elServiceChargesAmt = document.getElementById('stat-service-charges-amt');
+            if (elServiceChargesAmt) elServiceChargesAmt.textContent = formatMNT(serviceChargeAmt);
+
+            // 3. Wines & Sits
+            const elWines = document.getElementById('stat-wines');
+            if (elWines) elWines.textContent = `${sumWineReg} / ${sumWineExp}`;
+            const elSits = document.getElementById('stat-sits');
+            if (elSits) elSits.textContent = `${sumSits} / ${sumExtras}`;
+
+            if (window.lucide) lucide.createIcons();
 
             const listEl = document.getElementById('admin-report-list');
             if (rows.length === 0) {
