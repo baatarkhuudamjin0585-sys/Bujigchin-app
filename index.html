@@ -583,7 +583,7 @@
                     <div id="staff-tip-drawer" class="hidden p-3 border-t border-dark-800 space-y-2.5 bg-dark-950/60 text-xs">
                         <div class="flex items-center justify-between text-[11px] text-gray-400 pb-1 border-b border-dark-800">
                             <span>Бармен болон менежерүүдэд нэмэгдэл олгох</span>
-                            <span class="text-emerald-400 font-mono font-bold">10,000₮ эсвэл 8,000₮</span>
+                            <span class="text-emerald-400 font-mono font-bold">10,000₮ & 8,000₮ тоолуураар</span>
                         </div>
 
                         <!-- 1. Employee Name -->
@@ -627,22 +627,68 @@
                             <p class="text-[10px] text-gray-500 mt-1">Заавал 15-аас дээш оронтой IBAN дугаар байна</p>
                         </div>
 
-                        <!-- 4. Tip Amount Selection (10,000₮ or 8,000₮) -->
+                        <!-- 4. Staff Tip Counter Rows (10,000₮ & 8,000₮ тоо ширхэг сонгох) -->
                         <div>
-                            <label class="block text-[11px] text-gray-400 mb-1">Tip олгох дүн *</label>
-                            <div class="grid grid-cols-2 gap-2">
-                                <button type="button" onclick="selectStaffTipAmount(10000)" id="staff-amount-btn-10k"
-                                    class="staff-amount-btn py-2 px-3 rounded-xl border border-emerald-500 bg-emerald-950/60 text-emerald-300 font-bold font-mono text-sm flex items-center justify-center gap-1.5 shadow-sm transition-all">
-                                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                                    <span>10,000 ₮</span>
-                                </button>
-                                <button type="button" onclick="selectStaffTipAmount(8000)" id="staff-amount-btn-8k"
-                                    class="staff-amount-btn py-2 px-3 rounded-xl border border-dark-700 bg-dark-850 text-gray-300 font-bold font-mono text-sm flex items-center justify-center gap-1.5 hover:text-white transition-all">
-                                    <span class="w-2 h-2 rounded-full bg-gray-500"></span>
-                                    <span>8,000 ₮</span>
-                                </button>
+                            <label class="block text-[11px] text-gray-400 mb-1">Tip тоо ширхэг *</label>
+                            <div class="bg-dark-900 border border-dark-800 rounded-xl divide-y divide-dark-800 overflow-hidden shadow-sm">
+                                <!-- 10,000₮ Tip row -->
+                                <div class="flex items-center justify-between px-3 py-2 hover:bg-dark-850/40">
+                                    <div class="w-32 sm:w-36">
+                                        <div class="text-xs font-bold text-gray-100 flex items-center gap-1.5">
+                                            <i data-lucide="coins" class="w-3.5 h-3.5 text-emerald-400"></i>
+                                            <span>10,000 TIP</span>
+                                        </div>
+                                        <div class="text-[10px] text-emerald-400/80 font-mono">10,000 ₮</div>
+                                    </div>
+
+                                    <div class="flex items-center gap-1">
+                                        <button type="button" onclick="adjustStaffTipQty('staff_tip_10k_qty', -1)"
+                                            class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-90 text-gray-100 border border-dark-700 font-bold text-base flex items-center justify-center">
+                                            -
+                                        </button>
+                                        <input type="number" id="staff_tip_10k_qty" value="0" min="0" oninput="calculateStaffTipTotal()"
+                                            class="w-12 h-9 text-center bg-dark-950 border border-dark-700 rounded-lg font-mono font-bold text-gray-100 text-sm focus:outline-none focus:border-emerald-500">
+                                        <button type="button" onclick="adjustStaffTipQty('staff_tip_10k_qty', 1)"
+                                            class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-90 text-gray-100 border border-dark-700 font-bold text-base flex items-center justify-center">
+                                            +
+                                        </button>
+                                    </div>
+
+                                    <div class="w-20 text-right font-mono text-xs text-gray-300 font-medium" id="subtotal-staff-10k">0 ₮</div>
+                                </div>
+
+                                <!-- 8,000₮ Tip row -->
+                                <div class="flex items-center justify-between px-3 py-2 hover:bg-dark-850/40">
+                                    <div class="w-32 sm:w-36">
+                                        <div class="text-xs font-bold text-gray-100 flex items-center gap-1.5">
+                                            <i data-lucide="coins" class="w-3.5 h-3.5 text-emerald-400"></i>
+                                            <span>8,000 TIP</span>
+                                        </div>
+                                        <div class="text-[10px] text-emerald-400/80 font-mono">8,000 ₮</div>
+                                    </div>
+
+                                    <div class="flex items-center gap-1">
+                                        <button type="button" onclick="adjustStaffTipQty('staff_tip_8k_qty', -1)"
+                                            class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-90 text-gray-100 border border-dark-700 font-bold text-base flex items-center justify-center">
+                                            -
+                                        </button>
+                                        <input type="number" id="staff_tip_8k_qty" value="0" min="0" oninput="calculateStaffTipTotal()"
+                                            class="w-12 h-9 text-center bg-dark-950 border border-dark-700 rounded-lg font-mono font-bold text-gray-100 text-sm focus:outline-none focus:border-emerald-500">
+                                        <button type="button" onclick="adjustStaffTipQty('staff_tip_8k_qty', 1)"
+                                            class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-90 text-gray-100 border border-dark-700 font-bold text-base flex items-center justify-center">
+                                            +
+                                        </button>
+                                    </div>
+
+                                    <div class="w-20 text-right font-mono text-xs text-gray-300 font-medium" id="subtotal-staff-8k">0 ₮</div>
+                                </div>
                             </div>
-                            <input type="hidden" id="staff_tip_amount" value="10000">
+
+                            <!-- Total Display Strip -->
+                            <div class="mt-2 px-3 py-2 rounded-xl bg-dark-900 border border-emerald-500/30 flex items-center justify-between text-xs shadow-inner">
+                                <span class="text-gray-400 font-medium">Олгох нийт Tip:</span>
+                                <span id="staff-tip-total-display" class="font-mono font-bold text-emerald-400 text-sm">0 ₮</span>
+                            </div>
                         </div>
 
                         <!-- 5. Note (Optional) -->
@@ -4760,33 +4806,34 @@
             if (window.lucide) lucide.createIcons();
         }
 
-        function selectStaffTipAmount(amount) {
-            document.getElementById('staff_tip_amount').value = amount;
-            const btn10 = document.getElementById('staff-amount-btn-10k');
-            const btn8 = document.getElementById('staff-amount-btn-8k');
-            if (amount === 10000) {
-                if (btn10) {
-                    btn10.className = 'staff-amount-btn py-2 px-3 rounded-xl border border-emerald-500 bg-emerald-950/60 text-emerald-300 font-bold font-mono text-sm flex items-center justify-center gap-1.5 shadow-sm transition-all';
-                    const dot10 = btn10.querySelector('span:first-child');
-                    if (dot10) dot10.className = 'w-2 h-2 rounded-full bg-emerald-400';
-                }
-                if (btn8) {
-                    btn8.className = 'staff-amount-btn py-2 px-3 rounded-xl border border-dark-700 bg-dark-850 text-gray-300 font-bold font-mono text-sm flex items-center justify-center gap-1.5 hover:text-white transition-all';
-                    const dot8 = btn8.querySelector('span:first-child');
-                    if (dot8) dot8.className = 'w-2 h-2 rounded-full bg-gray-500';
-                }
-            } else {
-                if (btn8) {
-                    btn8.className = 'staff-amount-btn py-2 px-3 rounded-xl border border-emerald-500 bg-emerald-950/60 text-emerald-300 font-bold font-mono text-sm flex items-center justify-center gap-1.5 shadow-sm transition-all';
-                    const dot8 = btn8.querySelector('span:first-child');
-                    if (dot8) dot8.className = 'w-2 h-2 rounded-full bg-emerald-400';
-                }
-                if (btn10) {
-                    btn10.className = 'staff-amount-btn py-2 px-3 rounded-xl border border-dark-700 bg-dark-850 text-gray-300 font-bold font-mono text-sm flex items-center justify-center gap-1.5 hover:text-white transition-all';
-                    const dot10 = btn10.querySelector('span:first-child');
-                    if (dot10) dot10.className = 'w-2 h-2 rounded-full bg-gray-500';
-                }
-            }
+        function adjustStaffTipQty(inputId, delta) {
+            const el = document.getElementById(inputId);
+            if (!el) return;
+            let val = (parseInt(el.value || 0) || 0) + delta;
+            if (val < 0) val = 0;
+            el.value = val;
+            calculateStaffTipTotal();
+            playFeedback("click");
+        }
+
+        function calculateStaffTipTotal() {
+            const qty10k = parseInt(document.getElementById('staff_tip_10k_qty')?.value || 0) || 0;
+            const qty8k = parseInt(document.getElementById('staff_tip_8k_qty')?.value || 0) || 0;
+
+            const subtotal10k = qty10k * 10000;
+            const subtotal8k = qty8k * 8000;
+            const total = subtotal10k + subtotal8k;
+
+            const subEl10k = document.getElementById('subtotal-staff-10k');
+            if (subEl10k) subEl10k.textContent = formatMNT(subtotal10k);
+
+            const subEl8k = document.getElementById('subtotal-staff-8k');
+            if (subEl8k) subEl8k.textContent = formatMNT(subtotal8k);
+
+            const totalEl = document.getElementById('staff-tip-total-display');
+            if (totalEl) totalEl.textContent = formatMNT(total);
+
+            return { qty10k, qty8k, total };
         }
 
         function handleStaffIbanInput(el) {
@@ -4807,7 +4854,6 @@
             const name = (document.getElementById('staff_tip_name')?.value || '').trim();
             const role = document.getElementById('staff_tip_role')?.value || 'Бармен';
             const bank = (document.getElementById('staff_tip_bank')?.value || '').trim().replace(/\s+/g, '').toUpperCase();
-            const amount = parseInt(document.getElementById('staff_tip_amount')?.value || 10000);
             const note = (document.getElementById('staff_tip_note')?.value || '').trim();
             const club = store.clubs.find(c => String(c.id) === String(currentClubId));
 
@@ -4839,10 +4885,19 @@
                 return;
             }
 
-            if (![10000, 8000].includes(amount)) {
-                showToast('Tip олгох дүнгээ 10,000₮ эсвэл 8,000₮-өөр сонгоно уу!', true, 'Дүн буруу');
+            const { qty10k, qty8k, total } = calculateStaffTipTotal();
+
+            if (total <= 0) {
+                showToast('Tip-ийн тоо ширхэгийг дор хаяж 1-ийг сонгоно уу!', true, 'Тоо ширхэг сонгоогүй');
                 return;
             }
+
+            // Build clear breakdown note
+            const parts = [];
+            if (qty10k > 0) parts.push(`10k: ${qty10k}ш`);
+            if (qty8k > 0) parts.push(`8k: ${qty8k}ш`);
+            const breakdownStr = parts.join(', ');
+            const finalNote = note ? `${breakdownStr} • ${note}` : breakdownStr;
 
             const newTip = {
                 id: Date.now(),
@@ -4852,8 +4907,8 @@
                 employee_name: name,
                 role: role,
                 bank_account: bank,
-                amount: amount,
-                note: note,
+                amount: total,
+                note: finalNote,
                 bartender_name: currentUser?.name || 'Ээлжийн ажилтан',
                 created_at: new Date().toISOString()
             };
@@ -4864,11 +4919,15 @@
             cloudInsert('staff_tips', newTip);
 
             playFeedback('success');
-            showToast(`Ажилтны Tip (${name} • ${role} • ${formatMNT(amount)}) амжилттай бүртгэгдлээ!`, false, 'Амжилттай бүртгэгдлээ');
+            showToast(`Ажилтны Tip (${name} • ${breakdownStr} • ${formatMNT(total)}) амжилттай бүртгэгдлээ!`, false, 'Амжилттай бүртгэгдлээ');
 
             document.getElementById('staff_tip_name').value = '';
             document.getElementById('staff_tip_bank').value = '';
             document.getElementById('staff_tip_note').value = '';
+            document.getElementById('staff_tip_10k_qty').value = '0';
+            document.getElementById('staff_tip_8k_qty').value = '0';
+            calculateStaffTipTotal();
+
             const counter = document.getElementById('staff-tip-iban-counter');
             if (counter) {
                 counter.textContent = '0 орон';
