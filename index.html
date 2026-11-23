@@ -78,7 +78,7 @@
         #toast {
             top: max(16px, calc(env(safe-area-inset-top, 0px) + 12px)) !important;
         }
-        #dancer-search-modal {
+        #dancer-search-modal, #employee-search-modal {
             padding-top: max(12px, calc(env(safe-area-inset-top, 0px) + 8px)) !important;
         }
         #sticky-bottom-bar {
@@ -586,7 +586,7 @@
                             <span class="text-emerald-400 font-mono font-bold">Tip 10,000₮ • Service 8,000₮</span>
                         </div>
 
-                        <!-- 1. Employee Selector & "+ Ажилтан нэмэх" button -->
+                        <!-- 1. Employee Search & Selector & "+ Ажилтан нэмэх" button -->
                         <div class="space-y-1.5">
                             <div class="flex items-center justify-between">
                                 <label class="text-[11px] font-medium text-gray-300 flex items-center gap-1">
@@ -600,13 +600,37 @@
                                 </button>
                             </div>
 
-                            <!-- Employee Select Dropdown -->
-                            <div class="relative">
-                                <select id="staff_tip_employee_select" onchange="onEmployeeSelected()"
-                                    class="w-full bg-dark-850 hover:bg-dark-800 border border-dark-700 hover:border-emerald-500/50 rounded-xl px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-emerald-500 font-medium cursor-pointer transition-all">
-                                    <option value="">-- Ажилтныг сонгоно уу --</option>
-                                </select>
+                            <!-- Employee Search & Select Trigger Button -->
+                            <div id="staff-employee-picker-btn" onclick="openEmployeeSearchModal()"
+                                class="w-full bg-dark-850 hover:bg-dark-800 border border-dark-700 hover:border-emerald-500/50 rounded-xl px-3 py-2.5 flex items-center justify-between cursor-pointer transition-all active:scale-[0.99] shadow-inner group">
+                                <div class="flex items-center gap-2.5 min-w-0">
+                                    <div class="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center shrink-0 text-emerald-400 group-hover:scale-105 transition-transform">
+                                        <i data-lucide="search" class="w-4 h-4"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <div id="staff-picker-title" class="text-xs font-bold text-gray-200 truncate flex items-center gap-1.5">
+                                            <span>-- Ажилтан хайх / сонгох --</span>
+                                        </div>
+                                        <div id="staff-picker-sub" class="text-[10px] text-gray-400 font-mono truncate">
+                                            Нэр, албан тушаал, данс, утсаар хайна уу
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-1 shrink-0 ml-1">
+                                    <button id="staff-picker-clear-btn" type="button" onclick="event.stopPropagation(); clearSelectedEmployee();"
+                                        class="hidden p-1.5 text-gray-500 hover:text-red-400 rounded-lg hover:bg-dark-750 transition-colors" title="Сонголт цэвэрлэх">
+                                        <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                                    </button>
+                                    <div class="w-7 h-7 rounded-lg bg-dark-800 flex items-center justify-center text-emerald-400">
+                                        <i data-lucide="chevrons-up-down" class="w-4 h-4"></i>
+                                    </div>
+                                </div>
                             </div>
+
+                            <!-- Hidden select for compatibility -->
+                            <select id="staff_tip_employee_select" onchange="onEmployeeSelected()" class="hidden">
+                                <option value="">-- Ажилтныг сонгоно уу --</option>
+                            </select>
 
                             <!-- Selected Employee Info Strip -->
                             <div id="staff-employee-info-strip" class="hidden bg-dark-900 border border-dark-750 rounded-xl p-2.5 space-y-1">
@@ -1321,6 +1345,72 @@
         </div>
     </div>
 
+    <!-- EMPLOYEE SEARCH / PICKER MODAL (FAST MOBILE AUTOCOMPLETE & KEYBOARD-SAFE) -->
+    <div id="employee-search-modal" onclick="if(event.target === this) closeEmployeeSearchModal()"
+        class="hidden fixed inset-0 z-[100] flex items-start justify-center p-2 pt-2 sm:pt-6 bg-black/85 backdrop-blur-md transition-opacity">
+        <div id="employee-search-modal-box"
+            class="bg-dark-900 border border-dark-700 rounded-2xl max-w-md w-full flex flex-col overflow-hidden shadow-2xl transition-all duration-150 animate-in fade-in zoom-in-95 duration-150">
+            <!-- Header -->
+            <div class="px-3.5 py-2.5 border-b border-dark-800 flex items-center justify-between shrink-0 bg-dark-950/70">
+                <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-md bg-emerald-500/15 flex items-center justify-center text-emerald-400">
+                        <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
+                    </div>
+                    <h3 class="text-xs font-bold text-gray-100 uppercase tracking-wide">Ажилтан хайх / сонгох</h3>
+                </div>
+                <button type="button" onclick="closeEmployeeSearchModal()" class="w-7 h-7 rounded-lg bg-dark-800 hover:bg-dark-700 flex items-center justify-center text-gray-400 hover:text-gray-100">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <!-- Search input bar -->
+            <div class="p-2.5 border-b border-dark-800 space-y-2 shrink-0 bg-dark-900">
+                <div class="relative">
+                    <i data-lucide="search" class="w-4 h-4 text-emerald-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                    <input type="search" id="employee-search-kw" oninput="renderEmployeeSearchResults()"
+                        placeholder="Нэр, албан тушаал, данс, утсаар хайх..."
+                        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                        class="w-full bg-dark-850 border border-dark-700 rounded-xl pl-9 pr-8 py-2 text-[16px] sm:text-xs text-gray-100 placeholder-gray-500 font-medium focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500">
+                    <button type="button" onclick="document.getElementById('employee-search-kw').value=''; renderEmployeeSearchResults(); document.getElementById('employee-search-kw').focus();"
+                        class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 p-1">
+                        <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+
+                <!-- Filter Chips -->
+                <div class="flex items-center gap-1.5 overflow-x-auto pb-0.5 no-scrollbar text-xs">
+                    <button type="button" id="emp-picker-tab-all" onclick="setEmployeePickerFilter('all')"
+                        class="px-2.5 py-1 rounded-lg font-semibold whitespace-nowrap bg-emerald-500 text-gray-950 shadow">
+                        Бүгд
+                    </button>
+                    <button type="button" id="emp-picker-tab-local" onclick="setEmployeePickerFilter('local')"
+                        class="px-2.5 py-1 rounded-lg font-semibold whitespace-nowrap bg-dark-800 text-gray-400 hover:text-gray-200">
+                        📍 Манай салбар
+                    </button>
+                    <button type="button" id="emp-picker-tab-other" onclick="setEmployeePickerFilter('other')"
+                        class="px-2.5 py-1 rounded-lg font-semibold whitespace-nowrap bg-dark-800 text-gray-400 hover:text-gray-200">
+                        🔄 Бусад салбар
+                    </button>
+                </div>
+            </div>
+
+            <!-- Employees scrollable list -->
+            <div id="employee-search-results" class="p-2.5 overflow-y-auto space-y-1 flex-1 min-h-[140px] max-h-[360px] overscroll-contain">
+                <!-- Employees dynamically rendered here -->
+            </div>
+
+            <!-- Footer: Quick register new employee -->
+            <div class="p-2 border-t border-dark-800 bg-dark-950/80 flex items-center justify-between shrink-0 text-xs">
+                <span class="text-[11px] text-gray-400">Ажилтан жагсаалтад байхгүй юу?</span>
+                <button type="button" onclick="closeEmployeeSearchModal(); openEmployeeModal('add');"
+                    class="flex items-center gap-1 text-[11px] font-bold text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 px-2.5 py-1 rounded-lg border border-emerald-500/30">
+                    <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+                    <span>+ Шинэ ажилтан нэмэх</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- DANCER ADD/EDIT MODAL -->
     <div id="dancer-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
         <div class="bg-dark-900 border border-dark-700 rounded-xl max-w-sm w-full overflow-hidden shadow-2xl">
@@ -1380,7 +1470,8 @@
     </div>
 
     <!-- EMPLOYEE (STAFF TIP RECIPIENT) ADD/EDIT MODAL -->
-    <div id="employee-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div id="employee-modal" onclick="if(event.target === this) closeEmployeeModal()"
+        class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
         <div class="bg-dark-900 border border-dark-700 rounded-xl max-w-sm w-full overflow-hidden shadow-2xl">
             <div class="px-4 py-3 border-b border-dark-800 flex items-center justify-between bg-dark-950/70">
                 <div class="flex items-center gap-2">
@@ -5092,7 +5183,275 @@
             renderTaxiPrSection();
         }
 
-        // ================= EMPLOYEE & STAFF TIP SYSTEM =================
+        // ================= EMPLOYEE SEARCH & STAFF TIP SYSTEM =================
+        let currentEmployeePickerFilter = 'all';
+
+        function adjustEmployeePickerHeightForKeyboard() {
+            const modalOverlay = document.getElementById('employee-search-modal');
+            const modalBox = document.getElementById('employee-search-modal-box');
+            const resultsList = document.getElementById('employee-search-results');
+            if (!modalBox || !resultsList) return;
+
+            if (window.visualViewport) {
+                const vpHeight = window.visualViewport.height;
+                const padTop = modalOverlay ? (parseFloat(getComputedStyle(modalOverlay).paddingTop) || 12) : 12;
+                const maxModalH = Math.max(200, Math.floor(vpHeight - padTop - 12));
+                modalBox.style.maxHeight = `${maxModalH}px`;
+                const maxListH = Math.max(100, maxModalH - 170);
+                resultsList.style.maxHeight = `${maxListH}px`;
+            }
+        }
+
+        function openEmployeeSearchModal() {
+            playFeedback('click');
+            const modal = document.getElementById('employee-search-modal');
+            if (!modal) return;
+            document.body.classList.add('overflow-hidden');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            const kwInput = document.getElementById('employee-search-kw');
+            if (kwInput) kwInput.value = '';
+            currentEmployeePickerFilter = 'all';
+            renderEmployeeSearchResults();
+            adjustEmployeePickerHeightForKeyboard();
+
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', adjustEmployeePickerHeightForKeyboard);
+                window.visualViewport.addEventListener('scroll', adjustEmployeePickerHeightForKeyboard);
+            }
+
+            setTimeout(() => {
+                if (kwInput) kwInput.focus();
+                adjustEmployeePickerHeightForKeyboard();
+            }, 60);
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function closeEmployeeSearchModal() {
+            const modal = document.getElementById('employee-search-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+            document.body.classList.remove('overflow-hidden');
+            if (window.visualViewport) {
+                window.visualViewport.removeEventListener('resize', adjustEmployeePickerHeightForKeyboard);
+                window.visualViewport.removeEventListener('scroll', adjustEmployeePickerHeightForKeyboard);
+            }
+            const kwInput = document.getElementById('employee-search-kw');
+            if (kwInput) kwInput.blur();
+        }
+
+        function setEmployeePickerFilter(filter) {
+            playFeedback('click');
+            currentEmployeePickerFilter = filter;
+            renderEmployeeSearchResults();
+        }
+
+        function renderEmployeeSearchResults() {
+            const listEl = document.getElementById('employee-search-results');
+            if (!listEl) return;
+            const kw = (document.getElementById('employee-search-kw')?.value || '').trim().toLowerCase();
+            const curClubIdNum = parseInt(currentClubId);
+            const curClub = store.clubs.find(c => c.id === curClubIdNum);
+
+            const isLocal = (e) => (!e.club_id || String(e.club_id) === 'all' || e.club_id === curClubIdNum);
+
+            let filtered = (store.employees || []).filter(e => e.is_active !== 0);
+
+            if (currentEmployeePickerFilter === 'local') {
+                filtered = filtered.filter(isLocal);
+            } else if (currentEmployeePickerFilter === 'other') {
+                filtered = filtered.filter(e => !isLocal(e));
+            }
+
+            if (kw) {
+                filtered = filtered.filter(e => {
+                    const name = (e.name || '').toLowerCase();
+                    const role = (e.role || '').toLowerCase();
+                    const bank = (e.bank_account || '').toLowerCase();
+                    const ph = (e.phone || '').toLowerCase();
+                    return name.includes(kw) || role.includes(kw) || bank.includes(kw) || ph.includes(kw);
+                });
+            }
+
+            // Sort: local club employees first, then alphabetical by name
+            filtered.sort((a, b) => {
+                const aLocal = isLocal(a);
+                const bLocal = isLocal(b);
+                if (aLocal && !bLocal) return -1;
+                if (!aLocal && bLocal) return 1;
+                return (a.name || '').localeCompare(b.name || '', 'mn');
+            });
+
+            // Update tab badges
+            const allActive = (store.employees || []).filter(e => e.is_active !== 0);
+            const allCount = allActive.length;
+            const localCount = allActive.filter(isLocal).length;
+            const otherCount = allCount - localCount;
+
+            const tabAll = document.getElementById('emp-picker-tab-all');
+            const tabLocal = document.getElementById('emp-picker-tab-local');
+            const tabOther = document.getElementById('emp-picker-tab-other');
+
+            if (tabAll) {
+                tabAll.textContent = `Бүгд (${allCount})`;
+                tabAll.className = `px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${currentEmployeePickerFilter === 'all' ? 'bg-emerald-500 text-gray-950 shadow' : 'bg-dark-800 text-gray-400 hover:text-gray-200'}`;
+            }
+            if (tabLocal) {
+                tabLocal.textContent = `📍 Манай салбар (${localCount})`;
+                tabLocal.className = `px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${currentEmployeePickerFilter === 'local' ? 'bg-emerald-500 text-gray-950 shadow' : 'bg-dark-800 text-gray-400 hover:text-gray-200'}`;
+            }
+            if (tabOther) {
+                tabOther.textContent = `🔄 Бусад салбар (${otherCount})`;
+                tabOther.className = `px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${currentEmployeePickerFilter === 'other' ? 'bg-emerald-500 text-gray-950 shadow' : 'bg-dark-800 text-gray-400 hover:text-gray-200'}`;
+            }
+
+            if (filtered.length === 0) {
+                listEl.innerHTML = `
+                    <div class="py-8 text-center space-y-2">
+                        <i data-lucide="search-x" class="w-8 h-8 text-gray-600 mx-auto"></i>
+                        <div class="text-xs text-gray-400">«${kw || 'Ажилтан'}» илэрц олдсонгүй</div>
+                        <button type="button" onclick="closeEmployeeSearchModal(); openEmployeeModal('add');"
+                            class="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-bold hover:bg-emerald-500/25">
+                            <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+                            <span>Шинээр ажилтан нэмэх</span>
+                        </button>
+                    </div>
+                `;
+                if (window.lucide) lucide.createIcons();
+                return;
+            }
+
+            const curSelectedId = document.getElementById('staff_tip_selected_id')?.value;
+
+            listEl.innerHTML = filtered.map((e, idx) => {
+                const local = isLocal(e);
+                const isSel = String(e.id) === String(curSelectedId);
+
+                let clubBadge = '';
+                if (local) {
+                    clubBadge = `<span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 font-mono border border-emerald-500/30">📍 ${curClub?.name.replace(' CLUB', '') || 'Манайх'}</span>`;
+                } else {
+                    const origClub = store.clubs.find(c => c.id === e.club_id);
+                    const cName = origClub ? origClub.name.replace(' CLUB', '') : 'Өөр';
+                    clubBadge = `<span class="text-[9px] px-1.5 py-0.5 rounded bg-purple-500/15 text-purple-300 font-mono border border-purple-500/30">🔄 ${cName}-аас</span>`;
+                }
+
+                return `
+                    <div onclick="selectEmployeeFromPicker(${e.id})"
+                        class="px-3 py-2.5 rounded-xl border transition-all cursor-pointer flex items-center justify-between active:scale-[0.98] ${isSel ? 'bg-emerald-500/20 border-emerald-500/60 ring-1 ring-emerald-500/40' : 'bg-dark-850 hover:bg-dark-800 border-dark-750'}">
+                        <div class="flex items-center gap-2.5 min-w-0 flex-1 pr-2">
+                            <div class="w-6 h-6 rounded-md bg-dark-800 border border-dark-700/60 text-gray-400 font-mono text-[10px] font-bold flex items-center justify-center shrink-0">
+                                ${idx + 1}
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-center gap-1.5 flex-wrap">
+                                    <span class="font-bold text-sm text-gray-100">${e.name}</span>
+                                    <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-950/70 text-emerald-300 font-semibold border border-emerald-800/60">${e.role || 'Ажилтан'}</span>
+                                    ${clubBadge}
+                                </div>
+                                <div class="text-[11px] text-gray-400 font-mono mt-0.5 flex items-center gap-1.5 truncate">
+                                    <span class="text-amber-400/90 font-bold">${e.bank_account || '-'}</span>
+                                    ${e.phone ? `<span class="text-gray-600">•</span><span class="text-cyan-400">📞 ${e.phone}</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="shrink-0">
+                            ${isSel ? '<i data-lucide="check" class="w-4 h-4 text-emerald-400"></i>' : '<i data-lucide="chevron-right" class="w-4 h-4 text-gray-600"></i>'}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function selectEmployeeFromPicker(empId) {
+            playFeedback('click');
+            selectEmployee(empId);
+            closeEmployeeSearchModal();
+        }
+
+        function selectEmployee(empId) {
+            const emp = (store.employees || []).find(e => String(e.id) === String(empId));
+            const idInput = document.getElementById('staff_tip_selected_id');
+            const nameInput = document.getElementById('staff_tip_name');
+            const roleInput = document.getElementById('staff_tip_role');
+            const bankInput = document.getElementById('staff_tip_bank');
+            const phoneInput = document.getElementById('staff_tip_phone');
+            const titleEl = document.getElementById('staff-picker-title');
+            const subEl = document.getElementById('staff-picker-sub');
+            const clearBtn = document.getElementById('staff-picker-clear-btn');
+            const strip = document.getElementById('staff-employee-info-strip');
+            const select = document.getElementById('staff_tip_employee_select');
+
+            if (!emp) {
+                clearSelectedEmployee();
+                return;
+            }
+
+            if (idInput) idInput.value = emp.id;
+            if (nameInput) nameInput.value = emp.name || '';
+            if (roleInput) roleInput.value = emp.role || 'Бармен';
+            if (bankInput) bankInput.value = emp.bank_account || '';
+            if (phoneInput) phoneInput.value = emp.phone || '';
+            if (select) select.value = String(emp.id);
+
+            if (titleEl) {
+                titleEl.innerHTML = `<span class="text-white font-bold">${emp.name}</span> <span class="text-[10px] px-1.5 py-0.2 rounded font-semibold bg-emerald-950/80 text-emerald-300 border border-emerald-800/60">${emp.role || 'Ажилтан'}</span>`;
+            }
+            if (subEl) {
+                subEl.innerHTML = `IBAN: <span class="text-amber-400 font-bold">${emp.bank_account || '-'}</span> • 📞 ${emp.phone || '-'}`;
+            }
+            if (clearBtn) clearBtn.classList.remove('hidden');
+
+            if (strip) {
+                const elName = document.getElementById('staff-selected-name');
+                const elRole = document.getElementById('staff-selected-role-badge');
+                const elBank = document.getElementById('staff-selected-bank');
+                const elPhone = document.getElementById('staff-selected-phone');
+                if (elName) elName.textContent = emp.name;
+                if (elRole) elRole.textContent = emp.role || 'Ажилтан';
+                if (elBank) elBank.textContent = emp.bank_account || '-';
+                if (elPhone) elPhone.textContent = emp.phone || '-';
+                strip.classList.remove('hidden');
+            }
+
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function clearSelectedEmployee() {
+            const idInput = document.getElementById('staff_tip_selected_id');
+            const nameInput = document.getElementById('staff_tip_name');
+            const roleInput = document.getElementById('staff_tip_role');
+            const bankInput = document.getElementById('staff_tip_bank');
+            const phoneInput = document.getElementById('staff_tip_phone');
+            const titleEl = document.getElementById('staff-picker-title');
+            const subEl = document.getElementById('staff-picker-sub');
+            const clearBtn = document.getElementById('staff-picker-clear-btn');
+            const strip = document.getElementById('staff-employee-info-strip');
+            const select = document.getElementById('staff_tip_employee_select');
+
+            if (idInput) idInput.value = '';
+            if (nameInput) nameInput.value = '';
+            if (roleInput) roleInput.value = 'Бармен';
+            if (bankInput) bankInput.value = '';
+            if (phoneInput) phoneInput.value = '';
+            if (select) select.value = '';
+
+            if (titleEl) {
+                titleEl.innerHTML = `<span>-- Ажилтан хайх / сонгох --</span>`;
+            }
+            if (subEl) {
+                subEl.textContent = 'Нэр, албан тушаал, данс, утсаар хайна уу';
+            }
+            if (clearBtn) clearBtn.classList.add('hidden');
+            if (strip) strip.classList.add('hidden');
+
+            if (window.lucide) lucide.createIcons();
+        }
+
         function populateEmployeeSelect(selectedId = null) {
             const select = document.getElementById('staff_tip_employee_select');
             if (!select) return;
@@ -5112,52 +5471,19 @@
                 select.appendChild(opt);
             });
 
-            if (selectedId) {
-                select.value = String(selectedId);
+            const currentVal = selectedId || document.getElementById('staff_tip_selected_id')?.value;
+            if (currentVal && (store.employees || []).some(e => String(e.id) === String(currentVal))) {
+                selectEmployee(currentVal);
             }
-            onEmployeeSelected();
         }
 
         function onEmployeeSelected() {
             const select = document.getElementById('staff_tip_employee_select');
-            const strip = document.getElementById('staff-employee-info-strip');
-            const nameInput = document.getElementById('staff_tip_name');
-            const roleInput = document.getElementById('staff_tip_role');
-            const bankInput = document.getElementById('staff_tip_bank');
-            const phoneInput = document.getElementById('staff_tip_phone');
-            const idInput = document.getElementById('staff_tip_selected_id');
-
-            if (!select || !select.value) {
-                if (strip) strip.classList.add('hidden');
-                if (nameInput) nameInput.value = '';
-                if (roleInput) roleInput.value = 'Бармен';
-                if (bankInput) bankInput.value = '';
-                if (phoneInput) phoneInput.value = '';
-                if (idInput) idInput.value = '';
-                return;
+            if (select && select.value) {
+                selectEmployee(select.value);
+            } else {
+                clearSelectedEmployee();
             }
-
-            const emp = (store.employees || []).find(e => String(e.id) === String(select.value));
-            if (!emp) return;
-
-            if (nameInput) nameInput.value = emp.name || '';
-            if (roleInput) roleInput.value = emp.role || 'Бармен';
-            if (bankInput) bankInput.value = emp.bank_account || '';
-            if (phoneInput) phoneInput.value = emp.phone || '';
-            if (idInput) idInput.value = emp.id;
-
-            if (strip) {
-                const elName = document.getElementById('staff-selected-name');
-                const elRole = document.getElementById('staff-selected-role-badge');
-                const elBank = document.getElementById('staff-selected-bank');
-                const elPhone = document.getElementById('staff-selected-phone');
-                if (elName) elName.textContent = emp.name;
-                if (elRole) elRole.textContent = emp.role || 'Ажилтан';
-                if (elBank) elBank.textContent = emp.bank_account || '-';
-                if (elPhone) elPhone.textContent = emp.phone || '-';
-                strip.classList.remove('hidden');
-            }
-            if (window.lucide) lucide.createIcons();
         }
 
         function openEmployeeModal(mode, empId = null) {
@@ -5207,12 +5533,16 @@
                 document.getElementById('modal-employee-phone').value = emp.phone || '';
             }
             modal.classList.remove('hidden');
+            modal.classList.add('flex');
             if (window.lucide) lucide.createIcons();
         }
 
         function closeEmployeeModal() {
             const modal = document.getElementById('employee-modal');
-            if (modal) modal.classList.add('hidden');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
         }
 
         function submitEmployeeModal(e) {
@@ -5283,6 +5613,7 @@
             if (!store.employees) store.employees = [];
 
             let targetId = null;
+            let targetEmp = null;
             if (id) {
                 const emp = store.employees.find(x => String(x.id) === String(id));
                 if (emp) {
@@ -5292,14 +5623,12 @@
                     emp.bank_account = bankAcc;
                     emp.phone = phone;
                     targetId = emp.id;
-                    if (supabaseClient) {
-                        supabaseClient.from('employees').upsert([emp]).catch(err => console.warn(err));
-                    }
+                    targetEmp = emp;
                 }
                 showToast(`${name} ажилтны мэдээлэл шинэчлэгдлээ`);
             } else {
                 targetId = Date.now();
-                const newEmp = {
+                targetEmp = {
                     id: targetId,
                     club_id: clubId,
                     name: name,
@@ -5309,20 +5638,38 @@
                     is_active: 1,
                     created_at: new Date().toISOString()
                 };
-                store.employees.push(newEmp);
+                store.employees.push(targetEmp);
                 showToast(`${name} (${role}) ажилтан амжилттай бүртгэгдлээ`);
-                if (supabaseClient) {
-                    supabaseClient.from('employees').upsert([newEmp]).catch(err => console.warn(err));
-                }
             }
 
+            // Always save stored data & close modal
             saveStoredData(store);
             closeEmployeeModal();
+
+            // Auto-select the newly added / edited employee immediately
+            if (targetId) {
+                selectEmployee(targetId);
+            }
             populateEmployeeSelect(targetId);
+
             if (typeof renderEmployeesAdminTable === 'function') {
                 renderEmployeesAdminTable();
             }
+            if (typeof renderEmployeeSearchResults === 'function') {
+                renderEmployeeSearchResults();
+            }
             playFeedback('success');
+
+            // Safely sync to Supabase without calling .catch() on PostgrestFilterBuilder
+            if (supabaseClient && targetEmp) {
+                try {
+                    supabaseClient.from('employees').upsert([targetEmp]).then(({ error }) => {
+                        if (error) console.warn('Supabase employee upsert error:', error);
+                    });
+                } catch (syncErr) {
+                    console.warn('Supabase employee sync failed:', syncErr);
+                }
+            }
         }
 
         function renderEmployeesAdminTable() {
@@ -5389,11 +5736,20 @@
             emp.is_active = 0;
             saveStoredData(store);
             if (supabaseClient) {
-                supabaseClient.from('employees').upsert([emp]).catch(err => console.warn(err));
+                try {
+                    supabaseClient.from('employees').upsert([emp]).then(({ error }) => {
+                        if (error) console.warn('Supabase employee delete error:', error);
+                    });
+                } catch (e) {
+                    console.warn(e);
+                }
             }
             showToast(`${emp.name} ажилтан амжилттай хасагдлаа`, false, 'Устгагдлаа');
             renderEmployeesAdminTable();
             populateEmployeeSelect();
+            if (String(document.getElementById('staff_tip_selected_id')?.value) === String(empId)) {
+                clearSelectedEmployee();
+            }
         }
 
         function toggleStaffTipDrawer() {
@@ -5466,7 +5822,7 @@
             }
 
             if (!empId || !name || !bank) {
-                highlightField('staff_tip_employee_select');
+                highlightField('staff-employee-picker-btn');
                 showToast('Tip & Service charge олгох ажилтнаа сонгоно уу! Хэрэв байхгүй бол "+ Ажилтан нэмэх" товчоор шинээр бүртгэнэ үү.', true, 'Ажилтан сонгоогүй');
                 return;
             }
@@ -5508,9 +5864,7 @@
             playFeedback('success');
             showToast(`Ажилтны нэмэгдэл (${name} • ${breakdownStr} • ${formatMNT(total)}) амжилттай бүртгэгдлээ!`, false, 'Амжилттай бүртгэгдлээ');
 
-            const empSelect = document.getElementById('staff_tip_employee_select');
-            if (empSelect) empSelect.value = '';
-            onEmployeeSelected();
+            clearSelectedEmployee();
 
             document.getElementById('staff_tip_note').value = '';
             document.getElementById('staff_tip_10k_qty').value = '0';
