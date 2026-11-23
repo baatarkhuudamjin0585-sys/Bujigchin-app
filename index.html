@@ -3626,10 +3626,65 @@
             console.error('Failed to init Supabase client:', e);
         }
 
+        const TABLE_ALLOWED_COLUMNS = {
+            'records': [
+                'id', 'club_id', 'club_name', 'dancer_id', 'dancer_name', 'dancer_type',
+                'real_name', 'bank_account', 'tip_qty', 'wine_reg_qty', 'wine_exp_qty',
+                'sit_reg_qty', 'sit_drink_qty', 'extra_qty', 'penalty_amount', 'manual_extra_amount',
+                'grand_total', 'note', 'date', 'bartender_name', 'is_submitted', 'created_at'
+            ],
+            'taxi_pr_records': [
+                'id', 'type', 'date', 'club_id', 'club_name', 'bartender_name',
+                'driver_name', 'driver_bank', 'taxi_qty', 'rate', 'pr_manager_name',
+                'pr_manager_bank', 'bill_no', 'amount', 'note', 'created_at'
+            ],
+            'staff_tips': [
+                'id', 'club_id', 'club_name', 'date', 'employee_name', 'role',
+                'bank_account', 'amount', 'note', 'bartender_name', 'created_at'
+            ],
+            'submitted_shifts': [
+                'id', 'club_id', 'date', 'submitted_at', 'bartender_name', 'total_dancers',
+                'grand_total', 'total_tip', 'total_wine_reg', 'total_wine_exp', 'total_sit_reg',
+                'total_sit_drink', 'total_extra', 'total_penalty', 'total_manual_extra',
+                'is_locked', 'status', 'created_at'
+            ],
+            'dancers': [
+                'id', 'stage_name', 'real_name', 'bank_account', 'phone', 'type',
+                'club_id', 'club_name', 'is_active', 'created_at'
+            ],
+            'taxi_drivers': [
+                'id', 'name', 'bank_account', 'phone', 'is_active', 'club_id', 'created_at'
+            ],
+            'employees': [
+                'id', 'name', 'role', 'bank_account', 'phone', 'is_active', 'club_id', 'created_at'
+            ],
+            'tariffs': [
+                'id', 'club_id', 'dancer_type', 'item_key', 'service_key', 'item_name',
+                'service_name', 'rate', 'updated_at'
+            ],
+            'users': [
+                'id', 'username', 'password', 'name', 'role', 'club_id', 'is_blocked'
+            ]
+        };
+
+        function cleanRowForCloud(table, row) {
+            if (!row || typeof row !== 'object') return row;
+            const allowed = TABLE_ALLOWED_COLUMNS[table];
+            if (!allowed) return row;
+            const clean = {};
+            allowed.forEach(col => {
+                if (row[col] !== undefined) {
+                    clean[col] = row[col];
+                }
+            });
+            return clean;
+        }
+
         async function cloudInsert(table, row) {
             if (!supabaseClient) return;
             try {
-                const { error } = await supabaseClient.from(table).insert([row]);
+                const cleanRow = cleanRowForCloud(table, row);
+                const { error } = await supabaseClient.from(table).insert([cleanRow]);
                 if (error) {
                     console.error(`Error inserting into ${table}:`, error);
                     showToast('Үүлэн санд хадгалахад алдаа гарлаа: ' + error.message, true, 'Серверийн алдаа');
@@ -3642,7 +3697,8 @@
         async function cloudUpsert(table, row) {
             if (!supabaseClient) return;
             try {
-                const { error } = await supabaseClient.from(table).upsert([row]);
+                const cleanRow = cleanRowForCloud(table, row);
+                const { error } = await supabaseClient.from(table).upsert([cleanRow]);
                 if (error) {
                     console.error(`Error upserting into ${table}:`, error);
                     showToast('Үүлэн санд шинэчлэхэд алдаа гарлаа: ' + error.message, true, 'Серверийн алдаа');
@@ -5701,14 +5757,12 @@
                 club_id: parseInt(currentClubId),
                 club_name: club?.name || '',
                 bartender_name: currentUser ? currentUser.name : 'Ээлжийн ажилтан',
-                driver_id: driverId,
                 driver_name: driverName,
                 driver_bank: driverBank,
-                driver_phone: driverPhone,
                 taxi_qty: qty,
                 rate: rate,
                 amount: qty * rate,
-                note: ''
+                note: driverPhone ? `Утас: ${driverPhone}` : ''
             };
 
             if (!store.taxi_pr_records) store.taxi_pr_records = [];
@@ -6414,7 +6468,6 @@
                 club_id: parseInt(currentClubId),
                 club_name: club ? club.name : 'ARUM CLUB',
                 date: entryDate,
-                employee_id: empId,
                 employee_name: name,
                 role: role,
                 bank_account: bank,
