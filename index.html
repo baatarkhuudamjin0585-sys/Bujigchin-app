@@ -78,7 +78,7 @@
         #toast {
             top: max(16px, calc(env(safe-area-inset-top, 0px) + 12px)) !important;
         }
-        #dancer-search-modal, #employee-search-modal {
+        #dancer-search-modal, #employee-search-modal, #taxi-driver-search-modal {
             padding-top: max(12px, calc(env(safe-area-inset-top, 0px) + 8px)) !important;
         }
         #sticky-bottom-bar {
@@ -756,18 +756,70 @@
                             </span>
                         </div>
 
-                        <!-- Driver Name & Account -->
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block text-[11px] text-gray-400 mb-1">Жолоочийн нэр *</label>
-                                <input type="text" id="bar_taxi_driver_name" required placeholder="Жишээ: Д.Батбаяр..."
-                                    class="w-full bg-dark-850 border border-dark-700 rounded-lg px-2.5 py-1.5 text-xs text-gray-100 focus:outline-none focus:border-amber-500">
+                        <!-- Driver Selector & "+ Жолооч нэмэх" button -->
+                        <div class="space-y-1.5">
+                            <div class="flex items-center justify-between">
+                                <label class="text-[11px] font-medium text-gray-300 flex items-center gap-1">
+                                    <i data-lucide="car" class="w-3.5 h-3.5 text-amber-400"></i>
+                                    <span>Жолооч сонгох *</span>
+                                </label>
+                                <button type="button" onclick="openTaxiDriverModal('add')" 
+                                    class="flex items-center gap-1 text-[11px] font-semibold text-amber-400 hover:text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 px-2 py-0.5 rounded border border-amber-500/30 transition-all active:scale-95">
+                                    <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+                                    <span>+ Жолооч нэмэх</span>
+                                </button>
                             </div>
-                            <div>
-                                <label class="block text-[11px] text-gray-400 mb-1">Жолоочийн данс / IBAN *</label>
-                                <input type="text" id="bar_taxi_driver_bank" required placeholder="5005... эсвэл MN..."
-                                    class="w-full bg-dark-850 border border-dark-700 rounded-lg px-2.5 py-1.5 text-xs text-amber-400 font-mono focus:outline-none focus:border-amber-500 uppercase">
+
+                            <!-- Taxi Driver Search & Select Trigger Button -->
+                            <div id="bar-taxi-picker-btn" onclick="openTaxiDriverSearchModal()"
+                                class="w-full bg-dark-850 hover:bg-dark-800 border border-dark-700 hover:border-amber-500/50 rounded-xl px-3 py-2.5 flex items-center justify-between cursor-pointer transition-all active:scale-[0.99] shadow-inner group">
+                                <div class="flex items-center gap-2.5 min-w-0">
+                                    <div class="w-8 h-8 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center justify-center shrink-0 text-amber-400 group-hover:scale-105 transition-transform">
+                                        <i data-lucide="search" class="w-4 h-4"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <div id="taxi-picker-title" class="text-xs font-bold text-gray-200 truncate flex items-center gap-1.5">
+                                            <span>-- Жолооч хайх / сонгох --</span>
+                                        </div>
+                                        <div id="taxi-picker-sub" class="text-[10px] text-gray-400 font-mono truncate">
+                                            Нэр, данс, утсаар хайна уу
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-1 shrink-0 ml-1">
+                                    <button id="taxi-picker-clear-btn" type="button" onclick="event.stopPropagation(); clearSelectedTaxiDriver();"
+                                        class="hidden p-1.5 text-gray-500 hover:text-red-400 rounded-lg hover:bg-dark-750 transition-colors" title="Сонголт цэвэрлэх">
+                                        <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                                    </button>
+                                    <div class="w-7 h-7 rounded-lg bg-dark-800 flex items-center justify-center text-amber-400">
+                                        <i data-lucide="chevrons-up-down" class="w-4 h-4"></i>
+                                    </div>
+                                </div>
                             </div>
+
+                            <!-- Selected Driver Info Strip -->
+                            <div id="taxi-driver-info-strip" class="hidden bg-dark-950/80 border border-dark-800 rounded-xl p-2.5 space-y-1">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-1.5 min-w-0">
+                                        <span id="taxi-selected-name" class="font-bold text-gray-100 text-xs truncate">-</span>
+                                        <span class="px-1.5 py-0.2 rounded text-[10px] font-semibold bg-amber-950/70 text-amber-300 border border-amber-800/60">Такси жолооч</span>
+                                    </div>
+                                    <div class="flex items-center gap-1 text-gray-400 text-[10px] font-mono shrink-0">
+                                        <i data-lucide="phone" class="w-3 h-3 text-cyan-400"></i>
+                                        <span id="taxi-selected-phone">-</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between text-[11px] pt-1 border-t border-dark-800/70 font-mono">
+                                    <span class="text-gray-400 text-[10px]">Дансны дугаар / IBAN:</span>
+                                    <span id="taxi-selected-bank" class="text-amber-400 font-bold tracking-wide">-</span>
+                                </div>
+                            </div>
+
+                            <!-- Hidden inputs for form data -->
+                            <input type="hidden" id="bar_taxi_selected_id" value="">
+                            <input type="hidden" id="bar_taxi_driver_name" value="">
+                            <input type="hidden" id="bar_taxi_driver_bank" value="">
+                            <input type="hidden" id="bar_taxi_driver_phone" value="">
                         </div>
 
                         <div class="flex items-center justify-between pt-1">
@@ -1411,6 +1463,72 @@
         </div>
     </div>
 
+    <!-- TAXI DRIVER SEARCH / PICKER MODAL (FAST MOBILE AUTOCOMPLETE & KEYBOARD-SAFE) -->
+    <div id="taxi-driver-search-modal" onclick="if(event.target === this) closeTaxiDriverSearchModal()"
+        class="hidden fixed inset-0 z-[100] flex items-start justify-center p-2 pt-2 sm:pt-6 bg-black/85 backdrop-blur-md transition-opacity">
+        <div id="taxi-driver-search-modal-box"
+            class="bg-dark-900 border border-dark-700 rounded-2xl max-w-md w-full flex flex-col overflow-hidden shadow-2xl transition-all duration-150 animate-in fade-in zoom-in-95 duration-150">
+            <!-- Header -->
+            <div class="px-3.5 py-2.5 border-b border-dark-800 flex items-center justify-between shrink-0 bg-dark-950/70">
+                <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-md bg-amber-500/15 flex items-center justify-center text-amber-400">
+                        <i data-lucide="car" class="w-3.5 h-3.5"></i>
+                    </div>
+                    <h3 class="text-xs font-bold text-gray-100 uppercase tracking-wide">Такси жолооч хайх / сонгох</h3>
+                </div>
+                <button type="button" onclick="closeTaxiDriverSearchModal()" class="w-7 h-7 rounded-lg bg-dark-800 hover:bg-dark-700 flex items-center justify-center text-gray-400 hover:text-gray-100">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <!-- Search input bar -->
+            <div class="p-2.5 border-b border-dark-800 space-y-2 shrink-0 bg-dark-900">
+                <div class="relative">
+                    <i data-lucide="search" class="w-4 h-4 text-amber-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                    <input type="search" id="taxi-driver-search-kw" oninput="renderTaxiDriverSearchResults()"
+                        placeholder="Нэр, данс, утсаар хайх..."
+                        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                        class="w-full bg-dark-850 border border-dark-700 rounded-xl pl-9 pr-8 py-2 text-[16px] sm:text-xs text-gray-100 placeholder-gray-500 font-medium focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500">
+                    <button type="button" onclick="document.getElementById('taxi-driver-search-kw').value=''; renderTaxiDriverSearchResults(); document.getElementById('taxi-driver-search-kw').focus();"
+                        class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 p-1">
+                        <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+
+                <!-- Filter Chips -->
+                <div class="flex items-center gap-1.5 overflow-x-auto pb-0.5 no-scrollbar text-xs">
+                    <button type="button" id="driver-picker-tab-all" onclick="setTaxiDriverPickerFilter('all')"
+                        class="px-2.5 py-1 rounded-lg font-semibold whitespace-nowrap bg-amber-500 text-gray-950 shadow">
+                        Бүгд
+                    </button>
+                    <button type="button" id="driver-picker-tab-local" onclick="setTaxiDriverPickerFilter('local')"
+                        class="px-2.5 py-1 rounded-lg font-semibold whitespace-nowrap bg-dark-800 text-gray-400 hover:text-gray-200">
+                        📍 Манай салбар
+                    </button>
+                    <button type="button" id="driver-picker-tab-other" onclick="setTaxiDriverPickerFilter('other')"
+                        class="px-2.5 py-1 rounded-lg font-semibold whitespace-nowrap bg-dark-800 text-gray-400 hover:text-gray-200">
+                        🔄 Бусад салбар
+                    </button>
+                </div>
+            </div>
+
+            <!-- Drivers scrollable list -->
+            <div id="taxi-driver-search-results" class="p-2.5 overflow-y-auto space-y-1 flex-1 min-h-[140px] max-h-[360px] overscroll-contain">
+                <!-- Drivers dynamically rendered here -->
+            </div>
+
+            <!-- Footer: Quick register new taxi driver -->
+            <div class="p-2 border-t border-dark-800 bg-dark-950/80 flex items-center justify-between shrink-0 text-xs">
+                <span class="text-[11px] text-gray-400">Жолооч жагсаалтад байхгүй юу?</span>
+                <button type="button" onclick="closeTaxiDriverSearchModal(); openTaxiDriverModal('add');"
+                    class="flex items-center gap-1 text-[11px] font-bold text-amber-400 hover:text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 px-2.5 py-1 rounded-lg border border-amber-500/30">
+                    <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+                    <span>+ Шинэ жолооч нэмэх</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- DANCER ADD/EDIT MODAL -->
     <div id="dancer-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
         <div class="bg-dark-900 border border-dark-700 rounded-xl max-w-sm w-full overflow-hidden shadow-2xl">
@@ -1534,6 +1652,62 @@
                 <div class="pt-2 flex justify-end gap-2 border-t border-dark-800">
                     <button type="button" onclick="closeEmployeeModal()" class="px-3 py-1.5 rounded bg-dark-800 text-gray-300">Болих</button>
                     <button type="submit" class="px-4 py-1.5 rounded bg-emerald-600 text-gray-950 font-bold">Хадгалах</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TAXI DRIVER ADD/EDIT MODAL -->
+    <div id="taxi-driver-modal" onclick="if(event.target === this) closeTaxiDriverModal()"
+        class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+        <div class="bg-dark-900 border border-dark-700 rounded-xl max-w-sm w-full overflow-hidden shadow-2xl">
+            <div class="px-4 py-3 border-b border-dark-800 flex items-center justify-between bg-dark-950/70">
+                <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-md bg-amber-500/15 flex items-center justify-center text-amber-400">
+                        <i data-lucide="car" class="w-3.5 h-3.5"></i>
+                    </div>
+                    <h3 id="taxi-driver-modal-title" class="text-xs font-bold uppercase tracking-wider text-gray-200">Такси жолооч бүртгэх</h3>
+                </div>
+                <button type="button" onclick="closeTaxiDriverModal()" class="text-gray-400 hover:text-gray-200">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <form id="taxi-driver-modal-form" onsubmit="submitTaxiDriverModal(event)" class="p-4 space-y-2.5 text-xs">
+                <input type="hidden" id="modal-driver-id">
+                
+                <div>
+                    <label class="block text-gray-400 mb-0.5">Салбар *</label>
+                    <select id="modal-driver-club" required class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200 focus:outline-none focus:border-amber-500"></select>
+                </div>
+
+                <div>
+                    <label class="block text-gray-400 mb-0.5">Жолоочийн нэр (Заавал кириллээр) *</label>
+                    <input type="text" id="modal-driver-name" required placeholder="Жишээ: Д.Батбаяр, Гантулга..."
+                        class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200 focus:outline-none focus:border-amber-500">
+                    <p class="text-[10px] text-gray-500 mt-0.5">Данс эзэмшигчийн нэрийг кириллээр бичнэ үү</p>
+                </div>
+
+                <div>
+                    <label class="block text-gray-400 mb-0.5">Дансны дугаар / IBAN (10+ тэмдэгт) *</label>
+                    <input type="text" id="modal-driver-bankacc" required placeholder="Жишээ: 5005001234 эсвэл MN02..."
+                        class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200 font-mono uppercase focus:outline-none focus:border-amber-500">
+                    <p class="text-[10px] text-gray-500 mt-0.5">Дансны дугаар эсвэл 15+ оронтой IBAN оруулна уу</p>
+                </div>
+
+                <div>
+                    <label class="block text-gray-400 mb-0.5">Утасны дугаар (8 оронтой) *</label>
+                    <input type="tel" id="modal-driver-phone" required maxlength="8" pattern="[0-9]{8}"
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                        placeholder="Жишээ: 99112233"
+                        class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200 font-mono focus:outline-none focus:border-amber-500">
+                    <p class="text-[10px] text-gray-500 mt-0.5">8 оронтой гар утасны дугаар оруулна уу</p>
+                </div>
+
+                <div id="modal-driver-error" class="hidden text-[11px] text-red-400 font-medium p-2 rounded bg-red-950/40 border border-red-900/50"></div>
+
+                <div class="pt-2 flex justify-end gap-2 border-t border-dark-800">
+                    <button type="button" onclick="closeTaxiDriverModal()" class="px-3 py-1.5 rounded bg-dark-800 text-gray-300">Болих</button>
+                    <button type="submit" class="px-4 py-1.5 rounded bg-amber-500 hover:bg-amber-400 text-gray-950 font-bold">Хадгалах</button>
                 </div>
             </form>
         </div>
@@ -3282,7 +3456,8 @@
   ],
   "staff_tips": [],
   "submitted_shifts": [],
-  "employees": []
+  "employees": [],
+  "taxi_drivers": []
 };
     </script>
 
@@ -3370,6 +3545,9 @@
             }
             if (!data.employees) {
                 data.employees = window.INITIAL_DATA?.employees || [];
+            }
+            if (!data.taxi_drivers) {
+                data.taxi_drivers = window.INITIAL_DATA?.taxi_drivers || [];
             }
             if (data.tariffs) {
                 // Ensure all default tariffs (both Үндсэн and Халтуур) exist in stored data
@@ -3530,6 +3708,14 @@
                     }
                 } catch (e) {}
 
+                try {
+                    const { data: driversList } = await supabaseClient.from('taxi_drivers').select('*').order('name', { ascending: true });
+                    if (driversList && driversList.length > 0 && JSON.stringify(driversList) !== JSON.stringify(store.taxi_drivers)) {
+                        store.taxi_drivers = driversList;
+                        changed = true;
+                    }
+                } catch (e) {}
+
                 if (changed) {
                     saveStoredData(store);
                     refreshAllUI();
@@ -3568,6 +3754,9 @@
                     })
                     .on('postgres_changes', { event: '*', schema: 'public', table: 'employees' }, (payload) => {
                         handleRealtimePayload('employees', payload);
+                    })
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'taxi_drivers' }, (payload) => {
+                        handleRealtimePayload('taxi_drivers', payload);
                     })
                     .subscribe((status) => {
                         console.log('Realtime status:', status);
@@ -3900,6 +4089,8 @@
                 reportFilter.add(new Option(c.name, c.id));
                 const modalEmpClub = document.getElementById('modal-employee-club');
                 if (modalEmpClub) modalEmpClub.add(new Option(c.name, c.id));
+                const modalDriverClub = document.getElementById('modal-driver-club');
+                if (modalDriverClub) modalDriverClub.add(new Option(c.name, c.id));
             });
         }
 
@@ -5003,25 +5194,462 @@
             if (disp) disp.textContent = formatMNT(qty * rate);
         }
 
+        // ================= TAXI DRIVER SEARCH & PICKER SYSTEM =================
+        let currentTaxiDriverPickerFilter = 'all';
+
+        function adjustTaxiDriverPickerHeightForKeyboard() {
+            const modalOverlay = document.getElementById('taxi-driver-search-modal');
+            const modalBox = document.getElementById('taxi-driver-search-modal-box');
+            const resultsList = document.getElementById('taxi-driver-search-results');
+            if (!modalBox || !resultsList) return;
+
+            if (window.visualViewport) {
+                const vpHeight = window.visualViewport.height;
+                const padTop = modalOverlay ? (parseFloat(getComputedStyle(modalOverlay).paddingTop) || 12) : 12;
+                const maxModalH = Math.max(200, Math.floor(vpHeight - padTop - 12));
+                modalBox.style.maxHeight = `${maxModalH}px`;
+                const maxListH = Math.max(100, maxModalH - 170);
+                resultsList.style.maxHeight = `${maxListH}px`;
+            }
+        }
+
+        function openTaxiDriverSearchModal() {
+            playFeedback('click');
+            const modal = document.getElementById('taxi-driver-search-modal');
+            if (!modal) return;
+            document.body.classList.add('overflow-hidden');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            const kwInput = document.getElementById('taxi-driver-search-kw');
+            if (kwInput) kwInput.value = '';
+            currentTaxiDriverPickerFilter = 'all';
+            renderTaxiDriverSearchResults();
+            adjustTaxiDriverPickerHeightForKeyboard();
+
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', adjustTaxiDriverPickerHeightForKeyboard);
+                window.visualViewport.addEventListener('scroll', adjustTaxiDriverPickerHeightForKeyboard);
+            }
+
+            setTimeout(() => {
+                if (kwInput) kwInput.focus();
+                adjustTaxiDriverPickerHeightForKeyboard();
+            }, 60);
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function closeTaxiDriverSearchModal() {
+            const modal = document.getElementById('taxi-driver-search-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+            document.body.classList.remove('overflow-hidden');
+            if (window.visualViewport) {
+                window.visualViewport.removeEventListener('resize', adjustTaxiDriverPickerHeightForKeyboard);
+                window.visualViewport.removeEventListener('scroll', adjustTaxiDriverPickerHeightForKeyboard);
+            }
+            const kwInput = document.getElementById('taxi-driver-search-kw');
+            if (kwInput) kwInput.blur();
+        }
+
+        function setTaxiDriverPickerFilter(filter) {
+            playFeedback('click');
+            currentTaxiDriverPickerFilter = filter;
+            renderTaxiDriverSearchResults();
+        }
+
+        function renderTaxiDriverSearchResults() {
+            const listEl = document.getElementById('taxi-driver-search-results');
+            if (!listEl) return;
+            const kw = (document.getElementById('taxi-driver-search-kw')?.value || '').trim().toLowerCase();
+            const curClubIdNum = parseInt(currentClubId);
+            const curClub = store.clubs.find(c => c.id === curClubIdNum);
+
+            const isLocal = (d) => (!d.club_id || String(d.club_id) === 'all' || d.club_id === curClubIdNum);
+
+            let filtered = (store.taxi_drivers || []).filter(d => d.is_active !== 0);
+
+            if (currentTaxiDriverPickerFilter === 'local') {
+                filtered = filtered.filter(isLocal);
+            } else if (currentTaxiDriverPickerFilter === 'other') {
+                filtered = filtered.filter(d => !isLocal(d));
+            }
+
+            if (kw) {
+                filtered = filtered.filter(d => {
+                    const name = (d.name || '').toLowerCase();
+                    const bank = (d.bank_account || '').toLowerCase();
+                    const ph = (d.phone || '').toLowerCase();
+                    return name.includes(kw) || bank.includes(kw) || ph.includes(kw);
+                });
+            }
+
+            // Sort: local club drivers first, then alphabetical by name
+            filtered.sort((a, b) => {
+                const aLocal = isLocal(a);
+                const bLocal = isLocal(b);
+                if (aLocal && !bLocal) return -1;
+                if (!aLocal && bLocal) return 1;
+                return (a.name || '').localeCompare(b.name || '', 'mn');
+            });
+
+            // Update tab badges
+            const allActive = (store.taxi_drivers || []).filter(d => d.is_active !== 0);
+            const allCount = allActive.length;
+            const localCount = allActive.filter(isLocal).length;
+            const otherCount = allCount - localCount;
+
+            const tabAll = document.getElementById('driver-picker-tab-all');
+            const tabLocal = document.getElementById('driver-picker-tab-local');
+            const tabOther = document.getElementById('driver-picker-tab-other');
+
+            if (tabAll) {
+                tabAll.textContent = `Бүгд (${allCount})`;
+                tabAll.className = `px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${currentTaxiDriverPickerFilter === 'all' ? 'bg-amber-500 text-gray-950 shadow' : 'bg-dark-800 text-gray-400 hover:text-gray-200'}`;
+            }
+            if (tabLocal) {
+                tabLocal.textContent = `📍 Манай салбар (${localCount})`;
+                tabLocal.className = `px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${currentTaxiDriverPickerFilter === 'local' ? 'bg-amber-500 text-gray-950 shadow' : 'bg-dark-800 text-gray-400 hover:text-gray-200'}`;
+            }
+            if (tabOther) {
+                tabOther.textContent = `🔄 Бусад салбар (${otherCount})`;
+                tabOther.className = `px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${currentTaxiDriverPickerFilter === 'other' ? 'bg-amber-500 text-gray-950 shadow' : 'bg-dark-800 text-gray-400 hover:text-gray-200'}`;
+            }
+
+            if (filtered.length === 0) {
+                listEl.innerHTML = `
+                    <div class="py-8 text-center space-y-2">
+                        <i data-lucide="search-x" class="w-8 h-8 text-gray-600 mx-auto"></i>
+                        <div class="text-xs text-gray-400">«${kw || 'Жолооч'}» илэрц олдсонгүй</div>
+                        <button type="button" onclick="closeTaxiDriverSearchModal(); openTaxiDriverModal('add');"
+                            class="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 text-xs font-bold hover:bg-amber-500/25">
+                            <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+                            <span>Шинээр жолооч нэмэх</span>
+                        </button>
+                    </div>
+                `;
+                if (window.lucide) lucide.createIcons();
+                return;
+            }
+
+            const curSelectedId = document.getElementById('bar_taxi_selected_id')?.value;
+
+            listEl.innerHTML = filtered.map((d, idx) => {
+                const local = isLocal(d);
+                const isSel = String(d.id) === String(curSelectedId);
+
+                let clubBadge = '';
+                if (local) {
+                    clubBadge = `<span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 font-mono border border-amber-500/30">📍 ${curClub?.name.replace(' CLUB', '') || 'Манайх'}</span>`;
+                } else {
+                    const origClub = store.clubs.find(c => c.id === d.club_id);
+                    const cName = origClub ? origClub.name.replace(' CLUB', '') : 'Өөр';
+                    clubBadge = `<span class="text-[9px] px-1.5 py-0.5 rounded bg-purple-500/15 text-purple-300 font-mono border border-purple-500/30">🔄 ${cName}-аас</span>`;
+                }
+
+                return `
+                    <div onclick="selectTaxiDriverFromPicker(${d.id})"
+                        class="px-3 py-2.5 rounded-xl border transition-all cursor-pointer flex items-center justify-between active:scale-[0.98] ${isSel ? 'bg-amber-500/20 border-amber-500/60 ring-1 ring-amber-500/40' : 'bg-dark-850 hover:bg-dark-800 border-dark-750'}">
+                        <div class="flex items-center gap-2.5 min-w-0 flex-1 pr-2">
+                            <div class="w-6 h-6 rounded-md bg-dark-800 border border-dark-700/60 text-gray-400 font-mono text-[10px] font-bold flex items-center justify-center shrink-0">
+                                ${idx + 1}
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-center gap-1.5 flex-wrap">
+                                    <span class="font-bold text-sm text-gray-100">${d.name}</span>
+                                    <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-950/70 text-amber-300 font-semibold border border-amber-800/60">Такси жолооч</span>
+                                    ${clubBadge}
+                                </div>
+                                <div class="text-[11px] text-gray-400 font-mono mt-0.5 flex items-center gap-1.5 truncate">
+                                    <span class="text-amber-400/90 font-bold">${d.bank_account || '-'}</span>
+                                    ${d.phone ? `<span class="text-gray-600">•</span><span class="text-cyan-400">📞 ${d.phone}</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="shrink-0">
+                            ${isSel ? '<i data-lucide="check" class="w-4 h-4 text-amber-400"></i>' : '<i data-lucide="chevron-right" class="w-4 h-4 text-gray-600"></i>'}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function selectTaxiDriverFromPicker(driverId) {
+            playFeedback('click');
+            selectTaxiDriver(driverId);
+            closeTaxiDriverSearchModal();
+        }
+
+        function selectTaxiDriver(driverId) {
+            const driver = (store.taxi_drivers || []).find(d => String(d.id) === String(driverId));
+            const idInput = document.getElementById('bar_taxi_selected_id');
+            const nameInput = document.getElementById('bar_taxi_driver_name');
+            const bankInput = document.getElementById('bar_taxi_driver_bank');
+            const phoneInput = document.getElementById('bar_taxi_driver_phone');
+            const titleEl = document.getElementById('taxi-picker-title');
+            const subEl = document.getElementById('taxi-picker-sub');
+            const clearBtn = document.getElementById('taxi-picker-clear-btn');
+            const strip = document.getElementById('taxi-driver-info-strip');
+
+            if (!driver) {
+                clearSelectedTaxiDriver();
+                return;
+            }
+
+            if (idInput) idInput.value = driver.id;
+            if (nameInput) nameInput.value = driver.name || '';
+            if (bankInput) bankInput.value = driver.bank_account || '';
+            if (phoneInput) phoneInput.value = driver.phone || '';
+
+            if (titleEl) {
+                titleEl.innerHTML = `<span class="text-white font-bold">${driver.name}</span> <span class="text-[10px] px-1.5 py-0.2 rounded font-semibold bg-amber-950/80 text-amber-300 border border-amber-800/60">Такси</span>`;
+            }
+            if (subEl) {
+                subEl.innerHTML = `Данс: <span class="text-amber-400 font-bold">${driver.bank_account || '-'}</span> • 📞 ${driver.phone || '-'}`;
+            }
+            if (clearBtn) clearBtn.classList.remove('hidden');
+
+            if (strip) {
+                const elName = document.getElementById('taxi-selected-name');
+                const elBank = document.getElementById('taxi-selected-bank');
+                const elPhone = document.getElementById('taxi-selected-phone');
+                if (elName) elName.textContent = driver.name;
+                if (elBank) elBank.textContent = driver.bank_account || '-';
+                if (elPhone) elPhone.textContent = driver.phone || '-';
+                strip.classList.remove('hidden');
+            }
+
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function clearSelectedTaxiDriver() {
+            const idInput = document.getElementById('bar_taxi_selected_id');
+            const nameInput = document.getElementById('bar_taxi_driver_name');
+            const bankInput = document.getElementById('bar_taxi_driver_bank');
+            const phoneInput = document.getElementById('bar_taxi_driver_phone');
+            const titleEl = document.getElementById('taxi-picker-title');
+            const subEl = document.getElementById('taxi-picker-sub');
+            const clearBtn = document.getElementById('taxi-picker-clear-btn');
+            const strip = document.getElementById('taxi-driver-info-strip');
+
+            if (idInput) idInput.value = '';
+            if (nameInput) nameInput.value = '';
+            if (bankInput) bankInput.value = '';
+            if (phoneInput) phoneInput.value = '';
+
+            if (titleEl) {
+                titleEl.innerHTML = `<span>-- Жолооч хайх / сонгох --</span>`;
+            }
+            if (subEl) {
+                subEl.textContent = 'Нэр, данс, утсаар хайна уу';
+            }
+            if (clearBtn) clearBtn.classList.add('hidden');
+            if (strip) strip.classList.add('hidden');
+
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function openTaxiDriverModal(mode, driverId = null) {
+            playFeedback('click');
+            const modal = document.getElementById('taxi-driver-modal');
+            const title = document.getElementById('taxi-driver-modal-title');
+            const idInput = document.getElementById('modal-driver-id');
+            const clubSelect = document.getElementById('modal-driver-club');
+            const errEl = document.getElementById('modal-driver-error');
+            if (errEl) { errEl.textContent = ''; errEl.classList.add('hidden'); }
+
+            if (clubSelect) {
+                clubSelect.innerHTML = '';
+                store.clubs.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.id;
+                    opt.textContent = c.name;
+                    clubSelect.appendChild(opt);
+                });
+            }
+
+            const isRestrictedUser = currentUser && currentUser.role !== 'admin' && currentUser.club_id && currentUser.club_id !== 'all';
+            const targetClubId = isRestrictedUser ? parseInt(currentUser.club_id) : currentClubId;
+
+            if (mode === 'add') {
+                title.textContent = 'Шинэ такси жолооч бүртгэх';
+                idInput.value = '';
+                document.getElementById('taxi-driver-modal-form').reset();
+                if (clubSelect) {
+                    clubSelect.value = targetClubId;
+                    clubSelect.disabled = isRestrictedUser;
+                }
+            } else {
+                title.textContent = 'Жолоочийн мэдээлэл засах';
+                const driver = (store.taxi_drivers || []).find(d => String(d.id) === String(driverId));
+                if (!driver) return;
+                idInput.value = driver.id;
+                if (clubSelect) {
+                    clubSelect.value = driver.club_id || targetClubId;
+                    clubSelect.disabled = isRestrictedUser;
+                }
+                document.getElementById('modal-driver-name').value = driver.name || '';
+                document.getElementById('modal-driver-bankacc').value = driver.bank_account || '';
+                document.getElementById('modal-driver-phone').value = driver.phone || '';
+            }
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function closeTaxiDriverModal() {
+            const modal = document.getElementById('taxi-driver-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        function submitTaxiDriverModal(e) {
+            e.preventDefault();
+            const id = document.getElementById('modal-driver-id').value;
+            const isRestrictedUser = currentUser && currentUser.role !== 'admin' && currentUser.club_id && currentUser.club_id !== 'all';
+            const clubId = isRestrictedUser ? parseInt(currentUser.club_id) : parseInt(document.getElementById('modal-driver-club').value);
+            
+            const name = document.getElementById('modal-driver-name').value.trim();
+            const bankAcc = document.getElementById('modal-driver-bankacc').value.trim().toUpperCase().replace(/\s+/g, '');
+            const phone = (document.getElementById('modal-driver-phone')?.value || '').trim().replace(/[^0-9]/g, '');
+            const errEl = document.getElementById('modal-driver-error');
+
+            function showError(msg) {
+                if (errEl) {
+                    errEl.textContent = msg;
+                    errEl.classList.remove('hidden');
+                }
+                showToast(msg, true, 'Бүртгэлийн алдаа');
+            }
+
+            if (!name) {
+                showError('Жолоочийн нэрийг заавал бичнэ үү!');
+                highlightField('modal-driver-name');
+                return;
+            }
+            const cyrillicRegex = /^[а-яА-ЯөӨүҮёЁ\s\-.]+$/;
+            if (!cyrillicRegex.test(name)) {
+                showError('Жолоочийн нэрийг заавал кирилл үсгээр бичнэ үү!');
+                highlightField('modal-driver-name');
+                return;
+            }
+
+            if (!bankAcc) {
+                showError('Дансны дугаарыг заавал оруулна уу!');
+                highlightField('modal-driver-bankacc');
+                return;
+            }
+            if (bankAcc.length < 10) {
+                showError('Дансны дугаар хамгийн багадаа 10 оронтой байх ёстой!');
+                highlightField('modal-driver-bankacc');
+                return;
+            }
+
+            if (!phone) {
+                showError('Утасны дугаарыг заавал оруулна уу!');
+                highlightField('modal-driver-phone');
+                return;
+            }
+            if (phone.length !== 8) {
+                showError('Утасны дугаар заавал 8 оронтой тоо байх ёстой! (Жишээ: 99112233)');
+                highlightField('modal-driver-phone');
+                return;
+            }
+
+            if (!store.taxi_drivers) store.taxi_drivers = [];
+
+            let targetId = null;
+            let targetDriver = null;
+            if (id) {
+                const driver = store.taxi_drivers.find(x => String(x.id) === String(id));
+                if (driver) {
+                    driver.club_id = clubId;
+                    driver.name = name;
+                    driver.bank_account = bankAcc;
+                    driver.phone = phone;
+                    targetId = driver.id;
+                    targetDriver = driver;
+                }
+                showToast(`${name} жолоочийн мэдээлэл шинэчлэгдлээ`);
+            } else {
+                targetId = Date.now();
+                targetDriver = {
+                    id: targetId,
+                    club_id: clubId,
+                    name: name,
+                    bank_account: bankAcc,
+                    phone: phone,
+                    is_active: 1,
+                    created_at: new Date().toISOString()
+                };
+                store.taxi_drivers.push(targetDriver);
+                showToast(`${name} жолооч амжилттай бүртгэгдлээ`);
+            }
+
+            saveStoredData(store);
+            closeTaxiDriverModal();
+
+            if (targetId) {
+                selectTaxiDriver(targetId);
+            }
+            if (typeof renderTaxiDriverSearchResults === 'function') {
+                renderTaxiDriverSearchResults();
+            }
+            playFeedback('success');
+
+            if (supabaseClient && targetDriver) {
+                try {
+                    supabaseClient.from('taxi_drivers').upsert([targetDriver]).then(({ error }) => {
+                        if (error) console.warn('Supabase taxi driver upsert:', error);
+                    });
+                } catch (syncErr) {
+                    console.warn('Taxi driver sync failed:', syncErr);
+                }
+            }
+        }
+
+        function deleteTaxiDriver(driverId) {
+            const driver = (store.taxi_drivers || []).find(d => String(d.id) === String(driverId));
+            if (!driver) return;
+
+            if (!confirm(`«${driver.name}» жолоочийг устгахдаа итгэлтэй байна уу?`)) {
+                return;
+            }
+
+            driver.is_active = 0;
+            saveStoredData(store);
+            if (supabaseClient) {
+                try {
+                    supabaseClient.from('taxi_drivers').upsert([driver]).then(({ error }) => {
+                        if (error) console.warn('Supabase taxi driver delete error:', error);
+                    });
+                } catch (e) {
+                    console.warn(e);
+                }
+            }
+            showToast(`${driver.name} жолооч амжилттай хасагдлаа`, false, 'Устгагдлаа');
+            if (typeof renderTaxiDriverSearchResults === 'function') renderTaxiDriverSearchResults();
+            if (String(document.getElementById('bar_taxi_selected_id')?.value) === String(driverId)) {
+                clearSelectedTaxiDriver();
+            }
+        }
+
         function submitTaxiRecord() {
+            const driverId = document.getElementById('bar_taxi_selected_id')?.value;
             const driverName = (document.getElementById('bar_taxi_driver_name')?.value || '').trim();
             const driverBank = (document.getElementById('bar_taxi_driver_bank')?.value || '').trim().toUpperCase().replace(/\s+/g, '');
+            const driverPhone = (document.getElementById('bar_taxi_driver_phone')?.value || '').trim();
             const qty = parseInt(document.getElementById('bar_taxi_qty')?.value || 1);
 
-            // Mandatory Validation: Name, Account/IBAN, Qty
-            if (!driverName) {
-                highlightField('bar_taxi_driver_name');
-                showToast('Жолоочийн нэрийг заавал оруулна уу!', true, 'Мэдээлэл дутуу');
-                return;
-            }
-            if (!driverBank) {
-                highlightField('bar_taxi_driver_bank');
-                showToast('Жолоочийн данс / IBAN дугаарыг заавал оруулна уу!', true, 'Мэдээлэл дутуу');
-                return;
-            }
-            if (driverBank.length < 10) {
-                highlightField('bar_taxi_driver_bank');
-                showToast('Жолоочийн данс буруу байна! (Хамгийн багадаа 10 оронтой данс эсвэл IBAN оруулна уу)', true, 'Дансны алдаа');
+            // Mandatory Validation: Driver selected
+            if (!driverId || !driverName || !driverBank) {
+                highlightField('bar-taxi-picker-btn');
+                showToast('Такси олгох жолоочоо сонгоно уу! Хэрэв байхгүй бол "+ Жолооч нэмэх" товчоор шинээр бүртгэнэ үү.', true, 'Жолооч сонгоогүй');
                 return;
             }
             if (qty < 1) {
@@ -5056,8 +5684,10 @@
                 club_id: parseInt(currentClubId),
                 club_name: club?.name || '',
                 bartender_name: currentUser ? currentUser.name : 'Ээлжийн ажилтан',
+                driver_id: driverId,
                 driver_name: driverName,
                 driver_bank: driverBank,
+                driver_phone: driverPhone,
                 taxi_qty: qty,
                 rate: rate,
                 amount: qty * rate,
@@ -5070,8 +5700,7 @@
             cloudInsert('taxi_pr_records', newRec);
 
             showToast(`🚕 Такси (${driverName} • ${qty} такси • ${formatMNT(newRec.amount)}) амжилттай бүртгэгдлээ!`, false, 'Амжилттай бүртгэгдлээ');
-            document.getElementById('bar_taxi_driver_name').value = '';
-            document.getElementById('bar_taxi_driver_bank').value = '';
+            clearSelectedTaxiDriver();
             document.getElementById('bar_taxi_qty').value = 1;
             updateTaxiTotal();
             loadDailyRecords();
