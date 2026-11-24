@@ -922,8 +922,8 @@
                         <span class="text-[10px] text-gray-400 font-mono" id="shift-summary-club-date">-</span>
                     </div>
 
-                    <!-- 6 Minimal Reconciliation Items (Нийт тип, Энг.вайн, Үнэт.вайн, Уулттай суулт, Extra, Service charge) -->
-                    <div class="p-2.5 grid grid-cols-3 sm:grid-cols-6 gap-1.5 text-center text-xs">
+                    <!-- 7 Minimal Reconciliation Items (Нийт тип, Энг.вайн, Үнэт.вайн, Энг.суулт, Уулттай суулт, Extra, Service charge) -->
+                    <div class="p-2.5 grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-7 gap-1.5 text-center text-xs">
                         <!-- 1. Нийт тип -->
                         <div class="bg-dark-850 border border-dark-750/70 rounded-lg p-2 flex flex-col justify-between">
                             <div class="text-[10px] text-amber-400 font-medium truncate flex items-center justify-center gap-1">
@@ -951,7 +951,16 @@
                             <div id="bar-stat-wine-exp" class="text-sm sm:text-base font-bold font-mono text-amber-200 mt-1">0 ш</div>
                         </div>
 
-                        <!-- 4. Уулттай суулт -->
+                        <!-- 4. Энгийн суулт -->
+                        <div class="bg-dark-850 border border-dark-750/70 rounded-lg p-2 flex flex-col justify-between">
+                            <div class="text-[10px] text-blue-400 font-medium truncate flex items-center justify-center gap-1">
+                                <i data-lucide="armchair" class="w-3 h-3 text-blue-400 shrink-0"></i>
+                                <span>Энгийн суулт</span>
+                            </div>
+                            <div id="bar-stat-sit-reg" class="text-sm sm:text-base font-bold font-mono text-blue-200 mt-1">0 ш</div>
+                        </div>
+
+                        <!-- 5. Уулттай суулт -->
                         <div class="bg-dark-850 border border-dark-750/70 rounded-lg p-2 flex flex-col justify-between">
                             <div class="text-[10px] text-emerald-400 font-medium truncate flex items-center justify-center gap-1">
                                 <i data-lucide="glass-water" class="w-3 h-3 text-emerald-400 shrink-0"></i>
@@ -960,7 +969,7 @@
                             <div id="bar-stat-sit-drink" class="text-sm sm:text-base font-bold font-mono text-emerald-300 mt-1">0 ш</div>
                         </div>
 
-                        <!-- 5. Extra -->
+                        <!-- 6. Extra -->
                         <div class="bg-dark-850 border border-dark-750/70 rounded-lg p-2 flex flex-col justify-between">
                             <div class="text-[10px] text-yellow-400 font-medium truncate flex items-center justify-center gap-1">
                                 <i data-lucide="award" class="w-3 h-3 text-yellow-400 shrink-0"></i>
@@ -969,13 +978,13 @@
                             <div id="bar-stat-extra" class="text-sm sm:text-base font-bold font-mono text-yellow-200 mt-1">0 ш</div>
                         </div>
 
-                        <!-- 6. Service charge -->
-                        <div class="bg-dark-850 border border-dark-750/70 rounded-lg p-2 flex flex-col justify-between">
+                        <!-- 7. Service charge -->
+                        <div class="col-span-3 sm:col-span-2 lg:col-span-1 bg-dark-850 border border-dark-750/70 rounded-lg p-2 flex items-center justify-between sm:flex-col sm:justify-between px-3 sm:px-2">
                             <div class="text-[10px] text-cyan-400 font-medium truncate flex items-center justify-center gap-1">
                                 <i data-lucide="clock" class="w-3 h-3 text-cyan-400 shrink-0"></i>
                                 <span>Service charge</span>
                             </div>
-                            <div id="bar-stat-service" class="text-sm sm:text-base font-bold font-mono text-cyan-200 mt-1">0 ш</div>
+                            <div id="bar-stat-service" class="text-sm sm:text-base font-bold font-mono text-cyan-200 sm:mt-1">0 ш</div>
                         </div>
                     </div>
                 </div>
@@ -4751,10 +4760,11 @@
             const staffTipTotal = staffTipRecords.reduce((s, r) => s + (r.amount || 0), 0);
             const grandTotal = dancerTotal + taxiTotal + prTotal + staffTipTotal;
 
-            // Shift Reconciliation Totals for Bartender (Нийт тип, Энгийн вайн, Үнэтэй вайн, Уулттай суулт, Extra, Service charge)
+            // Shift Reconciliation Totals for Bartender (Нийт тип, Энгийн вайн, Үнэтэй вайн, Энгийн суулт, Уулттай суулт, Extra, Service charge)
             const sumDancerTipQty = dancerRecords.reduce((s, r) => s + (r.tip_qty || 0), 0);
             const sumWineRegQty = dancerRecords.reduce((s, r) => s + (r.wine_reg_qty || 0), 0);
             const sumWineExpQty = dancerRecords.reduce((s, r) => s + (r.wine_exp_qty || 0), 0);
+            const sumSitRegQty = dancerRecords.reduce((s, r) => s + (r.sit_reg_qty || 0), 0);
             const sumSitDrinkQty = dancerRecords.reduce((s, r) => s + (r.sit_drink_qty || 0), 0);
             const sumExtraQty = dancerRecords.reduce((s, r) => s + (r.extra_qty || 0), 0);
 
@@ -4781,6 +4791,7 @@
             const elTip = document.getElementById('bar-stat-tip');
             const elWineReg = document.getElementById('bar-stat-wine-reg');
             const elWineExp = document.getElementById('bar-stat-wine-exp');
+            const elSitReg = document.getElementById('bar-stat-sit-reg');
             const elSitDrink = document.getElementById('bar-stat-sit-drink');
             const elExtra = document.getElementById('bar-stat-extra');
             const elService = document.getElementById('bar-stat-service');
@@ -4788,6 +4799,7 @@
             if (elTip) elTip.textContent = `${sumDancerTipQty} ш`;
             if (elWineReg) elWineReg.textContent = `${sumWineRegQty} ш`;
             if (elWineExp) elWineExp.textContent = `${sumWineExpQty} ш`;
+            if (elSitReg) elSitReg.textContent = `${sumSitRegQty} ш`;
             if (elSitDrink) elSitDrink.textContent = `${sumSitDrinkQty} ш`;
             if (elExtra) elExtra.textContent = `${sumExtraQty} ш`;
             if (elService) elService.textContent = `${sumServiceChargeQty} ш`;
@@ -5079,6 +5091,7 @@
             const sumDancerTipQty = dancerRecords.reduce((s, r) => s + (r.tip_qty || 0), 0);
             const sumWineRegQty = dancerRecords.reduce((s, r) => s + (r.wine_reg_qty || 0), 0);
             const sumWineExpQty = dancerRecords.reduce((s, r) => s + (r.wine_exp_qty || 0), 0);
+            const sumSitRegQty = dancerRecords.reduce((s, r) => s + (r.sit_reg_qty || 0), 0);
             const sumSitDrinkQty = dancerRecords.reduce((s, r) => s + (r.sit_drink_qty || 0), 0);
             const sumExtraQty = dancerRecords.reduce((s, r) => s + (r.extra_qty || 0), 0);
 
@@ -5108,6 +5121,7 @@
             const mTip = document.getElementById('modal-recon-tip');
             const mWineReg = document.getElementById('modal-recon-wine-reg');
             const mWineExp = document.getElementById('modal-recon-wine-exp');
+            const mSitReg = document.getElementById('modal-recon-sit-reg');
             const mSitDrink = document.getElementById('modal-recon-sit-drink');
             const mExtra = document.getElementById('modal-recon-extra');
             const mService = document.getElementById('modal-recon-service');
@@ -5115,6 +5129,7 @@
             if (mTip) mTip.textContent = `${sumDancerTipQty} ш`;
             if (mWineReg) mWineReg.textContent = `${sumWineRegQty} ш`;
             if (mWineExp) mWineExp.textContent = `${sumWineExpQty} ш`;
+            if (mSitReg) mSitReg.textContent = `${sumSitRegQty} ш`;
             if (mSitDrink) mSitDrink.textContent = `${sumSitDrinkQty} ш`;
             if (mExtra) mExtra.textContent = `${sumExtraQty} ш`;
             if (mService) mService.textContent = `${sumServiceChargeQty} ш`;
@@ -5170,6 +5185,13 @@
             const staffTipTotal = staffTipRecords.reduce((s, r) => s + (r.amount || 0), 0);
             const grandTotal = dancerTotal + taxiTotal + prTotal + staffTipTotal;
 
+            const sumDancerTipQtySub = dancerRecords.reduce((s, r) => s + (r.tip_qty || 0), 0);
+            const sumWineRegQtySub = dancerRecords.reduce((s, r) => s + (r.wine_reg_qty || 0), 0);
+            const sumWineExpQtySub = dancerRecords.reduce((s, r) => s + (r.wine_exp_qty || 0), 0);
+            const sumSitRegQtySub = dancerRecords.reduce((s, r) => s + (r.sit_reg_qty || 0), 0);
+            const sumSitDrinkQtySub = dancerRecords.reduce((s, r) => s + (r.sit_drink_qty || 0), 0);
+            const sumExtraQtySub = dancerRecords.reduce((s, r) => s + (r.extra_qty || 0), 0);
+
             const submission = {
                 id: `shift_${currentClubId}_${date}`,
                 club_id: parseInt(currentClubId),
@@ -5185,6 +5207,12 @@
                 pr_total: prTotal,
                 staff_tip_count: staffTipRecords.length,
                 staff_tip_total: staffTipTotal,
+                total_tip: sumDancerTipQtySub,
+                total_wine_reg: sumWineRegQtySub,
+                total_wine_exp: sumWineExpQtySub,
+                total_sit_reg: sumSitRegQtySub,
+                total_sit_drink: sumSitDrinkQtySub,
+                total_extra: sumExtraQtySub,
                 grand_total: grandTotal,
                 status: 'submitted'
             };
@@ -5309,7 +5337,6 @@
             } else if (tab === 'staff') {
                 calculateStaffTipTotal();
             } else if (tab === 'summary') {
-                updateShiftReconciliationSummary();
                 loadDailyRecords();
             }
 
@@ -5318,6 +5345,10 @@
 
         function switchBartenderEntryMode(mode) {
             switchBartenderTab(mode);
+        }
+
+        function updateShiftReconciliationSummary() {
+            loadDailyRecords();
         }
 
         function getTaxiRate(clubId) {
@@ -8265,7 +8296,7 @@
                         </span>
                         <span class="text-[9px] text-gray-500 font-mono">Ширхэгээр</span>
                     </div>
-                    <div class="grid grid-cols-3 gap-1.5 text-center font-mono">
+                    <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-7 gap-1.5 text-center font-mono">
                         <div class="bg-dark-900/90 p-1.5 rounded-lg border border-dark-800">
                             <div class="text-[9px] text-amber-400 truncate">Нийт Тип</div>
                             <div id="modal-recon-tip" class="text-xs font-bold text-amber-300 mt-0.5">0 ш</div>
@@ -8279,6 +8310,10 @@
                             <div id="modal-recon-wine-exp" class="text-xs font-bold text-amber-200 mt-0.5">0 ш</div>
                         </div>
                         <div class="bg-dark-900/90 p-1.5 rounded-lg border border-dark-800">
+                            <div class="text-[9px] text-blue-400 truncate">Энг. суулт</div>
+                            <div id="modal-recon-sit-reg" class="text-xs font-bold text-blue-200 mt-0.5">0 ш</div>
+                        </div>
+                        <div class="bg-dark-900/90 p-1.5 rounded-lg border border-dark-800">
                             <div class="text-[9px] text-emerald-400 truncate">Уулт. суу</div>
                             <div id="modal-recon-sit-drink" class="text-xs font-bold text-emerald-300 mt-0.5">0 ш</div>
                         </div>
@@ -8286,9 +8321,9 @@
                             <div class="text-[9px] text-yellow-400 truncate">Extra</div>
                             <div id="modal-recon-extra" class="text-xs font-bold text-yellow-200 mt-0.5">0 ш</div>
                         </div>
-                        <div class="bg-dark-900/90 p-1.5 rounded-lg border border-dark-800">
+                        <div class="col-span-3 sm:col-span-2 lg:col-span-1 bg-dark-900/90 p-1.5 rounded-lg border border-dark-800 flex items-center justify-between sm:flex-col sm:justify-between px-3 sm:px-1.5">
                             <div class="text-[9px] text-cyan-400 truncate">Service chg</div>
-                            <div id="modal-recon-service" class="text-xs font-bold text-cyan-200 mt-0.5">0 ш</div>
+                            <div id="modal-recon-service" class="text-xs font-bold text-cyan-200 sm:mt-0.5">0 ш</div>
                         </div>
                     </div>
                 </div>
