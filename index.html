@@ -855,6 +855,108 @@
                         </div>
                     </div>
 
+                    <!-- 1.5. ORDER MANAGER REVENUE CARD -->
+                    <div class="bg-dark-900 border border-dark-800 rounded-xl p-3 shadow-md space-y-2.5">
+                        <div class="flex items-center justify-between border-b border-dark-800 pb-2">
+                            <div class="flex items-center gap-1.5 font-bold text-xs text-cyan-400">
+                                <i data-lucide="badge-check" class="w-4 h-4"></i>
+                                <span>Захиалгын менежерийн орлого</span>
+                            </div>
+                            <span class="text-[10px] px-2 py-0.5 rounded bg-dark-800 text-cyan-300 font-mono border border-dark-700">
+                                20,000 ₮ / 1 захиалга
+                            </span>
+                        </div>
+
+                        <!-- Order Manager Selector & "+ Менежер нэмэх" button -->
+                        <div class="space-y-1.5">
+                            <div class="flex items-center justify-between">
+                                <label class="text-[11px] font-medium text-gray-300 flex items-center gap-1">
+                                    <i data-lucide="user-check" class="w-3.5 h-3.5 text-cyan-400"></i>
+                                    <span>Захиалгын менежер сонгох *</span>
+                                </label>
+                                <button type="button" onclick="openOrderManagerModal('add')" 
+                                    class="flex items-center gap-1 text-[11px] font-semibold text-cyan-400 hover:text-cyan-300 bg-cyan-500/10 hover:bg-cyan-500/20 px-2 py-0.5 rounded border border-cyan-500/30 transition-all active:scale-95">
+                                    <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+                                    <span>+ Менежер нэмэх</span>
+                                </button>
+                            </div>
+
+                            <!-- Order Manager Search & Select Trigger Button -->
+                            <div id="bar-order-manager-picker-btn" onclick="openOrderManagerSearchModal()"
+                                class="w-full bg-dark-850 hover:bg-dark-800 border border-dark-700 hover:border-cyan-500/50 rounded-xl px-3 py-2.5 flex items-center justify-between cursor-pointer transition-all active:scale-[0.99] shadow-inner group">
+                                <div class="flex items-center gap-2.5 min-w-0">
+                                    <div class="w-8 h-8 rounded-lg bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center shrink-0 text-cyan-400 group-hover:scale-105 transition-transform">
+                                        <i data-lucide="search" class="w-4 h-4"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <div id="order-manager-picker-title" class="text-xs font-bold text-gray-200 truncate flex items-center gap-1.5">
+                                            <span>-- Захиалгын менежер хайх / сонгох --</span>
+                                        </div>
+                                        <div id="order-manager-picker-sub" class="text-[10px] text-gray-400 font-mono truncate">
+                                            Нэр, данс, утсаар хайна уу
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-1 shrink-0 ml-1">
+                                    <button id="order-manager-picker-clear-btn" type="button" onclick="event.stopPropagation(); clearSelectedOrderManager();"
+                                        class="hidden p-1.5 text-gray-500 hover:text-red-400 rounded-lg hover:bg-dark-750 transition-colors" title="Сонголт цэвэрлэх">
+                                        <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                                    </button>
+                                    <div class="w-7 h-7 rounded-lg bg-dark-800 flex items-center justify-center text-cyan-400">
+                                        <i data-lucide="chevrons-up-down" class="w-4 h-4"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Selected Manager Info Strip -->
+                            <div id="order-manager-info-strip" class="hidden bg-dark-950/80 border border-dark-800 rounded-xl p-2.5 space-y-1">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-1.5 min-w-0">
+                                        <span id="order-manager-selected-name" class="font-bold text-gray-100 text-xs truncate">-</span>
+                                        <span class="px-1.5 py-0.2 rounded text-[10px] font-semibold bg-cyan-950/70 text-cyan-300 border border-cyan-800/60">Захиалгын менежер</span>
+                                    </div>
+                                    <div class="flex items-center gap-1 text-gray-400 text-[10px] font-mono shrink-0">
+                                        <i data-lucide="phone" class="w-3 h-3 text-cyan-400"></i>
+                                        <span id="order-manager-selected-phone">-</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between text-[11px] pt-1 border-t border-dark-800/70 font-mono">
+                                    <span class="text-gray-400 text-[10px]">Дансны дугаар / IBAN:</span>
+                                    <span id="order-manager-selected-bank" class="text-cyan-400 font-bold tracking-wide">-</span>
+                                </div>
+                            </div>
+
+                            <!-- Hidden inputs for form data -->
+                            <input type="hidden" id="bar_order_manager_selected_id" value="">
+                            <input type="hidden" id="bar_order_manager_name" value="">
+                            <input type="hidden" id="bar_order_manager_bank" value="">
+                            <input type="hidden" id="bar_order_manager_phone" value="">
+                        </div>
+
+                        <div class="flex items-center justify-between pt-1">
+                            <div>
+                                <label class="block text-[11px] text-gray-400 mb-1">Ширхэг (Тоо):</label>
+                                <div class="flex items-center gap-1.5">
+                                    <button type="button" onclick="adjustOrderManagerQty(-1)" class="w-8 h-8 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-95 text-cyan-400 font-bold text-lg flex items-center justify-center border border-dark-700">-</button>
+                                    <input type="number" id="bar_order_manager_qty" value="1" min="1" oninput="updateOrderManagerTotal()" class="w-12 h-8 text-center bg-dark-950 border border-dark-700 rounded-lg text-sm font-bold text-gray-100 font-mono">
+                                    <button type="button" onclick="adjustOrderManagerQty(1)" class="w-8 h-8 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-95 text-cyan-400 font-bold text-lg flex items-center justify-center border border-dark-700">+</button>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-[10px] text-gray-400 block mb-0.5">Нийт менежерийн орлого:</span>
+                                <div id="bar_order_manager_total_disp" class="font-mono text-base font-bold text-cyan-400">20,000 ₮</div>
+                            </div>
+                        </div>
+
+                        <div class="pt-1">
+                            <button type="button" onclick="submitOrderManagerRecord()"
+                                class="w-full py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 active:scale-95 text-gray-950 font-bold text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-cyan-500/10">
+                                <i data-lucide="check" class="w-4 h-4"></i>
+                                <span>Захиалгын менежерийн орлого хадгалах</span>
+                            </button>
+                        </div>
+                    </div>
+
                     <!-- 2. PR EXPENSE REGISTRATION CARD -->
                     <div class="bg-dark-900 border border-dark-800 rounded-xl p-3 shadow-md space-y-2.5">
                         <div class="flex items-center justify-between border-b border-dark-800 pb-2">
@@ -1187,8 +1289,9 @@
                             <div>
                                 <label class="block text-[10px] text-gray-400 mb-0.5">Төрөл</label>
                                 <select id="taxipr-type-filter" onchange="renderTaxiPrSection()" class="w-full bg-dark-850 border border-dark-700 rounded px-2 py-1 text-gray-200">
-                                    <option value="all">Бүгд (Такси, PR, Tip)</option>
+                                    <option value="all">Бүгд (Такси, Захиалга, PR, Tip)</option>
                                     <option value="taxi">Зөвхөн Такси</option>
+                                    <option value="order_manager">Зөвхөн Захиалгын менежер</option>
                                     <option value="pr">Зөвхөн PR</option>
                                     <option value="staff_tip">Зөвхөн Ажилтны Tip</option>
                                 </select>
@@ -1273,6 +1376,26 @@
                             </button>
                         </div>
                         <div id="taxi-drivers-crud-list" class="divide-y divide-dark-800 text-xs max-h-80 overflow-y-auto">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Registered Order Managers Card (Admin Edit & Delete) -->
+                    <div class="bg-dark-900 border border-dark-800 rounded-xl overflow-hidden shadow-sm space-y-2.5 p-3">
+                        <div class="flex items-center justify-between pb-2 border-b border-dark-800">
+                            <div>
+                                <div class="flex items-center gap-1.5 font-bold text-gray-200 text-xs uppercase tracking-wide">
+                                    <i data-lucide="badge-check" class="w-3.5 h-3.5 text-cyan-400"></i>
+                                    <span>Бүртгэлтэй захиалгын менежерүүд</span>
+                                </div>
+                                <p class="text-[10px] text-gray-400">Менежерийн нэр, данс, утас засах болон устгах</p>
+                            </div>
+                            <button onclick="openOrderManagerModal('add')" class="px-3 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-gray-950 font-bold text-xs flex items-center gap-1 shrink-0 shadow-md shadow-cyan-500/20 active:scale-95 transition-all">
+                                <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+                                <span>+ Менежер нэмэх</span>
+                            </button>
+                        </div>
+                        <div id="order-managers-crud-list" class="divide-y divide-dark-800 text-xs max-h-80 overflow-y-auto">
                             <!-- Populated dynamically via JS -->
                         </div>
                     </div>
@@ -1707,6 +1830,106 @@
                 <div class="pt-2 flex justify-end gap-2 border-t border-dark-800">
                     <button type="button" onclick="closeTaxiDriverModal()" class="px-3 py-1.5 rounded bg-dark-800 text-gray-300">Болих</button>
                     <button type="submit" class="px-4 py-1.5 rounded bg-amber-500 hover:bg-amber-400 text-gray-950 font-bold">Хадгалах</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ORDER MANAGER SEARCH & SELECT FULLSCREEN/POPUP MODAL -->
+    <div id="order-manager-search-modal" onclick="if(event.target === this) closeOrderManagerSearchModal()"
+        class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-sm">
+        <div id="order-manager-search-modal-card" class="bg-dark-900 border border-dark-700 rounded-t-2xl sm:rounded-2xl max-w-md w-full overflow-hidden shadow-2xl flex flex-col max-h-[85vh] sm:max-h-[80vh] transition-all duration-200">
+            <!-- Header with close button -->
+            <div class="px-3.5 py-3 border-b border-dark-800 flex items-center justify-between shrink-0 bg-dark-950/70">
+                <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-md bg-cyan-500/15 flex items-center justify-center text-cyan-400">
+                        <i data-lucide="badge-check" class="w-3.5 h-3.5"></i>
+                    </div>
+                    <h3 class="text-xs font-bold text-gray-100 uppercase tracking-wide">Захиалгын менежер хайх / сонгох</h3>
+                </div>
+                <button type="button" onclick="closeOrderManagerSearchModal()" class="w-7 h-7 rounded-lg bg-dark-800 hover:bg-dark-700 flex items-center justify-center text-gray-400 hover:text-gray-100">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <!-- Search input bar -->
+            <div class="p-2.5 border-b border-dark-800 space-y-2 shrink-0 bg-dark-900">
+                <div class="relative">
+                    <i data-lucide="search" class="w-4 h-4 text-cyan-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                    <input type="search" id="order-manager-search-kw" oninput="renderOrderManagerSearchResults()"
+                        placeholder="Нэр, данс, утсаар хайх..."
+                        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                        class="w-full bg-dark-850 border border-dark-700 rounded-xl pl-9 pr-8 py-2 text-[16px] sm:text-xs text-gray-100 placeholder-gray-500 font-medium focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500">
+                    <button type="button" onclick="document.getElementById('order-manager-search-kw').value=''; renderOrderManagerSearchResults(); document.getElementById('order-manager-search-kw').focus();"
+                        class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 p-1">
+                        <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Order managers scrollable list -->
+            <div id="order-manager-search-results" class="p-2.5 overflow-y-auto space-y-1 flex-1 min-h-[140px] max-h-[360px] overscroll-contain">
+                <!-- Managers dynamically rendered here -->
+            </div>
+
+            <!-- Footer: Quick register new order manager -->
+            <div class="p-2 border-t border-dark-800 bg-dark-950/80 flex items-center justify-between shrink-0 text-xs">
+                <span class="text-[11px] text-gray-400">Менежер жагсаалтад байхгүй юу?</span>
+                <button type="button" onclick="closeOrderManagerSearchModal(); openOrderManagerModal('add');"
+                    class="flex items-center gap-1 text-[11px] font-bold text-cyan-400 hover:text-cyan-300 bg-cyan-500/10 hover:bg-cyan-500/20 px-2.5 py-1 rounded-lg border border-cyan-500/30">
+                    <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+                    <span>+ Шинэ менежер нэмэх</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ORDER MANAGER ADD/EDIT MODAL -->
+    <div id="order-manager-modal" onclick="if(event.target === this) closeOrderManagerModal()"
+        class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+        <div class="bg-dark-900 border border-dark-700 rounded-xl max-w-sm w-full overflow-hidden shadow-2xl">
+            <div class="px-4 py-3 border-b border-dark-800 flex items-center justify-between bg-dark-950/70">
+                <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-md bg-cyan-500/15 flex items-center justify-center text-cyan-400">
+                        <i data-lucide="badge-check" class="w-3.5 h-3.5"></i>
+                    </div>
+                    <h3 id="order-manager-modal-title" class="text-xs font-bold uppercase tracking-wider text-gray-200">Захиалгын менежер бүртгэх</h3>
+                </div>
+                <button type="button" onclick="closeOrderManagerModal()" class="text-gray-400 hover:text-gray-200">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <form id="order-manager-modal-form" onsubmit="submitOrderManagerModal(event)" class="p-4 space-y-2.5 text-xs">
+                <input type="hidden" id="modal-order-manager-id">
+
+                <div>
+                    <label class="block text-gray-400 mb-0.5">Ажилтны нэр (Заавал кириллээр) *</label>
+                    <input type="text" id="modal-order-manager-name" required placeholder="Жишээ: Д.Болд, С.Сарантуяа..."
+                        class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200 focus:outline-none focus:border-cyan-500">
+                    <p class="text-[10px] text-gray-500 mt-0.5">Данс эзэмшигчийн нэрийг кириллээр бичнэ үү</p>
+                </div>
+
+                <div>
+                    <label class="block text-gray-400 mb-0.5">Дансны IBAN дугаар (15+ тэмдэгт) *</label>
+                    <input type="text" id="modal-order-manager-bankacc" required placeholder="Жишээ: MN020005005250242017"
+                        class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200 font-mono uppercase focus:outline-none focus:border-cyan-500">
+                    <p class="text-[10px] text-gray-500 mt-0.5">Заавал 15-аас дээш оронтой IBAN дугаар байна</p>
+                </div>
+
+                <div>
+                    <label class="block text-gray-400 mb-0.5">Утасны дугаар (8 оронтой) *</label>
+                    <input type="tel" id="modal-order-manager-phone" required maxlength="8" pattern="[0-9]{8}"
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                        placeholder="Жишээ: 99112233"
+                        class="w-full bg-dark-850 border border-dark-700 rounded px-2.5 py-1.5 text-gray-200 font-mono focus:outline-none focus:border-cyan-500">
+                    <p class="text-[10px] text-gray-500 mt-0.5">8 оронтой гар утасны дугаар оруулна уу</p>
+                </div>
+
+                <div id="modal-order-manager-error" class="hidden text-[11px] text-red-400 font-medium p-2 rounded bg-red-950/40 border border-red-900/50"></div>
+
+                <div class="pt-2 flex justify-end gap-2 border-t border-dark-800">
+                    <button type="button" onclick="closeOrderManagerModal()" class="px-3 py-1.5 rounded bg-dark-800 text-gray-300">Болих</button>
+                    <button type="submit" class="px-4 py-1.5 rounded bg-cyan-500 hover:bg-cyan-400 text-gray-950 font-bold">Хадгалах</button>
                 </div>
             </form>
         </div>
@@ -3456,7 +3679,8 @@
   "staff_tips": [],
   "submitted_shifts": [],
   "employees": [],
-  "taxi_drivers": []
+  "taxi_drivers": [],
+  "order_managers": []
 };
     </script>
 
@@ -3568,6 +3792,25 @@
             }
             if (!data.taxi_drivers) {
                 data.taxi_drivers = window.INITIAL_DATA?.taxi_drivers || [];
+            }
+            if (!data.order_managers) {
+                data.order_managers = window.INITIAL_DATA?.order_managers || [];
+            }
+            if (data.employees && Array.isArray(data.employees)) {
+                data.employees.forEach(emp => {
+                    if (emp.role === 'Захиалгын менежер' && emp.is_active !== 0) {
+                        if (!data.order_managers.some(m => String(m.id) === String(emp.id))) {
+                            data.order_managers.push({
+                                id: emp.id,
+                                name: emp.name,
+                                bank_account: emp.bank_account,
+                                phone: emp.phone,
+                                is_active: emp.is_active !== undefined ? emp.is_active : 1,
+                                created_at: emp.created_at || new Date().toISOString()
+                            });
+                        }
+                    }
+                });
             }
             if (data.tariffs && Array.isArray(data.tariffs)) {
                 data.tariffs.forEach(normalizeTariff);
@@ -3681,6 +3924,9 @@
                 'club_id', 'clubs', 'club_name', 'is_active', 'created_at'
             ],
             'taxi_drivers': [
+                'id', 'name', 'bank_account', 'phone', 'is_active', 'club_id', 'created_at'
+            ],
+            'order_managers': [
                 'id', 'name', 'bank_account', 'phone', 'is_active', 'club_id', 'created_at'
             ],
             'employees': [
@@ -3939,6 +4185,8 @@
                 if (activeAdminSubtab === 'taxipr') {
                     if (typeof renderTaxiPrSection === 'function') renderTaxiPrSection();
                     if (typeof renderTaxiDriversAdminTable === 'function') renderTaxiDriversAdminTable();
+            if (typeof renderOrderManagersAdminTable === 'function') renderOrderManagersAdminTable();
+                    if (typeof renderOrderManagersAdminTable === 'function') renderOrderManagersAdminTable();
                 }
                 if (activeAdminSubtab === 'tariffs' && typeof renderTariffs === 'function') renderTariffs();
                 if (activeAdminSubtab === 'users') {
@@ -4756,9 +5004,10 @@
 
             const dancerTotal = dancerRecords.reduce((s, r) => s + (r.total_amount || 0), 0);
             const taxiTotal = taxiPrRecords.filter(r => r.type === 'taxi').reduce((s, r) => s + (r.amount || 0), 0);
+            const orderManagerTotal = taxiPrRecords.filter(r => r.type === 'order_manager').reduce((s, r) => s + (r.amount || 0), 0);
             const prTotal = taxiPrRecords.filter(r => r.type === 'pr').reduce((s, r) => s + (r.amount || 0), 0);
             const staffTipTotal = staffTipRecords.reduce((s, r) => s + (r.amount || 0), 0);
-            const grandTotal = dancerTotal + taxiTotal + prTotal + staffTipTotal;
+            const grandTotal = dancerTotal + taxiTotal + orderManagerTotal + prTotal + staffTipTotal;
 
             // Shift Reconciliation Totals for Bartender (Нийт тип, Энгийн вайн, Үнэтэй вайн, Энгийн суулт, Уулттай суулт, Extra, Service charge)
             const sumDancerTipQty = dancerRecords.reduce((s, r) => s + (r.tip_qty || 0), 0);
@@ -4885,6 +5134,30 @@
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="font-bold font-mono text-amber-400 text-xs">${formatMNT(r.amount)}</span>
+                            ${canDeleteThisRecord ? `
+                            <button onclick="deleteTaxiPrRecord(${r.id})" class="text-gray-500 hover:text-red-400 p-1" title="Устгах">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            </button>` : `
+                            <span class="text-[10px] text-gray-500 p-1 cursor-not-allowed" title="${isLocked ? 'Нягтлан руу илгээгдэж түгжигдсэн тул устгах боломжгүй' : 'Өнгөрсөн өдрийн бүртгэл (Зөвхөн нягтлан засах эрхтэй)'}">
+                                <i data-lucide="lock" class="w-3.5 h-3.5 ${isLocked ? 'text-emerald-500/80' : 'text-gray-600'}"></i>
+                            </span>`}
+                        </div>
+                    `;
+                } else if (r.type === 'order_manager') {
+                    div.innerHTML = `
+                        <div class="flex-1 pr-2">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-400 font-mono font-bold border border-cyan-500/30">🛎️ Захиалга (${r.taxi_qty} ш)</span>
+                                <span class="font-bold text-gray-100 text-xs">${r.driver_name || 'Захиалгын менежер'}</span>
+                            </div>
+                            <div class="text-[10px] text-cyan-400/90 font-mono mt-0.5">${r.driver_bank || '-'} ${r.note ? '• ' + r.note : ''}</div>
+                            <div class="text-[9px] text-gray-500 mt-0.5 flex items-center gap-2">
+                                <span>Бүртгэсэн: ${r.bartender_name || 'Ажилтан'}</span>
+                                <span class="font-mono text-gray-600">${r.date}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold font-mono text-cyan-400 text-xs">${formatMNT(r.amount)}</span>
                             ${canDeleteThisRecord ? `
                             <button onclick="deleteTaxiPrRecord(${r.id})" class="text-gray-500 hover:text-red-400 p-1" title="Устгах">
                                 <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
@@ -5081,11 +5354,15 @@
             const taxiQty = taxiRecs.reduce((s, r) => s + (r.taxi_qty || 0), 0);
             const taxiTotal = taxiRecs.reduce((s, r) => s + (r.amount || 0), 0);
 
+            const orderManagerRecs = taxiPrRecords.filter(r => r.type === 'order_manager');
+            const orderManagerQty = orderManagerRecs.reduce((s, r) => s + (r.taxi_qty || 0), 0);
+            const orderManagerTotal = orderManagerRecs.reduce((s, r) => s + (r.amount || 0), 0);
+
             const prRecs = taxiPrRecords.filter(r => r.type === 'pr');
             const prTotal = prRecs.reduce((s, r) => s + (r.amount || 0), 0);
 
             const staffTipTotal = staffTipRecords.reduce((s, r) => s + (r.amount || 0), 0);
-            const grandTotal = dancerTotal + taxiTotal + prTotal + staffTipTotal;
+            const grandTotal = dancerTotal + taxiTotal + orderManagerTotal + prTotal + staffTipTotal;
 
             // Shift Reconciliation Totals for Confirmation Modal
             const sumDancerTipQty = dancerRecords.reduce((s, r) => s + (r.tip_qty || 0), 0);
@@ -5114,6 +5391,7 @@
             const modalDate = document.getElementById('modal-submit-date');
             const modalDancer = document.getElementById('modal-submit-dancer-summary');
             const modalTaxi = document.getElementById('modal-submit-taxi-summary');
+            const modalOrderManager = document.getElementById('modal-submit-order-manager-summary');
             const modalPr = document.getElementById('modal-submit-pr-summary');
             const modalStaffTip = document.getElementById('modal-submit-stafftip-summary');
             const modalGrandTotal = document.getElementById('modal-submit-grand-total');
@@ -5138,6 +5416,7 @@
             if (modalDate) modalDate.textContent = date;
             if (modalDancer) modalDancer.textContent = `${dancerRecords.length} бичилт • ${formatMNT(dancerTotal)}`;
             if (modalTaxi) modalTaxi.textContent = `${taxiQty} ш • ${formatMNT(taxiTotal)}`;
+            if (modalOrderManager) modalOrderManager.textContent = `${orderManagerQty} ш • ${formatMNT(orderManagerTotal)}`;
             if (modalPr) modalPr.textContent = `${prRecs.length} билл • ${formatMNT(prTotal)}`;
             if (modalStaffTip) modalStaffTip.textContent = `${staffTipRecords.length} бичилт • ${formatMNT(staffTipTotal)}`;
             if (modalGrandTotal) modalGrandTotal.textContent = formatMNT(grandTotal);
@@ -5179,11 +5458,15 @@
             const taxiQty = taxiRecs.reduce((s, r) => s + (r.taxi_qty || 0), 0);
             const taxiTotal = taxiRecs.reduce((s, r) => s + (r.amount || 0), 0);
 
+            const orderManagerRecs = taxiPrRecords.filter(r => r.type === 'order_manager');
+            const orderManagerQty = orderManagerRecs.reduce((s, r) => s + (r.taxi_qty || 0), 0);
+            const orderManagerTotal = orderManagerRecs.reduce((s, r) => s + (r.amount || 0), 0);
+
             const prRecs = taxiPrRecords.filter(r => r.type === 'pr');
             const prTotal = prRecs.reduce((s, r) => s + (r.amount || 0), 0);
 
             const staffTipTotal = staffTipRecords.reduce((s, r) => s + (r.amount || 0), 0);
-            const grandTotal = dancerTotal + taxiTotal + prTotal + staffTipTotal;
+            const grandTotal = dancerTotal + taxiTotal + orderManagerTotal + prTotal + staffTipTotal;
 
             const sumDancerTipQtySub = dancerRecords.reduce((s, r) => s + (r.tip_qty || 0), 0);
             const sumWineRegQtySub = dancerRecords.reduce((s, r) => s + (r.wine_reg_qty || 0), 0);
@@ -5203,6 +5486,8 @@
                 dancer_total: dancerTotal,
                 taxi_count: taxiQty,
                 taxi_total: taxiTotal,
+                order_manager_count: orderManagerQty,
+                order_manager_total: orderManagerTotal,
                 pr_count: prRecs.length,
                 pr_total: prTotal,
                 staff_tip_count: staffTipRecords.length,
@@ -5742,6 +6027,7 @@
             showToast(`${driver.name} жолооч амжилттай хасагдлаа`, false, 'Устгагдлаа');
             if (typeof renderTaxiDriverSearchResults === 'function') renderTaxiDriverSearchResults();
             if (typeof renderTaxiDriversAdminTable === 'function') renderTaxiDriversAdminTable();
+            if (typeof renderOrderManagersAdminTable === 'function') renderOrderManagersAdminTable();
             if (String(document.getElementById('bar_taxi_selected_id')?.value) === String(driverId)) {
                 clearSelectedTaxiDriver();
             }
@@ -5858,6 +6144,514 @@
             clearSelectedTaxiDriver();
             document.getElementById('bar_taxi_qty').value = 1;
             updateTaxiTotal();
+            loadDailyRecords();
+        }
+
+        // ================= ORDER MANAGER SYSTEM =================
+        function adjustOrderManagerQty(delta) {
+            playFeedback('click');
+            const el = document.getElementById('bar_order_manager_qty');
+            if (!el) return;
+            let val = parseInt(el.value || 1) + delta;
+            if (val < 1) val = 1;
+            el.value = val;
+            updateOrderManagerTotal();
+        }
+
+        function updateOrderManagerTotal() {
+            const qty = parseInt(document.getElementById('bar_order_manager_qty')?.value || 1);
+            const rate = 20000;
+            const disp = document.getElementById('bar_order_manager_total_disp');
+            if (disp) disp.textContent = formatMNT(qty * rate);
+        }
+
+        function adjustOrderManagerPickerHeightForKeyboard() {
+            const modalOverlay = document.getElementById('order-manager-search-modal');
+            const modalCard = document.getElementById('order-manager-search-modal-card');
+            const resultsList = document.getElementById('order-manager-search-results');
+            if (!modalCard || !resultsList) return;
+
+            if (window.visualViewport) {
+                const vpHeight = window.visualViewport.height;
+                const padTop = modalOverlay ? (parseFloat(getComputedStyle(modalOverlay).paddingTop) || 12) : 12;
+                const maxModalH = Math.max(200, Math.floor(vpHeight - padTop - 12));
+                modalCard.style.maxHeight = `${maxModalH}px`;
+                const maxListH = Math.max(100, maxModalH - 120);
+                resultsList.style.maxHeight = `${maxListH}px`;
+            }
+        }
+
+        function openOrderManagerSearchModal() {
+            playFeedback('click');
+            const modal = document.getElementById('order-manager-search-modal');
+            if (!modal) return;
+            document.body.classList.add('overflow-hidden');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            const kwInput = document.getElementById('order-manager-search-kw');
+            if (kwInput) kwInput.value = '';
+            renderOrderManagerSearchResults();
+            adjustOrderManagerPickerHeightForKeyboard();
+
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', adjustOrderManagerPickerHeightForKeyboard);
+                window.visualViewport.addEventListener('scroll', adjustOrderManagerPickerHeightForKeyboard);
+            }
+
+            setTimeout(() => {
+                if (kwInput) kwInput.focus();
+                adjustOrderManagerPickerHeightForKeyboard();
+            }, 60);
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function closeOrderManagerSearchModal() {
+            const modal = document.getElementById('order-manager-search-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+            document.body.classList.remove('overflow-hidden');
+            if (window.visualViewport) {
+                window.visualViewport.removeEventListener('resize', adjustOrderManagerPickerHeightForKeyboard);
+                window.visualViewport.removeEventListener('scroll', adjustOrderManagerPickerHeightForKeyboard);
+            }
+            const kwInput = document.getElementById('order-manager-search-kw');
+            if (kwInput) kwInput.blur();
+        }
+
+        function renderOrderManagerSearchResults() {
+            const listEl = document.getElementById('order-manager-search-results');
+            if (!listEl) return;
+            const kw = (document.getElementById('order-manager-search-kw')?.value || '').trim().toLowerCase();
+
+            let filtered = (store.order_managers || []).filter(m => m.is_active !== 0);
+
+            if (kw) {
+                filtered = filtered.filter(m => {
+                    const name = (m.name || '').toLowerCase();
+                    const bank = (m.bank_account || '').toLowerCase();
+                    const ph = (m.phone || '').toLowerCase();
+                    return name.includes(kw) || bank.includes(kw) || ph.includes(kw);
+                });
+            }
+
+            // Sort alphabetical by name
+            filtered.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'mn'));
+
+            if (filtered.length === 0) {
+                listEl.innerHTML = `
+                    <div class="py-8 text-center space-y-2">
+                        <i data-lucide="search-x" class="w-8 h-8 text-gray-600 mx-auto"></i>
+                        <div class="text-xs text-gray-400">«${kw || 'Захиалгын менежер'}» илэрц олдсонгүй</div>
+                        <button type="button" onclick="closeOrderManagerSearchModal(); openOrderManagerModal('add');"
+                            class="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-400 text-xs font-bold hover:bg-cyan-500/25">
+                            <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+                            <span>Шинээр менежер нэмэх</span>
+                        </button>
+                    </div>
+                `;
+                if (window.lucide) lucide.createIcons();
+                return;
+            }
+
+            const curSelectedId = document.getElementById('bar_order_manager_selected_id')?.value;
+
+            listEl.innerHTML = filtered.map((m, idx) => {
+                const isSel = String(m.id) === String(curSelectedId);
+
+                return `
+                    <div onclick="selectOrderManagerFromPicker(${m.id})"
+                        class="px-3 py-2.5 rounded-xl border transition-all cursor-pointer flex items-center justify-between active:scale-[0.98] ${isSel ? 'bg-cyan-500/20 border-cyan-500/60 ring-1 ring-cyan-500/40' : 'bg-dark-850 hover:bg-dark-800 border-dark-750'}">
+                        <div class="flex items-center gap-2.5 min-w-0 flex-1 pr-2">
+                            <div class="w-6 h-6 rounded-md bg-dark-800 border border-dark-700/60 text-gray-400 font-mono text-[10px] font-bold flex items-center justify-center shrink-0">
+                                ${idx + 1}
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-center gap-1.5 flex-wrap">
+                                    <span class="font-bold text-sm text-gray-100">${m.name}</span>
+                                    <span class="text-[9px] px-1.5 py-0.5 rounded bg-cyan-950/70 text-cyan-300 font-semibold border border-cyan-800/60">Захиалгын менежер</span>
+                                </div>
+                                <div class="text-[11px] text-gray-400 font-mono mt-0.5 flex items-center gap-1.5 truncate">
+                                    <span class="text-cyan-400/90 font-bold">${m.bank_account || '-'}</span>
+                                    ${m.phone ? `<span class="text-gray-600">•</span><span class="text-emerald-400">📞 ${m.phone}</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="shrink-0">
+                            ${isSel ? '<i data-lucide="check" class="w-4 h-4 text-cyan-400"></i>' : '<i data-lucide="chevron-right" class="w-4 h-4 text-gray-600"></i>'}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function selectOrderManagerFromPicker(managerId) {
+            playFeedback('click');
+            selectOrderManager(managerId);
+            closeOrderManagerSearchModal();
+        }
+
+        function selectOrderManager(managerId) {
+            const manager = (store.order_managers || []).find(m => String(m.id) === String(managerId));
+            const idInput = document.getElementById('bar_order_manager_selected_id');
+            const nameInput = document.getElementById('bar_order_manager_name');
+            const bankInput = document.getElementById('bar_order_manager_bank');
+            const phoneInput = document.getElementById('bar_order_manager_phone');
+            const titleEl = document.getElementById('order-manager-picker-title');
+            const subEl = document.getElementById('order-manager-picker-sub');
+            const clearBtn = document.getElementById('order-manager-picker-clear-btn');
+            const strip = document.getElementById('order-manager-info-strip');
+
+            if (!manager) {
+                clearSelectedOrderManager();
+                return;
+            }
+
+            if (idInput) idInput.value = manager.id;
+            if (nameInput) nameInput.value = manager.name || '';
+            if (bankInput) bankInput.value = manager.bank_account || '';
+            if (phoneInput) phoneInput.value = manager.phone || '';
+
+            if (titleEl) {
+                titleEl.innerHTML = `<span class="text-white font-bold">${manager.name}</span> <span class="text-[10px] px-1.5 py-0.2 rounded font-semibold bg-cyan-950/80 text-cyan-300 border border-cyan-800/60">Менежер</span>`;
+            }
+            if (subEl) {
+                subEl.innerHTML = `Данс: <span class="text-cyan-400 font-bold">${manager.bank_account || '-'}</span> • 📞 ${manager.phone || '-'}`;
+            }
+            if (clearBtn) clearBtn.classList.remove('hidden');
+
+            if (strip) {
+                const elName = document.getElementById('order-manager-selected-name');
+                const elBank = document.getElementById('order-manager-selected-bank');
+                const elPhone = document.getElementById('order-manager-selected-phone');
+                if (elName) elName.textContent = manager.name;
+                if (elBank) elBank.textContent = manager.bank_account || '-';
+                if (elPhone) elPhone.textContent = manager.phone || '-';
+                strip.classList.remove('hidden');
+            }
+
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function clearSelectedOrderManager() {
+            const idInput = document.getElementById('bar_order_manager_selected_id');
+            const nameInput = document.getElementById('bar_order_manager_name');
+            const bankInput = document.getElementById('bar_order_manager_bank');
+            const phoneInput = document.getElementById('bar_order_manager_phone');
+            const titleEl = document.getElementById('order-manager-picker-title');
+            const subEl = document.getElementById('order-manager-picker-sub');
+            const clearBtn = document.getElementById('order-manager-picker-clear-btn');
+            const strip = document.getElementById('order-manager-info-strip');
+
+            if (idInput) idInput.value = '';
+            if (nameInput) nameInput.value = '';
+            if (bankInput) bankInput.value = '';
+            if (phoneInput) phoneInput.value = '';
+
+            if (titleEl) {
+                titleEl.innerHTML = `<span>-- Захиалгын менежер хайх / сонгох --</span>`;
+            }
+            if (subEl) {
+                subEl.textContent = 'Нэр, данс, утсаар хайна уу';
+            }
+            if (clearBtn) clearBtn.classList.add('hidden');
+            if (strip) strip.classList.add('hidden');
+
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function openOrderManagerModal(mode, managerId = null) {
+            playFeedback('click');
+            const modal = document.getElementById('order-manager-modal');
+            const title = document.getElementById('order-manager-modal-title');
+            const idInput = document.getElementById('modal-order-manager-id');
+            const errEl = document.getElementById('modal-order-manager-error');
+            if (errEl) { errEl.textContent = ''; errEl.classList.add('hidden'); }
+
+            if (mode === 'add') {
+                title.textContent = 'Шинэ захиалгын менежер бүртгэх';
+                idInput.value = '';
+                document.getElementById('order-manager-modal-form').reset();
+            } else {
+                title.textContent = 'Менежерийн мэдээлэл засах';
+                const manager = (store.order_managers || []).find(m => String(m.id) === String(managerId));
+                if (!manager) return;
+                idInput.value = manager.id;
+                document.getElementById('modal-order-manager-name').value = manager.name || '';
+                document.getElementById('modal-order-manager-bankacc').value = manager.bank_account || '';
+                document.getElementById('modal-order-manager-phone').value = manager.phone || '';
+            }
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function closeOrderManagerModal() {
+            const modal = document.getElementById('order-manager-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        function submitOrderManagerModal(e) {
+            e.preventDefault();
+            const id = document.getElementById('modal-order-manager-id').value;
+            const name = document.getElementById('modal-order-manager-name').value.trim();
+            const bankAcc = document.getElementById('modal-order-manager-bankacc').value.trim().toUpperCase().replace(/\s+/g, '');
+            const phone = (document.getElementById('modal-order-manager-phone')?.value || '').trim().replace(/[^0-9]/g, '');
+            const errEl = document.getElementById('modal-order-manager-error');
+
+            function showError(msg) {
+                if (errEl) {
+                    errEl.textContent = msg;
+                    errEl.classList.remove('hidden');
+                }
+                showToast(msg, true, 'Бүртгэлийн алдаа');
+            }
+
+            if (!name) {
+                showError('Ажилтны нэрийг заавал бичнэ үү!');
+                highlightField('modal-order-manager-name');
+                return;
+            }
+            const cyrillicRegex = /^[а-яА-ЯөӨүҮёЁ\s\-.]+$/;
+            if (!cyrillicRegex.test(name)) {
+                showError('Ажилтны нэрийг заавал кирилл үсгээр бичнэ үү!');
+                highlightField('modal-order-manager-name');
+                return;
+            }
+
+            if (!bankAcc) {
+                showError('Дансны IBAN дугаарыг заавал оруулна уу!');
+                highlightField('modal-order-manager-bankacc');
+                return;
+            }
+            if (bankAcc.length < 15) {
+                showError('Дансны IBAN дугаар 15-аас дээш оронтой байх ёстой!');
+                highlightField('modal-order-manager-bankacc');
+                return;
+            }
+
+            if (!phone) {
+                showError('Утасны дугаарыг заавал оруулна уу!');
+                highlightField('modal-order-manager-phone');
+                return;
+            }
+            if (phone.length !== 8) {
+                showError('Утасны дугаар заавал 8 оронтой тоо байх ёстой! (Жишээ: 99112233)');
+                highlightField('modal-order-manager-phone');
+                return;
+            }
+
+            if (!store.order_managers) store.order_managers = [];
+            if (!store.employees) store.employees = [];
+
+            let targetId = null;
+            let targetManager = null;
+            if (id) {
+                const manager = store.order_managers.find(x => String(x.id) === String(id));
+                if (manager) {
+                    manager.name = name;
+                    manager.bank_account = bankAcc;
+                    manager.phone = phone;
+                    targetId = manager.id;
+                    targetManager = manager;
+                }
+                // also update in employees list if present
+                const emp = store.employees.find(x => String(x.id) === String(id));
+                if (emp) {
+                    emp.name = name;
+                    emp.bank_account = bankAcc;
+                    emp.phone = phone;
+                    emp.role = 'Захиалгын менежер';
+                }
+                showToast(`${name} менежерийн мэдээлэл шинэчлэгдлээ`);
+            } else {
+                targetId = Date.now();
+                targetManager = {
+                    id: targetId,
+                    name: name,
+                    bank_account: bankAcc,
+                    phone: phone,
+                    role: 'Захиалгын менежер',
+                    is_active: 1,
+                    created_at: new Date().toISOString()
+                };
+                store.order_managers.push(targetManager);
+                store.employees.push({ ...targetManager });
+                showToast(`${name} менежер амжилттай бүртгэгдлээ`);
+            }
+
+            saveStoredData(store);
+            closeOrderManagerModal();
+
+            if (targetId) {
+                selectOrderManager(targetId);
+            }
+            if (typeof renderOrderManagerSearchResults === 'function') {
+                renderOrderManagerSearchResults();
+            }
+            if (typeof renderOrderManagersAdminTable === 'function') {
+                renderOrderManagersAdminTable();
+            }
+            playFeedback('success');
+
+            if (supabaseClient && targetManager) {
+                try {
+                    supabaseClient.from('employees').upsert([targetManager]).then(({ error }) => {
+                        if (error) console.warn('Supabase employee upsert:', error);
+                    });
+                } catch (syncErr) {
+                    console.warn('Employee sync failed:', syncErr);
+                }
+            }
+        }
+
+        function deleteOrderManager(managerId) {
+            const manager = (store.order_managers || []).find(m => String(m.id) === String(managerId));
+            if (!manager) return;
+
+            if (!confirm(`«${manager.name}» менежерийг устгахдаа итгэлтэй байна уу?`)) {
+                return;
+            }
+
+            manager.is_active = 0;
+            const emp = (store.employees || []).find(e => String(e.id) === String(managerId));
+            if (emp) emp.is_active = 0;
+
+            saveStoredData(store);
+            if (supabaseClient) {
+                try {
+                    supabaseClient.from('employees').upsert([{ id: manager.id, is_active: 0 }]).then(({ error }) => {
+                        if (error) console.warn('Supabase order manager delete error:', error);
+                    });
+                } catch (e) {
+                    console.warn(e);
+                }
+            }
+            showToast(`${manager.name} менежер амжилттай хасагдлаа`, false, 'Устгагдлаа');
+            if (typeof renderOrderManagerSearchResults === 'function') renderOrderManagerSearchResults();
+            if (typeof renderOrderManagersAdminTable === 'function') renderOrderManagersAdminTable();
+            if (String(document.getElementById('bar_order_manager_selected_id')?.value) === String(managerId)) {
+                clearSelectedOrderManager();
+            }
+        }
+
+        function renderOrderManagersAdminTable() {
+            const listEl = document.getElementById('order-managers-crud-list');
+            if (!listEl) return;
+            listEl.innerHTML = '';
+
+            const managers = (store.order_managers || []).filter(m => m.is_active !== 0)
+                .sort((a, b) => (a.name || '').localeCompare(b.name || '', 'mn'));
+
+            if (managers.length === 0) {
+                listEl.innerHTML = '<div class="text-center py-6 text-gray-500 font-mono text-[11px]">Бүртгэлтэй захиалгын менежер одоогоор байхгүй байна. "+ Менежер нэмэх" товчоор шинээр бүртгэнэ үү.</div>';
+                return;
+            }
+
+            managers.forEach((m, idx) => {
+                const div = document.createElement('div');
+                div.className = 'px-3 py-2.5 flex items-center justify-between hover:bg-dark-850/40 transition-colors';
+
+                div.innerHTML = `
+                    <div class="flex-1 pr-2 min-w-0">
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <span class="text-[10px] text-gray-500 font-mono">#${idx + 1}</span>
+                            <span class="font-bold text-gray-100 text-xs">${m.name}</span>
+                            <span class="text-[9px] px-1.5 py-0.2 rounded border bg-cyan-950/70 text-cyan-300 border-cyan-800/60 font-semibold">Захиалгын менежер</span>
+                        </div>
+                        <div class="text-[11px] text-gray-400 mt-1 flex flex-wrap items-center gap-3 font-mono">
+                            <span class="flex items-center gap-1">
+                                <i data-lucide="credit-card" class="w-3 h-3 text-cyan-400"></i>
+                                <strong class="text-gray-200">${m.bank_account || '-'}</strong>
+                            </span>
+                            <span class="flex items-center gap-1">
+                                <i data-lucide="phone" class="w-3 h-3 text-emerald-400"></i>
+                                <span class="text-cyan-300">${m.phone || '-'}</span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1 shrink-0">
+                        <button onclick="openOrderManagerModal('edit', ${m.id})" class="p-1.5 text-gray-400 hover:text-cyan-400 rounded hover:bg-dark-800 transition-colors" title="Засах">
+                            <i data-lucide="edit" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <button onclick="deleteOrderManager(${m.id})" class="p-1.5 text-gray-400 hover:text-red-400 rounded hover:bg-dark-800 transition-colors" title="Устгах">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                `;
+                listEl.appendChild(div);
+            });
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function submitOrderManagerRecord() {
+            const managerId = document.getElementById('bar_order_manager_selected_id')?.value;
+            const managerName = (document.getElementById('bar_order_manager_name')?.value || '').trim();
+            const managerBank = (document.getElementById('bar_order_manager_bank')?.value || '').trim().toUpperCase().replace(/\s+/g, '');
+            const managerPhone = (document.getElementById('bar_order_manager_phone')?.value || '').trim();
+            const qty = parseInt(document.getElementById('bar_order_manager_qty')?.value || 1);
+
+            // Mandatory Validation: Manager selected
+            if (!managerId || !managerName || !managerBank) {
+                highlightField('bar-order-manager-picker-btn');
+                showToast('Захиалгын менежерээ сонгоно уу! Хэрэв байхгүй бол "+ Менежер нэмэх" товчоор шинээр бүртгэнэ үү.', true, 'Менежер сонгоогүй');
+                return;
+            }
+            if (qty < 1) {
+                highlightField('bar_order_manager_qty');
+                showToast('Захиалгын тоо 1-ээс бага байж болохгүй!', true, 'Тоо хэмжээний алдаа');
+                return;
+            }
+
+            const rate = 20000;
+            const club = store.clubs.find(c => String(c.id) === String(currentClubId));
+
+            if (currentUser && currentUser.role === 'admin') {
+                showToast('Ерөнхий нягтлан зөвхөн хянах (Monitor) горимтой тул Захиалгын менежерийн орлого бүртгэхгүй. Шаардлагатай бол тухайн бармений эрхээр нэвтэрнэ үү.', true, 'Зөвхөн хянах горим');
+                return;
+            }
+
+            const shiftDateStr = getBusinessDateStr();
+            let entryDate = document.getElementById('bar-date-input').value;
+            if (currentUser && currentUser.role === 'bartender') {
+                entryDate = shiftDateStr;
+            }
+
+            if (currentUser && currentUser.role === 'bartender' && isShiftLocked(currentClubId, entryDate)) {
+                showToast('Энэ өдрийн бүртгэл нягтлан руу илгээгдэж түгжигдсэн тул хадгалах боломжгүй!', true, 'Түгжигдсэн өдөр');
+                return;
+            }
+
+            const newRec = {
+                id: Date.now(),
+                type: 'order_manager',
+                date: entryDate,
+                club_id: parseInt(currentClubId),
+                club_name: club?.name || '',
+                bartender_name: currentUser ? currentUser.name : 'Ээлжийн ажилтан',
+                driver_name: managerName,
+                driver_bank: managerBank,
+                taxi_qty: qty,
+                rate: rate,
+                amount: qty * rate,
+                note: managerPhone ? `Утас: ${managerPhone}` : ''
+            };
+
+            if (!store.taxi_pr_records) store.taxi_pr_records = [];
+            store.taxi_pr_records.unshift(newRec);
+            saveStoredData(store);
+            cloudInsert('taxi_pr_records', newRec);
+
+            showToast(`🛎️ Захиалгын менежер (${managerName} • ${qty} захиалга • ${formatMNT(newRec.amount)}) амжилттай бүртгэгдлээ!`, false, 'Амжилттай бүртгэгдлээ');
+            clearSelectedOrderManager();
+            document.getElementById('bar_order_manager_qty').value = 1;
+            updateOrderManagerTotal();
             loadDailyRecords();
         }
 
@@ -6646,11 +7440,15 @@
 
             // Compute KPIs
             const taxiRecs = records.filter(r => r.type === 'taxi');
+            const orderManagerRecs = records.filter(r => r.type === 'order_manager');
             const prRecs = records.filter(r => r.type === 'pr');
             const staffTipRecs = records.filter(r => r.type === 'staff_tip');
 
             const taxiQtySum = taxiRecs.reduce((s, r) => s + (r.taxi_qty || 0), 0);
             const taxiAmountSum = taxiRecs.reduce((s, r) => s + (r.amount || 0), 0);
+
+            const orderManagerQtySum = orderManagerRecs.reduce((s, r) => s + (r.taxi_qty || 0), 0);
+            const orderManagerAmountSum = orderManagerRecs.reduce((s, r) => s + (r.amount || 0), 0);
 
             const prCountSum = prRecs.length;
             const prAmountSum = prRecs.reduce((s, r) => s + (r.amount || 0), 0);
@@ -6658,7 +7456,7 @@
             const staffTipCountSum = staffTipRecs.length;
             const staffTipAmountSum = staffTipRecs.reduce((s, r) => s + (r.amount || 0), 0);
 
-            const grandTotal = taxiAmountSum + prAmountSum + staffTipAmountSum;
+            const grandTotal = taxiAmountSum + orderManagerAmountSum + prAmountSum + staffTipAmountSum;
 
             if (document.getElementById('stat-taxi-qty')) document.getElementById('stat-taxi-qty').textContent = `${taxiQtySum} ш`;
             if (document.getElementById('stat-taxi-total')) document.getElementById('stat-taxi-total').textContent = formatMNT(taxiAmountSum);
@@ -6695,6 +7493,27 @@
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="font-bold font-mono text-amber-400 text-xs">${formatMNT(r.amount)}</span>
+                            <button onclick="deleteTaxiPrRecord(${r.id})" class="p-1 text-gray-400 hover:text-red-400" title="Устгах">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                    `;
+                } else if (r.type === 'order_manager') {
+                    div.innerHTML = `
+                        <div class="flex-1 pr-2">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-400 font-mono font-bold border border-cyan-500/30">🛎️ Захиалга (${r.taxi_qty} ш)</span>
+                                <span class="font-bold text-gray-100 text-xs">${r.driver_name || 'Захиалгын менежер'}</span>
+                                <span class="text-[10px] text-gray-400 font-mono">${(r.club_name || '').replace(' CLUB','')}</span>
+                            </div>
+                            <div class="text-[10px] text-cyan-400/90 font-mono mt-0.5">${r.driver_bank || '-'} ${r.note ? '• ' + r.note : ''}</div>
+                            <div class="text-[9px] text-gray-500 mt-0.5 flex items-center gap-2">
+                                <span>Бүртгэсэн: ${r.bartender_name || 'Ажилтан'}</span>
+                                <span class="font-mono text-gray-600">${r.date}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold font-mono text-cyan-400 text-xs">${formatMNT(r.amount)}</span>
                             <button onclick="deleteTaxiPrRecord(${r.id})" class="p-1 text-gray-400 hover:text-red-400" title="Устгах">
                                 <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                             </button>
@@ -6746,6 +7565,7 @@
                 listEl.appendChild(div);
             });
             if (typeof renderTaxiDriversAdminTable === 'function') renderTaxiDriversAdminTable();
+            if (typeof renderOrderManagersAdminTable === 'function') renderOrderManagersAdminTable();
             lucide.createIcons();
         }
 
@@ -7299,16 +8119,18 @@
             ];
             let tIdx = 1;
             taxiPrRecords.forEach(r => {
-                const holderName = r.type === 'taxi' ? (r.driver_name || 'Жолооч') : (r.pr_manager_name || 'PR Менежер');
-                const holderBank = r.type === 'taxi' ? (r.driver_bank || '-') : (r.pr_manager_bank || '-');
+                const holderName = r.type === 'taxi' ? (r.driver_name || 'Жолооч') : (r.type === 'order_manager' ? (r.driver_name || 'Захиалгын менежер') : (r.pr_manager_name || 'PR Менежер'));
+                const holderBank = (r.type === 'taxi' || r.type === 'order_manager') ? (r.driver_bank || '-') : (r.pr_manager_bank || '-');
+                const typeLabel = r.type === 'taxi' ? 'Такси татвар' : (r.type === 'order_manager' ? 'Захиалгын менежер' : 'PR зардал');
+                const qtyLabel = r.type === 'taxi' ? `${r.taxi_qty} такси` : (r.type === 'order_manager' ? `${r.taxi_qty} захиалга` : `Билл ${r.bill_no}`);
                 taxiPrSheetData.push([
                     tIdx++,
                     r.date,
                     r.club_name,
-                    r.type === 'taxi' ? 'Такси татвар' : 'PR зардал',
+                    typeLabel,
                     holderName,
                     holderBank,
-                    r.type === 'taxi' ? `${r.taxi_qty} такси` : `Билл ${r.bill_no}`,
+                    qtyLabel,
                     r.amount,
                     r.note || '-',
                     r.bartender_name || '-'
@@ -7425,6 +8247,7 @@
                 listEl.appendChild(div);
             });
             if (typeof renderTaxiDriversAdminTable === 'function') renderTaxiDriversAdminTable();
+            if (typeof renderOrderManagersAdminTable === 'function') renderOrderManagersAdminTable();
             lucide.createIcons();
         }
 
@@ -8035,6 +8858,7 @@
                 listEl.appendChild(div);
             });
             if (typeof renderTaxiDriversAdminTable === 'function') renderTaxiDriversAdminTable();
+            if (typeof renderOrderManagersAdminTable === 'function') renderOrderManagersAdminTable();
             lucide.createIcons();
         }
 
@@ -8272,6 +9096,10 @@
                     <div class="flex items-center justify-between text-gray-300">
                         <span class="font-sans">🚕 Такси зардал:</span>
                         <span id="modal-submit-taxi-summary" class="text-amber-400">0 ш • 0 ₮</span>
+                    </div>
+                    <div class="flex items-center justify-between text-gray-300">
+                        <span class="font-sans">🛎️ Захиалгын менежер:</span>
+                        <span id="modal-submit-order-manager-summary" class="text-cyan-400">0 ш • 0 ₮</span>
                     </div>
                     <div class="flex items-center justify-between text-gray-300">
                         <span class="font-sans">🧾 PR зардал:</span>
