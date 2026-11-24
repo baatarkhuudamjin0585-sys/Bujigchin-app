@@ -439,8 +439,8 @@
                                 class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-90 text-gray-100 border border-dark-700 font-bold text-base flex items-center justify-center">
                                 -
                             </button>
-                            <input type="number" id="wine_reg_qty" value="0" min="0" oninput="calculateEntryTotal()"
-                                class="w-12 h-9 text-center bg-dark-950 border border-dark-700 rounded-lg font-mono font-bold text-gray-100 text-sm focus:outline-none focus:border-amber-500">
+                            <input type="number" id="wine_reg_qty" value="0" min="0" step="any" placeholder="0.00" oninput="calculateEntryTotal()"
+                                class="w-16 h-9 text-center bg-dark-950 border border-dark-700 rounded-lg font-mono font-bold text-gray-100 text-sm focus:outline-none focus:border-amber-500">
                             <button type="button" onclick="adjustCount('wine_reg_qty', 1)" 
                                 class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-90 text-gray-100 border border-dark-700 font-bold text-base flex items-center justify-center">
                                 +
@@ -465,8 +465,8 @@
                                 class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-90 text-gray-100 border border-dark-700 font-bold text-base flex items-center justify-center">
                                 -
                             </button>
-                            <input type="number" id="wine_exp_qty" value="0" min="0" oninput="calculateEntryTotal()"
-                                class="w-12 h-9 text-center bg-dark-950 border border-dark-700 rounded-lg font-mono font-bold text-gray-100 text-sm focus:outline-none focus:border-amber-500">
+                            <input type="number" id="wine_exp_qty" value="0" min="0" step="any" placeholder="0.00" oninput="calculateEntryTotal()"
+                                class="w-16 h-9 text-center bg-dark-950 border border-dark-700 rounded-lg font-mono font-bold text-gray-100 text-sm focus:outline-none focus:border-amber-500">
                             <button type="button" onclick="adjustCount('wine_exp_qty', 1)" 
                                 class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-90 text-gray-100 border border-dark-700 font-bold text-base flex items-center justify-center">
                                 +
@@ -3812,6 +3812,17 @@
                     }
                 });
             }
+            if (data.records && Array.isArray(data.records)) {
+                data.records.forEach(r => {
+                    if (r && r.note) {
+                        const m = r.note.match(/\[wine_split:\s*reg=([0-9.]+),\s*exp=([0-9.]+)\]/);
+                        if (m) {
+                            if (m[1] !== undefined) r.wine_reg_qty = parseFloat(m[1]);
+                            if (m[2] !== undefined) r.wine_exp_qty = parseFloat(m[2]);
+                        }
+                    }
+                });
+            }
             if (data.tariffs && Array.isArray(data.tariffs)) {
                 data.tariffs.forEach(normalizeTariff);
                 // Ensure all default tariffs (both Үндсэн and Халтуур) exist in stored data
@@ -3963,6 +3974,20 @@
                 if (clean.total_amount === undefined && row.grand_total !== undefined) {
                     clean.total_amount = row.grand_total;
                 }
+                // Safe handling for fractional wine quantities in PostgreSQL integer columns
+                const regQty = parseFloat(row.wine_reg_qty || 0);
+                const expQty = parseFloat(row.wine_exp_qty || 0);
+                const isRegFraction = (regQty % 1 !== 0);
+                const isExpFraction = (expQty % 1 !== 0);
+                if (isRegFraction || isExpFraction) {
+                    let noteText = clean.note || '';
+                    if (!noteText.includes('[wine_split:')) {
+                        noteText = (noteText ? noteText + ' ' : '') + `[wine_split: reg=${regQty}, exp=${expQty}]`;
+                        clean.note = noteText;
+                    }
+                    clean.wine_reg_qty = Math.floor(regQty);
+                    clean.wine_exp_qty = Math.floor(expQty);
+                }
             }
             return clean;
         }
@@ -4048,6 +4073,13 @@
                             else if (r.dancer_id) {
                                 const d = (store.dancers || []).find(x => String(x.id) === String(r.dancer_id));
                                 if (d && d.stage_name) r.stage_name = d.stage_name;
+                            }
+                        }
+                        if (r.note) {
+                            const m = r.note.match(/\[wine_split:\s*reg=([0-9.]+),\s*exp=([0-9.]+)\]/);
+                            if (m) {
+                                if (m[1] !== undefined) r.wine_reg_qty = parseFloat(m[1]);
+                                if (m[2] !== undefined) r.wine_exp_qty = parseFloat(m[2]);
                             }
                         }
                     });
@@ -4152,6 +4184,14 @@
         function handleRealtimePayload(table, payload) {
             if (!store[table]) store[table] = [];
 
+            if (table === 'records' && payload.new && payload.new.note) {
+                const m = payload.new.note.match(/\[wine_split:\s*reg=([0-9.]+),\s*exp=([0-9.]+)\]/);
+                if (m) {
+                    if (m[1] !== undefined) payload.new.wine_reg_qty = parseFloat(m[1]);
+                    if (m[2] !== undefined) payload.new.wine_exp_qty = parseFloat(m[2]);
+                }
+            }
+
             if (payload.eventType === 'INSERT') {
                 const exists = store[table].some(x => String(x.id) === String(payload.new.id));
                 if (!exists) {
@@ -4205,6 +4245,14 @@
         function formatMNT(num) {
             if (num === null || num === undefined) return '0 ₮';
             return Number(num).toLocaleString('mn-MN') + ' ₮';
+        }
+
+        function formatQty(num) {
+            if (num === null || num === undefined || num === '') return '0';
+            const n = parseFloat(num);
+            if (isNaN(n)) return '0';
+            if (Number.isInteger(n)) return String(n);
+            return String(Math.round(n * 100) / 100);
         }
 
         // ================= BUSINESS SHIFT LOGIC (CUTOFF AT 12:00 NOON) =================
@@ -4835,8 +4883,17 @@
         function adjustCount(inputId, delta) {
             playFeedback("click");
             const el = document.getElementById(inputId);
-            let val = parseInt(el.value || 0) + delta;
+            if (!el) return;
+            const isWine = (inputId === 'wine_reg_qty' || inputId === 'wine_exp_qty');
+            let val = parseFloat(el.value || 0);
+            if (isNaN(val)) val = 0;
+            val = val + delta;
             if (val < 0) val = 0;
+            if (isWine) {
+                val = Math.round(val * 100) / 100;
+            } else {
+                val = Math.round(val);
+            }
             el.value = val;
             calculateEntryTotal();
         }
@@ -4845,18 +4902,18 @@
             const dtype = selectedDancer ? (selectedDancer.dancer_type || 'Үндсэн') : 'Үндсэн';
             const rates = getRatesForClubAndType(currentClubId, dtype);
 
-            const tipQty = parseInt(document.getElementById('tip_qty').value || 0);
-            const wineRegQty = parseInt(document.getElementById('wine_reg_qty').value || 0);
-            const wineExpQty = parseInt(document.getElementById('wine_exp_qty').value || 0);
-            const sitRegQty = parseInt(document.getElementById('sit_reg_qty').value || 0);
-            const sitDrinkQty = parseInt(document.getElementById('sit_drink_qty').value || 0);
-            const extraQty = parseInt(document.getElementById('extra_qty').value || 0);
-            const manualExtra = parseInt(document.getElementById('manual_extra_amount').value || 0);
-            const penalty = parseInt(document.getElementById('penalty_amount').value || 0);
+            const tipQty = parseInt(document.getElementById('tip_qty').value || 0) || 0;
+            const wineRegQty = parseFloat(document.getElementById('wine_reg_qty').value || 0) || 0;
+            const wineExpQty = parseFloat(document.getElementById('wine_exp_qty').value || 0) || 0;
+            const sitRegQty = parseInt(document.getElementById('sit_reg_qty').value || 0) || 0;
+            const sitDrinkQty = parseInt(document.getElementById('sit_drink_qty').value || 0) || 0;
+            const extraQty = parseInt(document.getElementById('extra_qty').value || 0) || 0;
+            const manualExtra = parseInt(document.getElementById('manual_extra_amount').value || 0) || 0;
+            const penalty = parseInt(document.getElementById('penalty_amount').value || 0) || 0;
 
             const subTip = tipQty * rates.tip;
-            const subWineReg = wineRegQty * rates.wine_reg;
-            const subWineExp = wineExpQty * rates.wine_exp;
+            const subWineReg = Math.round(wineRegQty * rates.wine_reg);
+            const subWineExp = Math.round(wineExpQty * rates.wine_exp);
             const subSitReg = sitRegQty * rates.sit_reg;
             const subSitDrink = sitDrinkQty * rates.sit_drink;
             const subExtra = (extraQty * rates.extra) + manualExtra;
@@ -4917,22 +4974,26 @@
             }
             const rates = getRatesForClubAndType(currentClubId, dancer?.dancer_type || selectedDancer?.dancer_type || 'Үндсэн');
 
-            const tipQty = parseInt(document.getElementById('tip_qty').value || 0);
-            const wineRegQty = parseInt(document.getElementById('wine_reg_qty').value || 0);
-            const wineExpQty = parseInt(document.getElementById('wine_exp_qty').value || 0);
-            const sitRegQty = parseInt(document.getElementById('sit_reg_qty').value || 0);
-            const sitDrinkQty = parseInt(document.getElementById('sit_drink_qty').value || 0);
-            const extraQty = parseInt(document.getElementById('extra_qty').value || 0);
-            const manualExtra = parseInt(document.getElementById('manual_extra_amount').value || 0);
-            const penalty = parseInt(document.getElementById('penalty_amount').value || 0);
+            const tipQty = parseInt(document.getElementById('tip_qty').value || 0) || 0;
+            const wineRegQty = parseFloat(document.getElementById('wine_reg_qty').value || 0) || 0;
+            const wineExpQty = parseFloat(document.getElementById('wine_exp_qty').value || 0) || 0;
+            const sitRegQty = parseInt(document.getElementById('sit_reg_qty').value || 0) || 0;
+            const sitDrinkQty = parseInt(document.getElementById('sit_drink_qty').value || 0) || 0;
+            const extraQty = parseInt(document.getElementById('extra_qty').value || 0) || 0;
+            const manualExtra = parseInt(document.getElementById('manual_extra_amount').value || 0) || 0;
+            const penalty = parseInt(document.getElementById('penalty_amount').value || 0) || 0;
 
             if (tipQty === 0 && wineRegQty === 0 && wineExpQty === 0 && sitRegQty === 0 && sitDrinkQty === 0 && extraQty === 0 && manualExtra === 0 && penalty === 0) {
                 showToast('Үйлчилгээний тоо хэмжээг оруулна уу (TIP, Wine, Суулт гэх мэт)!', true, 'Утга хоосон байна');
                 return;
             }
 
+            const cleanWineRegQty = Math.round(wineRegQty * 100) / 100;
+            const cleanWineExpQty = Math.round(wineExpQty * 100) / 100;
+            const wineRegAmount = Math.round(cleanWineRegQty * rates.wine_reg);
+            const wineExpAmount = Math.round(cleanWineExpQty * rates.wine_exp);
             const extraAmount = (extraQty * rates.extra) + manualExtra;
-            const total = (tipQty * rates.tip) + (wineRegQty * rates.wine_reg) + (wineExpQty * rates.wine_exp) + 
+            const total = (tipQty * rates.tip) + wineRegAmount + wineExpAmount + 
                           (sitRegQty * rates.sit_reg) + (sitDrinkQty * rates.sit_drink) + extraAmount - penalty;
 
             const club = store.clubs.find(c => String(c.id) === String(currentClubId));
@@ -4968,10 +5029,10 @@
                 dancer_type: dancer?.dancer_type || selectedDancer?.dancer_type || 'Үндсэн',
                 tip_qty: tipQty,
                 tip_amount: tipQty * rates.tip,
-                wine_reg_qty: wineRegQty,
-                wine_reg_amount: wineRegQty * rates.wine_reg,
-                wine_exp_qty: wineExpQty,
-                wine_exp_amount: wineExpQty * rates.wine_exp,
+                wine_reg_qty: cleanWineRegQty,
+                wine_reg_amount: wineRegAmount,
+                wine_exp_qty: cleanWineExpQty,
+                wine_exp_amount: wineExpAmount,
                 sit_reg_qty: sitRegQty,
                 sit_reg_amount: sitRegQty * rates.sit_reg,
                 sit_drink_qty: sitDrinkQty,
@@ -5011,8 +5072,8 @@
 
             // Shift Reconciliation Totals for Bartender (Нийт тип, Энгийн вайн, Үнэтэй вайн, Энгийн суулт, Уулттай суулт, Extra, Service charge)
             const sumDancerTipQty = dancerRecords.reduce((s, r) => s + (r.tip_qty || 0), 0);
-            const sumWineRegQty = dancerRecords.reduce((s, r) => s + (r.wine_reg_qty || 0), 0);
-            const sumWineExpQty = dancerRecords.reduce((s, r) => s + (r.wine_exp_qty || 0), 0);
+            const sumWineRegQty = Math.round(dancerRecords.reduce((s, r) => s + (parseFloat(r.wine_reg_qty) || 0), 0) * 100) / 100;
+            const sumWineExpQty = Math.round(dancerRecords.reduce((s, r) => s + (parseFloat(r.wine_exp_qty) || 0), 0) * 100) / 100;
             const sumSitRegQty = dancerRecords.reduce((s, r) => s + (r.sit_reg_qty || 0), 0);
             const sumSitDrinkQty = dancerRecords.reduce((s, r) => s + (r.sit_drink_qty || 0), 0);
             const sumExtraQty = dancerRecords.reduce((s, r) => s + (r.extra_qty || 0), 0);
@@ -5046,8 +5107,8 @@
             const elService = document.getElementById('bar-stat-service');
 
             if (elTip) elTip.textContent = `${sumDancerTipQty} ш`;
-            if (elWineReg) elWineReg.textContent = `${sumWineRegQty} ш`;
-            if (elWineExp) elWineExp.textContent = `${sumWineExpQty} ш`;
+            if (elWineReg) elWineReg.textContent = `${formatQty(sumWineRegQty)} ш`;
+            if (elWineExp) elWineExp.textContent = `${formatQty(sumWineExpQty)} ш`;
             if (elSitReg) elSitReg.textContent = `${sumSitRegQty} ш`;
             if (elSitDrink) elSitDrink.textContent = `${sumSitDrinkQty} ш`;
             if (elExtra) elExtra.textContent = `${sumExtraQty} ш`;
@@ -5075,8 +5136,8 @@
 
                 const details = [];
                 if (r.tip_qty > 0) details.push(`Тип:${r.tip_qty}`);
-                if (r.wine_reg_qty > 0) details.push(`Э.Вай:${r.wine_reg_qty}`);
-                if (r.wine_exp_qty > 0) details.push(`Ү.Вай:${r.wine_exp_qty}`);
+                if (r.wine_reg_qty > 0) details.push(`Э.Вай:${formatQty(r.wine_reg_qty)}`);
+                if (r.wine_exp_qty > 0) details.push(`Ү.Вай:${formatQty(r.wine_exp_qty)}`);
                 if (r.sit_reg_qty > 0) details.push(`Э.Суу:${r.sit_reg_qty}`);
                 if (r.sit_drink_qty > 0) details.push(`У.Суу:${r.sit_drink_qty}`);
                 if (r.extra_qty > 0) details.push(`Ext:${r.extra_qty}`);
@@ -5366,8 +5427,8 @@
 
             // Shift Reconciliation Totals for Confirmation Modal
             const sumDancerTipQty = dancerRecords.reduce((s, r) => s + (r.tip_qty || 0), 0);
-            const sumWineRegQty = dancerRecords.reduce((s, r) => s + (r.wine_reg_qty || 0), 0);
-            const sumWineExpQty = dancerRecords.reduce((s, r) => s + (r.wine_exp_qty || 0), 0);
+            const sumWineRegQty = Math.round(dancerRecords.reduce((s, r) => s + (parseFloat(r.wine_reg_qty) || 0), 0) * 100) / 100;
+            const sumWineExpQty = Math.round(dancerRecords.reduce((s, r) => s + (parseFloat(r.wine_exp_qty) || 0), 0) * 100) / 100;
             const sumSitRegQty = dancerRecords.reduce((s, r) => s + (r.sit_reg_qty || 0), 0);
             const sumSitDrinkQty = dancerRecords.reduce((s, r) => s + (r.sit_drink_qty || 0), 0);
             const sumExtraQty = dancerRecords.reduce((s, r) => s + (r.extra_qty || 0), 0);
@@ -5405,8 +5466,8 @@
             const mService = document.getElementById('modal-recon-service');
 
             if (mTip) mTip.textContent = `${sumDancerTipQty} ш`;
-            if (mWineReg) mWineReg.textContent = `${sumWineRegQty} ш`;
-            if (mWineExp) mWineExp.textContent = `${sumWineExpQty} ш`;
+            if (mWineReg) mWineReg.textContent = `${formatQty(sumWineRegQty)} ш`;
+            if (mWineExp) mWineExp.textContent = `${formatQty(sumWineExpQty)} ш`;
             if (mSitReg) mSitReg.textContent = `${sumSitRegQty} ш`;
             if (mSitDrink) mSitDrink.textContent = `${sumSitDrinkQty} ш`;
             if (mExtra) mExtra.textContent = `${sumExtraQty} ш`;
@@ -5469,8 +5530,8 @@
             const grandTotal = dancerTotal + taxiTotal + orderManagerTotal + prTotal + staffTipTotal;
 
             const sumDancerTipQtySub = dancerRecords.reduce((s, r) => s + (r.tip_qty || 0), 0);
-            const sumWineRegQtySub = dancerRecords.reduce((s, r) => s + (r.wine_reg_qty || 0), 0);
-            const sumWineExpQtySub = dancerRecords.reduce((s, r) => s + (r.wine_exp_qty || 0), 0);
+            const sumWineRegQtySub = Math.round(dancerRecords.reduce((s, r) => s + (parseFloat(r.wine_reg_qty) || 0), 0) * 100) / 100;
+            const sumWineExpQtySub = Math.round(dancerRecords.reduce((s, r) => s + (parseFloat(r.wine_exp_qty) || 0), 0) * 100) / 100;
             const sumSitRegQtySub = dancerRecords.reduce((s, r) => s + (r.sit_reg_qty || 0), 0);
             const sumSitDrinkQtySub = dancerRecords.reduce((s, r) => s + (r.sit_drink_qty || 0), 0);
             const sumExtraQtySub = dancerRecords.reduce((s, r) => s + (r.extra_qty || 0), 0);
@@ -7834,8 +7895,8 @@
                 const d = dancerMap[key];
                 d.shifts_count += 1;
                 d.total_tip_qty += r.tip_qty || 0;
-                d.total_wine_reg_qty += r.wine_reg_qty || 0;
-                d.total_wine_exp_qty += r.wine_exp_qty || 0;
+                d.total_wine_reg_qty = Math.round((d.total_wine_reg_qty + (parseFloat(r.wine_reg_qty) || 0)) * 100) / 100;
+                d.total_wine_exp_qty = Math.round((d.total_wine_exp_qty + (parseFloat(r.wine_exp_qty) || 0)) * 100) / 100;
                 d.total_sit_reg_qty += r.sit_reg_qty || 0;
                 d.total_sit_drink_qty += r.sit_drink_qty || 0;
                 d.total_extra += r.extra_amount || 0;
@@ -7850,8 +7911,8 @@
 
             const sumTotal = rows.reduce((s, r) => s + r.grand_total, 0);
             const sumTips = rows.reduce((s, r) => s + r.total_tip_qty, 0);
-            const sumWineReg = rows.reduce((s, r) => s + r.total_wine_reg_qty, 0);
-            const sumWineExp = rows.reduce((s, r) => s + r.total_wine_exp_qty, 0);
+            const sumWineReg = Math.round(rows.reduce((s, r) => s + (parseFloat(r.total_wine_reg_qty) || 0), 0) * 100) / 100;
+            const sumWineExp = Math.round(rows.reduce((s, r) => s + (parseFloat(r.total_wine_exp_qty) || 0), 0) * 100) / 100;
             const sumSits = rows.reduce((s, r) => s + r.total_sit_reg_qty + r.total_sit_drink_qty, 0);
             const sumExtras = records.reduce((s, r) => s + (r.extra_qty || 0), 0);
 
@@ -7974,7 +8035,7 @@
                     </div>
                     <div class="text-right">
                         <div class="font-bold font-mono text-emerald-400 text-sm">${formatMNT(r.grand_total)}</div>
-                        <div class="text-[9px] text-gray-400 font-mono">Tip:${r.total_tip_qty} • Wai:${r.total_wine_reg_qty+r.total_wine_exp_qty}</div>
+                        <div class="text-[9px] text-gray-400 font-mono">Tip:${r.total_tip_qty} • Wai:${formatQty(r.total_wine_reg_qty + r.total_wine_exp_qty)}</div>
                     </div>
                 `;
                 listEl.appendChild(div);
@@ -8016,8 +8077,8 @@
                 const d = dancerMap[key];
                 d.shifts_count += 1;
                 d.total_tip_qty += r.tip_qty || 0;
-                d.total_wine_reg_qty += r.wine_reg_qty || 0;
-                d.total_wine_exp_qty += r.wine_exp_qty || 0;
+                d.total_wine_reg_qty = Math.round((d.total_wine_reg_qty + (parseFloat(r.wine_reg_qty) || 0)) * 100) / 100;
+                d.total_wine_exp_qty = Math.round((d.total_wine_exp_qty + (parseFloat(r.wine_exp_qty) || 0)) * 100) / 100;
                 d.total_sit_reg_qty += r.sit_reg_qty || 0;
                 d.total_sit_drink_qty += r.sit_drink_qty || 0;
                 d.total_extra += r.extra_amount || 0;
