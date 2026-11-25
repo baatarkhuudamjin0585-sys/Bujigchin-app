@@ -952,7 +952,7 @@
                                             class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-90 text-gray-100 border border-dark-700 font-bold text-base flex items-center justify-center">
                                             -
                                         </button>
-                                        <input type="number" id="bar_order_manager_qty" value="1" min="0" oninput="updateOrderManagerTotal()"
+                                        <input type="number" id="bar_order_manager_qty" value="0" min="0" oninput="updateOrderManagerTotal()"
                                             class="w-12 h-9 text-center bg-dark-950 border border-dark-700 rounded-lg font-mono font-bold text-gray-100 text-sm focus:outline-none focus:border-cyan-500">
                                         <button type="button" onclick="adjustOrderManagerCount('order_qty', 1)"
                                             class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-90 text-gray-100 border border-dark-700 font-bold text-base flex items-center justify-center">
@@ -960,7 +960,7 @@
                                         </button>
                                     </div>
 
-                                    <div class="w-20 text-right font-mono text-xs text-gray-300 font-medium" id="subtotal-order-manager-order">20,000 ₮</div>
+                                    <div class="w-20 text-right font-mono text-xs text-gray-300 font-medium" id="subtotal-order-manager-order">0 ₮</div>
                                 </div>
 
                                 <!-- 2. Өрөө (30,000₮) -->
@@ -993,7 +993,7 @@
 
                         <div class="flex items-center justify-between pt-1">
                             <span class="text-[11px] text-gray-400 font-medium">Нийт менежерийн орлого:</span>
-                            <div id="bar_order_manager_total_disp" class="font-mono text-base font-bold text-cyan-400">20,000 ₮</div>
+                            <div id="bar_order_manager_total_disp" class="font-mono text-base font-bold text-cyan-400">0 ₮</div>
                         </div>
 
                         <div class="pt-1">
@@ -6607,7 +6607,7 @@
             if (strip) strip.classList.add('hidden');
 
             const orderQtyInput = document.getElementById('bar_order_manager_qty');
-            if (orderQtyInput) orderQtyInput.value = 1;
+            if (orderQtyInput) orderQtyInput.value = 0;
             const roomQtyInput = document.getElementById('bar_order_manager_room_qty');
             if (roomQtyInput) roomQtyInput.value = 0;
             updateOrderManagerTotal();
@@ -6917,7 +6917,7 @@
             showToast(`🛎️ Захиалгын менежер (${managerName} • ${summaryDesc.join(' + ')} • ${formatMNT(totalAmount)}) амжилттай бүртгэгдлээ!`, false, 'Амжилттай бүртгэгдлээ');
             clearSelectedOrderManager();
             const orderQtyInput = document.getElementById('bar_order_manager_qty');
-            if (orderQtyInput) orderQtyInput.value = 1;
+            if (orderQtyInput) orderQtyInput.value = 0;
             const roomQtyInput = document.getElementById('bar_order_manager_room_qty');
             if (roomQtyInput) roomQtyInput.value = 0;
             updateOrderManagerTotal();
