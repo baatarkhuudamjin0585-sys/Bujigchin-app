@@ -195,8 +195,16 @@
                 </div>
                 <div>
                     <label class="block text-gray-400 mb-1 font-medium">Нууц үг (Password)</label>
-                    <input type="password" id="login-password" required placeholder="Нууц үг..."
-                        class="w-full bg-dark-850 border border-dark-700 rounded-lg px-3 py-2.5 text-sm text-gray-100 font-medium focus:outline-none focus:border-amber-500">
+                    <div class="relative flex items-center">
+                        <input type="password" id="login-password" required placeholder="Нууц үг..."
+                            class="w-full bg-dark-850 border border-dark-700 rounded-lg pl-3 pr-10 py-2.5 text-sm text-gray-100 font-medium focus:outline-none focus:border-amber-500">
+                        <button type="button" onclick="togglePasswordVisibility('login-password', 'login-password-eye-icon')"
+                            tabindex="-1"
+                            class="absolute right-0 top-0 bottom-0 px-3 flex items-center justify-center text-gray-400 hover:text-amber-400 active:scale-90 transition-colors"
+                            title="Нууц үг харах / нуух">
+                            <i data-lucide="eye" id="login-password-eye-icon" class="w-4 h-4"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div id="login-error-msg" class="hidden text-xs text-red-400 font-medium text-center py-1">
@@ -4487,11 +4495,30 @@
             showLoginScreen();
         }
 
+        function togglePasswordVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (!input) return;
+            playFeedback('click');
+            if (input.type === 'password') {
+                input.type = 'text';
+                if (icon) icon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                input.type = 'password';
+                if (icon) icon.setAttribute('data-lucide', 'eye');
+            }
+            if (window.lucide) lucide.createIcons();
+        }
+
         function showLoginScreen() {
             document.getElementById('login-screen').classList.remove('hidden');
             document.getElementById('app-container').classList.add('hidden');
             document.getElementById('sticky-bottom-bar').classList.add('hidden');
             document.getElementById('login-error-msg').classList.add('hidden');
+            const pwdInput = document.getElementById('login-password');
+            if (pwdInput) pwdInput.type = 'password';
+            const eyeIcon = document.getElementById('login-password-eye-icon');
+            if (eyeIcon) eyeIcon.setAttribute('data-lucide', 'eye');
             lucide.createIcons();
         }
 
