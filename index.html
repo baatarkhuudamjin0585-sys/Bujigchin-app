@@ -863,7 +863,7 @@
                                 <span>Захиалгын менежерийн орлого</span>
                             </div>
                             <span class="text-[10px] px-2 py-0.5 rounded bg-dark-800 text-cyan-300 font-mono border border-dark-700">
-                                20,000 ₮ / 1 захиалга
+                                Захиалга: 20k • Өрөө: 30k
                             </span>
                         </div>
 
@@ -933,19 +933,67 @@
                             <input type="hidden" id="bar_order_manager_phone" value="">
                         </div>
 
-                        <div class="flex items-center justify-between pt-1">
-                            <div>
-                                <label class="block text-[11px] text-gray-400 mb-1">Ширхэг (Тоо):</label>
-                                <div class="flex items-center gap-1.5">
-                                    <button type="button" onclick="adjustOrderManagerQty(-1)" class="w-8 h-8 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-95 text-cyan-400 font-bold text-lg flex items-center justify-center border border-dark-700">-</button>
-                                    <input type="number" id="bar_order_manager_qty" value="1" min="1" oninput="updateOrderManagerTotal()" class="w-12 h-8 text-center bg-dark-950 border border-dark-700 rounded-lg text-sm font-bold text-gray-100 font-mono">
-                                    <button type="button" onclick="adjustOrderManagerQty(1)" class="w-8 h-8 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-95 text-cyan-400 font-bold text-lg flex items-center justify-center border border-dark-700">+</button>
+                        <!-- Counters for Захиалгын орлого (20,000₮) & Өрөө (30,000₮) -->
+                        <div class="space-y-1">
+                            <label class="block text-[11px] text-gray-400">Орлого & Өрөөний тоо ширхэг *</label>
+                            <div class="bg-dark-850 border border-dark-750 rounded-xl divide-y divide-dark-800 overflow-hidden shadow-sm">
+                                <!-- 1. Захиалгын орлого (20,000₮) -->
+                                <div class="flex items-center justify-between px-3 py-2 hover:bg-dark-800/40">
+                                    <div class="w-36 sm:w-44">
+                                        <div class="text-xs font-bold text-gray-100 flex items-center gap-1.5">
+                                            <i data-lucide="badge-check" class="w-3.5 h-3.5 text-cyan-400"></i>
+                                            <span>Менежерийн орлого</span>
+                                        </div>
+                                        <div class="text-[10px] text-cyan-400/80 font-mono">20,000 ₮ • Захиалга</div>
+                                    </div>
+
+                                    <div class="flex items-center gap-1">
+                                        <button type="button" onclick="adjustOrderManagerCount('order_qty', -1)"
+                                            class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-90 text-gray-100 border border-dark-700 font-bold text-base flex items-center justify-center">
+                                            -
+                                        </button>
+                                        <input type="number" id="bar_order_manager_qty" value="1" min="0" oninput="updateOrderManagerTotal()"
+                                            class="w-12 h-9 text-center bg-dark-950 border border-dark-700 rounded-lg font-mono font-bold text-gray-100 text-sm focus:outline-none focus:border-cyan-500">
+                                        <button type="button" onclick="adjustOrderManagerCount('order_qty', 1)"
+                                            class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-90 text-gray-100 border border-dark-700 font-bold text-base flex items-center justify-center">
+                                            +
+                                        </button>
+                                    </div>
+
+                                    <div class="w-20 text-right font-mono text-xs text-gray-300 font-medium" id="subtotal-order-manager-order">20,000 ₮</div>
+                                </div>
+
+                                <!-- 2. Өрөө (30,000₮) -->
+                                <div class="flex items-center justify-between px-3 py-2 hover:bg-dark-800/40">
+                                    <div class="w-36 sm:w-44">
+                                        <div class="text-xs font-bold text-gray-100 flex items-center gap-1.5">
+                                            <i data-lucide="door-closed" class="w-3.5 h-3.5 text-amber-400"></i>
+                                            <span>Өрөө</span>
+                                        </div>
+                                        <div class="text-[10px] text-amber-400/80 font-mono">30,000 ₮ • Өрөөний нэмэгдэл</div>
+                                    </div>
+
+                                    <div class="flex items-center gap-1">
+                                        <button type="button" onclick="adjustOrderManagerCount('room_qty', -1)"
+                                            class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-90 text-gray-100 border border-dark-700 font-bold text-base flex items-center justify-center">
+                                            -
+                                        </button>
+                                        <input type="number" id="bar_order_manager_room_qty" value="0" min="0" oninput="updateOrderManagerTotal()"
+                                            class="w-12 h-9 text-center bg-dark-950 border border-dark-700 rounded-lg font-mono font-bold text-gray-100 text-sm focus:outline-none focus:border-amber-500">
+                                        <button type="button" onclick="adjustOrderManagerCount('room_qty', 1)"
+                                            class="w-9 h-9 rounded-lg bg-dark-800 hover:bg-dark-700 active:scale-90 text-gray-100 border border-dark-700 font-bold text-base flex items-center justify-center">
+                                            +
+                                        </button>
+                                    </div>
+
+                                    <div class="w-20 text-right font-mono text-xs text-gray-300 font-medium" id="subtotal-order-manager-room">0 ₮</div>
                                 </div>
                             </div>
-                            <div class="text-right">
-                                <span class="text-[10px] text-gray-400 block mb-0.5">Нийт менежерийн орлого:</span>
-                                <div id="bar_order_manager_total_disp" class="font-mono text-base font-bold text-cyan-400">20,000 ₮</div>
-                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-1">
+                            <span class="text-[11px] text-gray-400 font-medium">Нийт менежерийн орлого:</span>
+                            <div id="bar_order_manager_total_disp" class="font-mono text-base font-bold text-cyan-400">20,000 ₮</div>
                         </div>
 
                         <div class="pt-1">
@@ -5299,8 +5347,8 @@
                 } else if (r.type === 'order_manager') {
                     div.innerHTML = `
                         <div class="flex-1 pr-2">
-                            <div class="flex items-center gap-1.5">
-                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-400 font-mono font-bold border border-cyan-500/30">🛎️ Захиалга (${r.taxi_qty} ш)</span>
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                ${getOrderManagerBadgeHtml(r)}
                                 <span class="font-bold text-gray-100 text-xs">${r.driver_name || 'Захиалгын менежер'}</span>
                             </div>
                             <div class="text-[10px] text-cyan-400/90 font-mono mt-0.5">${r.driver_bank || '-'} ${r.note ? '• ' + r.note : ''}</div>
@@ -6301,21 +6349,66 @@
         }
 
         // ================= ORDER MANAGER SYSTEM =================
-        function adjustOrderManagerQty(delta) {
+        function adjustOrderManagerCount(field, delta) {
             playFeedback('click');
-            const el = document.getElementById('bar_order_manager_qty');
+            const inputId = field === 'room_qty' ? 'bar_order_manager_room_qty' : 'bar_order_manager_qty';
+            const el = document.getElementById(inputId);
             if (!el) return;
-            let val = parseInt(el.value || 1) + delta;
-            if (val < 1) val = 1;
+            let val = (parseInt(el.value || 0) || 0) + delta;
+            if (val < 0) val = 0;
             el.value = val;
             updateOrderManagerTotal();
         }
 
+        function adjustOrderManagerQty(delta) {
+            adjustOrderManagerCount('order_qty', delta);
+        }
+
         function updateOrderManagerTotal() {
-            const qty = parseInt(document.getElementById('bar_order_manager_qty')?.value || 1);
-            const rate = 20000;
+            const orderQty = Math.max(0, parseInt(document.getElementById('bar_order_manager_qty')?.value || 0) || 0);
+            const roomQty = Math.max(0, parseInt(document.getElementById('bar_order_manager_room_qty')?.value || 0) || 0);
+            const subtotalOrder = orderQty * 20000;
+            const subtotalRoom = roomQty * 30000;
+            const total = subtotalOrder + subtotalRoom;
+
+            const elSubOrder = document.getElementById('subtotal-order-manager-order');
+            if (elSubOrder) elSubOrder.textContent = formatMNT(subtotalOrder);
+            const elSubRoom = document.getElementById('subtotal-order-manager-room');
+            if (elSubRoom) elSubRoom.textContent = formatMNT(subtotalRoom);
             const disp = document.getElementById('bar_order_manager_total_disp');
-            if (disp) disp.textContent = formatMNT(qty * rate);
+            if (disp) disp.textContent = formatMNT(total);
+        }
+
+        function getOrderManagerBadgeHtml(r) {
+            let oQty = r.order_qty;
+            let rQty = r.room_qty;
+            if (oQty === undefined && rQty === undefined) {
+                const note = r.note || '';
+                const mOrder = note.match(/Захиалга:\s*(\d+)ш?/i);
+                const mRoom = note.match(/Өрөө:\s*(\d+)ш?/i);
+                if (mOrder || mRoom) {
+                    oQty = mOrder ? parseInt(mOrder[1]) : 0;
+                    rQty = mRoom ? parseInt(mRoom[1]) : 0;
+                } else {
+                    oQty = r.taxi_qty || 1;
+                    rQty = 0;
+                }
+            } else {
+                oQty = oQty || 0;
+                rQty = rQty || 0;
+            }
+
+            const badges = [];
+            if (oQty > 0) {
+                badges.push(`<span class="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-400 font-mono font-bold border border-cyan-500/30">🛎️ Захиалга (${oQty} ш)</span>`);
+            }
+            if (rQty > 0) {
+                badges.push(`<span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-400 font-mono font-bold border border-amber-500/30">🚪 Өрөө (${rQty} ш)</span>`);
+            }
+            if (badges.length === 0) {
+                badges.push(`<span class="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-400 font-mono font-bold border border-cyan-500/30">🛎️ Захиалга (${r.taxi_qty || 1} ш)</span>`);
+            }
+            return badges.join(' ');
         }
 
         function adjustOrderManagerPickerHeightForKeyboard() {
@@ -6512,6 +6605,12 @@
             }
             if (clearBtn) clearBtn.classList.add('hidden');
             if (strip) strip.classList.add('hidden');
+
+            const orderQtyInput = document.getElementById('bar_order_manager_qty');
+            if (orderQtyInput) orderQtyInput.value = 1;
+            const roomQtyInput = document.getElementById('bar_order_manager_room_qty');
+            if (roomQtyInput) roomQtyInput.value = 0;
+            updateOrderManagerTotal();
 
             if (window.lucide) lucide.createIcons();
         }
@@ -6748,7 +6847,8 @@
             const managerName = (document.getElementById('bar_order_manager_name')?.value || '').trim();
             const managerBank = (document.getElementById('bar_order_manager_bank')?.value || '').trim().toUpperCase().replace(/\s+/g, '');
             const managerPhone = (document.getElementById('bar_order_manager_phone')?.value || '').trim();
-            const qty = parseInt(document.getElementById('bar_order_manager_qty')?.value || 1);
+            const orderQty = Math.max(0, parseInt(document.getElementById('bar_order_manager_qty')?.value || 0) || 0);
+            const roomQty = Math.max(0, parseInt(document.getElementById('bar_order_manager_room_qty')?.value || 0) || 0);
 
             // Mandatory Validation: Manager selected
             if (!managerId || !managerName || !managerBank) {
@@ -6756,13 +6856,15 @@
                 showToast('Захиалгын менежерээ сонгоно уу! Хэрэв байхгүй бол "+ Менежер нэмэх" товчоор шинээр бүртгэнэ үү.', true, 'Менежер сонгоогүй');
                 return;
             }
-            if (qty < 1) {
+            if (orderQty <= 0 && roomQty <= 0) {
                 highlightField('bar_order_manager_qty');
-                showToast('Захиалгын тоо 1-ээс бага байж болохгүй!', true, 'Тоо хэмжээний алдаа');
+                highlightField('bar_order_manager_room_qty');
+                showToast('Захиалгын орлого (20,000₮) эсвэл Өрөөний нэмэгдлийн (30,000₮) аль нэгийг заавал 1 буюу түүнээс дээш сонгоно уу!', true, 'Тоо хэмжээний алдаа');
                 return;
             }
 
-            const rate = 20000;
+            const totalAmount = (orderQty * 20000) + (roomQty * 30000);
+            const totalQty = orderQty + roomQty;
             const club = store.clubs.find(c => String(c.id) === String(currentClubId));
 
             if (currentUser && currentUser.role === 'admin') {
@@ -6781,6 +6883,11 @@
                 return;
             }
 
+            const noteParts = [];
+            if (orderQty > 0) noteParts.push(`Захиалга: ${orderQty}ш (20k)`);
+            if (roomQty > 0) noteParts.push(`Өрөө: ${roomQty}ш (30k)`);
+            if (managerPhone) noteParts.push(`Утас: ${managerPhone}`);
+
             const newRec = {
                 id: Date.now(),
                 type: 'order_manager',
@@ -6790,10 +6897,12 @@
                 bartender_name: currentUser ? currentUser.name : 'Ээлжийн ажилтан',
                 driver_name: managerName,
                 driver_bank: managerBank,
-                taxi_qty: qty,
-                rate: rate,
-                amount: qty * rate,
-                note: managerPhone ? `Утас: ${managerPhone}` : ''
+                taxi_qty: totalQty,
+                rate: 20000,
+                amount: totalAmount,
+                order_qty: orderQty,
+                room_qty: roomQty,
+                note: noteParts.join(' • ')
             };
 
             if (!store.taxi_pr_records) store.taxi_pr_records = [];
@@ -6801,9 +6910,16 @@
             saveStoredData(store);
             cloudInsert('taxi_pr_records', newRec);
 
-            showToast(`🛎️ Захиалгын менежер (${managerName} • ${qty} захиалга • ${formatMNT(newRec.amount)}) амжилттай бүртгэгдлээ!`, false, 'Амжилттай бүртгэгдлээ');
+            const summaryDesc = [];
+            if (orderQty > 0) summaryDesc.push(`${orderQty} захиалга`);
+            if (roomQty > 0) summaryDesc.push(`${roomQty} өрөө`);
+
+            showToast(`🛎️ Захиалгын менежер (${managerName} • ${summaryDesc.join(' + ')} • ${formatMNT(totalAmount)}) амжилттай бүртгэгдлээ!`, false, 'Амжилттай бүртгэгдлээ');
             clearSelectedOrderManager();
-            document.getElementById('bar_order_manager_qty').value = 1;
+            const orderQtyInput = document.getElementById('bar_order_manager_qty');
+            if (orderQtyInput) orderQtyInput.value = 1;
+            const roomQtyInput = document.getElementById('bar_order_manager_room_qty');
+            if (roomQtyInput) roomQtyInput.value = 0;
             updateOrderManagerTotal();
             loadDailyRecords();
         }
@@ -7654,8 +7770,8 @@
                 } else if (r.type === 'order_manager') {
                     div.innerHTML = `
                         <div class="flex-1 pr-2">
-                            <div class="flex items-center gap-1.5">
-                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-400 font-mono font-bold border border-cyan-500/30">🛎️ Захиалга (${r.taxi_qty} ш)</span>
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                ${getOrderManagerBadgeHtml(r)}
                                 <span class="font-bold text-gray-100 text-xs">${r.driver_name || 'Захиалгын менежер'}</span>
                                 <span class="text-[10px] text-gray-400 font-mono">${(r.club_name || '').replace(' CLUB','')}</span>
                             </div>
@@ -8380,7 +8496,32 @@
                 const holderName = r.type === 'taxi' ? (r.driver_name || 'Жолооч') : (r.type === 'order_manager' ? (r.driver_name || 'Захиалгын менежер') : (r.pr_manager_name || 'PR Менежер'));
                 const holderBank = (r.type === 'taxi' || r.type === 'order_manager') ? (r.driver_bank || '-') : (r.pr_manager_bank || '-');
                 const typeLabel = r.type === 'taxi' ? 'Такси татвар' : (r.type === 'order_manager' ? 'Захиалгын менежер' : 'PR зардал');
-                const qtyLabel = r.type === 'taxi' ? `${r.taxi_qty} такси` : (r.type === 'order_manager' ? `${r.taxi_qty} захиалга` : `Билл ${r.bill_no}`);
+                let qtyLabel = `Билл ${r.bill_no}`;
+                if (r.type === 'taxi') {
+                    qtyLabel = `${r.taxi_qty} такси`;
+                } else if (r.type === 'order_manager') {
+                    let oQty = r.order_qty;
+                    let rQty = r.room_qty;
+                    if (oQty === undefined && rQty === undefined) {
+                        const note = r.note || '';
+                        const mOrder = note.match(/Захиалга:\s*(\d+)ш?/i);
+                        const mRoom = note.match(/Өрөө:\s*(\d+)ш?/i);
+                        if (mOrder || mRoom) {
+                            oQty = mOrder ? parseInt(mOrder[1]) : 0;
+                            rQty = mRoom ? parseInt(mRoom[1]) : 0;
+                        } else {
+                            oQty = r.taxi_qty || 1;
+                            rQty = 0;
+                        }
+                    } else {
+                        oQty = oQty || 0;
+                        rQty = rQty || 0;
+                    }
+                    const parts = [];
+                    if (oQty > 0) parts.push(`${oQty} захиалга`);
+                    if (rQty > 0) parts.push(`${rQty} өрөө`);
+                    qtyLabel = parts.join(' + ') || `${r.taxi_qty || 1} захиалга`;
+                }
                 taxiPrSheetData.push([
                     tIdx++,
                     r.date,
