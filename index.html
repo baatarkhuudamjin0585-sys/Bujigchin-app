@@ -1219,22 +1219,45 @@
                             </div>
                         </div>
 
-                        <!-- 3. Wine, Sit & Penalty Stats -->
-                        <div class="grid grid-cols-3 gap-2">
+                        <!-- 3. Wine, Sit, Extra & Penalty Stats -->
+                        <div class="grid grid-cols-2 gap-2">
+                            <!-- Card 1: Wine -->
                             <div class="bg-dark-900 border border-dark-800 rounded-xl p-2.5 shadow-sm text-center">
-                                <div class="text-[10px] text-purple-300 font-medium truncate">Wine (Энг/Үнэ)</div>
-                                <div id="stat-wines" class="text-sm sm:text-base font-bold font-mono text-purple-300 mt-1">0 / 0</div>
+                                <div class="text-[10px] text-purple-300 font-medium truncate flex items-center justify-center gap-1">
+                                    <i data-lucide="wine" class="w-3 h-3 text-purple-400 shrink-0"></i>
+                                    <span>Wine (Энг / Үнэтэй)</span>
+                                </div>
+                                <div id="stat-wines" class="text-base sm:text-lg font-bold font-mono text-purple-300 mt-0.5">0 / 0</div>
+                                <div id="stat-wines-sub" class="text-[9px] text-gray-500 font-mono mt-0.5">Энгийн / Үнэтэй</div>
                             </div>
+
+                            <!-- Card 2: Sits (Энгийн / Уулттай) -->
                             <div class="bg-dark-900 border border-dark-800 rounded-xl p-2.5 shadow-sm text-center">
-                                <div class="text-[10px] text-emerald-400 font-medium truncate">Суулт / Extra</div>
-                                <div id="stat-sits" class="text-sm sm:text-base font-bold font-mono text-emerald-400 mt-1">0 / 0</div>
+                                <div class="text-[10px] text-blue-400 font-medium truncate flex items-center justify-center gap-1">
+                                    <i data-lucide="armchair" class="w-3 h-3 text-blue-400 shrink-0"></i>
+                                    <span>Суулт (Энг / Уулттай)</span>
+                                </div>
+                                <div id="stat-sits" class="text-base sm:text-lg font-bold font-mono text-blue-300 mt-0.5">0 / 0</div>
+                                <div id="stat-sits-sub" class="text-[9px] text-gray-500 font-mono mt-0.5">Энгийн / Уулттай</div>
                             </div>
+
+                            <!-- Card 3: Extra -->
+                            <div class="bg-dark-900 border border-dark-800 rounded-xl p-2.5 shadow-sm text-center">
+                                <div class="text-[10px] text-amber-400 font-medium truncate flex items-center justify-center gap-1">
+                                    <i data-lucide="award" class="w-3 h-3 text-amber-400 shrink-0"></i>
+                                    <span>Extra суулт</span>
+                                </div>
+                                <div id="stat-extras" class="text-base sm:text-lg font-bold font-mono text-amber-300 mt-0.5">0 ш</div>
+                                <div id="stat-extras-amt" class="text-[9px] text-gray-500 font-mono mt-0.5">0 ₮</div>
+                            </div>
+
+                            <!-- Card 4: Penalties -->
                             <div class="bg-dark-900 border border-rose-500/30 rounded-xl p-2.5 shadow-sm text-center bg-rose-500/5">
                                 <div class="text-[10px] text-rose-400 font-medium truncate flex items-center justify-center gap-1">
                                     <i data-lucide="alert-circle" class="w-3 h-3 text-rose-400 shrink-0"></i>
-                                    <span class="truncate">Нийт Торгууль</span>
+                                    <span>Нийт Торгууль</span>
                                 </div>
-                                <div id="stat-penalties" class="text-sm sm:text-base font-bold font-mono text-rose-400 mt-1">0 ₮</div>
+                                <div id="stat-penalties" class="text-base sm:text-lg font-bold font-mono text-rose-400 mt-0.5">0 ₮</div>
                                 <div id="stat-penalties-count" class="text-[9px] text-rose-300/70 font-mono mt-0.5">0 бүртгэл</div>
                             </div>
                         </div>
@@ -7988,8 +8011,11 @@
             const sumTips = rows.reduce((s, r) => s + r.total_tip_qty, 0);
             const sumWineReg = Math.round(rows.reduce((s, r) => s + (parseFloat(r.total_wine_reg_qty) || 0), 0) * 100) / 100;
             const sumWineExp = Math.round(rows.reduce((s, r) => s + (parseFloat(r.total_wine_exp_qty) || 0), 0) * 100) / 100;
-            const sumSits = rows.reduce((s, r) => s + r.total_sit_reg_qty + r.total_sit_drink_qty, 0);
+            const sumSitReg = rows.reduce((s, r) => s + (r.total_sit_reg_qty || 0), 0);
+            const sumSitDrink = rows.reduce((s, r) => s + (r.total_sit_drink_qty || 0), 0);
+            const sumSits = sumSitReg + sumSitDrink;
             const sumExtras = records.reduce((s, r) => s + (r.extra_qty || 0), 0);
+            const sumExtraAmt = records.reduce((s, r) => s + (r.extra_amount || 0), 0);
 
             // Filter Penalties
             const penaltyRecords = records.filter(r => (r.penalty_amount || 0) > 0);
@@ -8079,11 +8105,22 @@
             const elServiceChargesAmt = document.getElementById('stat-service-charges-amt');
             if (elServiceChargesAmt) elServiceChargesAmt.textContent = formatMNT(serviceChargeAmt);
 
-            // 3. Wines, Sits & Penalties
+            // 3. Wines, Sits, Extras & Penalties
             const elWines = document.getElementById('stat-wines');
             if (elWines) elWines.textContent = `${formatQty(sumWineReg)} / ${formatQty(sumWineExp)}`;
+            const elWinesSub = document.getElementById('stat-wines-sub');
+            if (elWinesSub) elWinesSub.textContent = `Энг: ${formatQty(sumWineReg)} • Үнэ: ${formatQty(sumWineExp)}`;
+
             const elSits = document.getElementById('stat-sits');
-            if (elSits) elSits.textContent = `${sumSits} / ${sumExtras}`;
+            if (elSits) elSits.textContent = `${sumSitReg} / ${sumSitDrink}`;
+            const elSitsSub = document.getElementById('stat-sits-sub');
+            if (elSitsSub) elSitsSub.textContent = `Энгийн: ${sumSitReg} • Уулттай: ${sumSitDrink}`;
+
+            const elExtras = document.getElementById('stat-extras');
+            if (elExtras) elExtras.textContent = `${sumExtras} ш`;
+            const elExtrasAmt = document.getElementById('stat-extras-amt');
+            if (elExtrasAmt) elExtrasAmt.textContent = formatMNT(sumExtraAmt);
+
             const elPenalties = document.getElementById('stat-penalties');
             if (elPenalties) elPenalties.textContent = sumPenalties > 0 ? `-${formatMNT(sumPenalties)}` : '0 ₮';
             const elPenaltiesCount = document.getElementById('stat-penalties-count');
@@ -8171,6 +8208,14 @@
                     }
                 }
 
+                let sitsInfo = '';
+                if ((r.total_sit_reg_qty || 0) > 0 || (r.total_sit_drink_qty || 0) > 0 || (r.total_extra || 0) > 0) {
+                    sitsInfo = ` • Суу:${r.total_sit_reg_qty || 0}/${r.total_sit_drink_qty || 0}`;
+                    if (r.total_extra) {
+                        sitsInfo += ` • Ex:${formatMNT(r.total_extra)}`;
+                    }
+                }
+
                 div.innerHTML = `
                     <div class="flex-1 pr-2">
                         <div class="flex items-center gap-1.5 flex-wrap">
@@ -8184,7 +8229,7 @@
                     </div>
                     <div class="text-right shrink-0">
                         <div class="font-bold font-mono text-emerald-400 text-sm">${formatMNT(r.grand_total)}</div>
-                        <div class="text-[9px] text-gray-400 font-mono">Tip:${r.total_tip_qty} • Wai:${formatQty(r.total_wine_reg_qty + r.total_wine_exp_qty)}${penaltyStat}</div>
+                        <div class="text-[9px] text-gray-400 font-mono">Tip:${r.total_tip_qty} • Wai:${formatQty(r.total_wine_reg_qty + r.total_wine_exp_qty)}${sitsInfo}${penaltyStat}</div>
                     </div>
                 `;
                 listEl.appendChild(div);
