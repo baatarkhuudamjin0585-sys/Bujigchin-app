@@ -3936,7 +3936,8 @@
                 'stage_name', 'real_name', 'bank_account', 'dancer_type',
                 'tip_qty', 'wine_reg_qty', 'wine_exp_qty', 'sit_reg_qty',
                 'sit_drink_qty', 'extra_qty', 'extra_amount', 'penalty_amount',
-                'total_amount', 'bartender_name', 'note', 'created_at'
+                'total_amount', 'bartender_name', 'note', 'created_at',
+                'tip_amount', 'wine_reg_amount', 'wine_exp_amount', 'sit_reg_amount', 'sit_drink_amount'
             ],
             'taxi_pr_records': [
                 'id', 'type', 'date', 'club_id', 'club_name', 'bartender_name',
@@ -3948,32 +3949,37 @@
                 'bank_account', 'amount', 'note', 'bartender_name', 'created_at'
             ],
             'submitted_shifts': [
-                'id', 'club_id', 'date', 'submitted_at', 'bartender_name', 'total_dancers',
-                'grand_total', 'total_tip', 'total_wine_reg', 'total_wine_exp', 'total_sit_reg',
-                'total_sit_drink', 'total_extra', 'total_penalty', 'total_manual_extra',
-                'is_locked', 'status', 'created_at'
+                'id', 'club_id', 'club_name', 'date', 'submitted_at', 'bartender_name',
+                'total_dancers', 'grand_total', 'status', 'created_at',
+                'dancer_count', 'dancer_total', 'taxi_count', 'taxi_total',
+                'pr_count', 'pr_total', 'staff_tip_count', 'staff_tip_total'
             ],
             'dancers': [
                 'id', 'stage_name', 'real_name', 'bank_account', 'phone', 'dancer_type',
                 'club_id', 'clubs', 'club_name', 'is_active', 'created_at'
             ],
-            'taxi_drivers': [
-                'id', 'name', 'bank_account', 'phone', 'is_active', 'club_id', 'created_at'
-            ],
-            'order_managers': [
-                'id', 'name', 'bank_account', 'phone', 'is_active', 'club_id', 'created_at'
-            ],
             'employees': [
-                'id', 'name', 'role', 'bank_account', 'phone', 'is_active', 'club_id', 'created_at'
+                'id', 'club_id', 'name', 'role', 'bank_account', 'phone', 'is_active', 'created_at'
             ],
             'tariffs': [
                 'id', 'club_id', 'dancer_type', 'item_key', 'service_key', 'item_name',
                 'service_name', 'rate', 'updated_at'
             ],
             'users': [
-                'id', 'username', 'password', 'name', 'role', 'club_id', 'is_blocked'
+                'id', 'username', 'password', 'name', 'role', 'club_id', 'club_code', 'is_blocked'
             ]
         };
+
+        function extractMissingColumnFromError(errorMessage) {
+            if (!errorMessage || typeof errorMessage !== 'string') return null;
+            const m1 = errorMessage.match(/Could not find the '([^']+)' column/i);
+            if (m1 && m1[1]) return m1[1];
+            const m2 = errorMessage.match(/column ["']?([^"' ]+)["']? of relation/i);
+            if (m2 && m2[1]) return m2[1];
+            const m3 = errorMessage.match(/column ["']?([^"' ]+)["']? does not exist/i);
+            if (m3 && m3[1]) return m3[1];
+            return null;
+        }
 
         function cleanRowForCloud(table, row) {
             if (!row || typeof row !== 'object') return row;
@@ -4011,6 +4017,16 @@
                     clean.wine_reg_qty = Math.floor(regQty);
                     clean.wine_exp_qty = Math.floor(expQty);
                 }
+            } else if (table === 'submitted_shifts') {
+                if (clean.total_dancers === undefined && row.dancer_count !== undefined) {
+                    clean.total_dancers = row.dancer_count;
+                }
+                if (!clean.club_name && row.club_name) {
+                    clean.club_name = row.club_name;
+                }
+                if (!clean.status) {
+                    clean.status = row.status || 'submitted';
+                }
             }
             return clean;
         }
@@ -4018,11 +4034,26 @@
         async function cloudInsert(table, row) {
             if (!supabaseClient) return;
             try {
-                const cleanRow = cleanRowForCloud(table, row);
-                const { error } = await supabaseClient.from(table).insert([cleanRow]);
-                if (error) {
+                let cleanRow = cleanRowForCloud(table, row);
+                let attempts = 0;
+                while (attempts < 5) {
+                    attempts++;
+                    const { error } = await supabaseClient.from(table).insert([cleanRow]);
+                    if (!error) return; // Success
+
+                    const badCol = extractMissingColumnFromError(error.message);
+                    if (badCol && cleanRow && badCol in cleanRow) {
+                        console.warn(`[Auto-Recovery] Stripping missing column '${badCol}' from ${table} insert and retrying...`);
+                        delete cleanRow[badCol];
+                        if (TABLE_ALLOWED_COLUMNS[table]) {
+                            TABLE_ALLOWED_COLUMNS[table] = TABLE_ALLOWED_COLUMNS[table].filter(c => c !== badCol);
+                        }
+                        continue;
+                    }
+
                     console.error(`Error inserting into ${table}:`, error);
                     showToast('Үүлэн санд хадгалахад алдаа гарлаа: ' + error.message, true, 'Серверийн алдаа');
+                    break;
                 }
             } catch (e) {
                 console.error(`Exception inserting into ${table}:`, e);
@@ -4032,11 +4063,26 @@
         async function cloudUpsert(table, row) {
             if (!supabaseClient) return;
             try {
-                const cleanRow = cleanRowForCloud(table, row);
-                const { error } = await supabaseClient.from(table).upsert([cleanRow]);
-                if (error) {
+                let cleanRow = cleanRowForCloud(table, row);
+                let attempts = 0;
+                while (attempts < 5) {
+                    attempts++;
+                    const { error } = await supabaseClient.from(table).upsert([cleanRow]);
+                    if (!error) return; // Success
+
+                    const badCol = extractMissingColumnFromError(error.message);
+                    if (badCol && cleanRow && badCol in cleanRow) {
+                        console.warn(`[Auto-Recovery] Stripping missing column '${badCol}' from ${table} upsert and retrying...`);
+                        delete cleanRow[badCol];
+                        if (TABLE_ALLOWED_COLUMNS[table]) {
+                            TABLE_ALLOWED_COLUMNS[table] = TABLE_ALLOWED_COLUMNS[table].filter(c => c !== badCol);
+                        }
+                        continue;
+                    }
+
                     console.error(`Error upserting into ${table}:`, error);
                     showToast('Үүлэн санд шинэчлэхэд алдаа гарлаа: ' + error.message, true, 'Серверийн алдаа');
+                    break;
                 }
             } catch (e) {
                 console.error(`Exception upserting into ${table}:`, e);
