@@ -8850,48 +8850,55 @@
                 return;
             }
 
-            // Check if dancer is ALREADY registered by Bank Account or Real Name
+            // 5. Strict duplicate prevention (Тайзны нэр, Дансны дугаар, Утасны дугаар)
             const cleanAcc = bankAcc.replace(/\s+/g, '').toUpperCase();
-            const existing = store.dancers.find(d => {
+            const cleanPhone = phone.replace(/[^0-9]/g, '');
+            const cleanStageName = stageName.trim().toLowerCase();
+
+            // Other dancers in the system (excluding the current one being edited)
+            const otherDancers = (store.dancers || []).filter(d => {
                 if (id && String(d.id) === String(id)) return false;
-                const dAcc = (d.bank_account || '').replace(/\s+/g, '').toUpperCase();
-                if (dAcc && cleanAcc && dAcc === cleanAcc) return true;
-                if (d.real_name && realName && d.real_name.toLowerCase() === realName.toLowerCase() &&
-                    d.stage_name && stageName && d.stage_name.toLowerCase() === stageName.toLowerCase()) return true;
-                return false;
+                return true;
             });
 
-            if (existing) {
-                // Duplicate detected! Merge / link to current club
-                const originClubs = (existing.clubs && existing.clubs.length > 0) ?
-                    existing.clubs.map(cid => store.clubs.find(c => c.id === cid)?.name.replace(' CLUB', '')).join(', ') :
-                    (store.clubs.find(c => c.id === existing.club_id)?.name.replace(' CLUB', '') || '');
-
-                if (!existing.clubs) existing.clubs = [existing.club_id];
-                if (!existing.clubs.includes(clubId)) existing.clubs.push(clubId);
-                existing.club_id = clubId;
-                existing.stage_name = stageName;
-                existing.real_name = realName;
-                existing.bank_account = bankAcc;
-                if (phone) existing.phone = phone;
-                existing.dancer_type = dancerType;
-                existing.is_active = 1;
-
-                saveStoredData(store);
-                cloudUpsert('dancers', existing);
-                closeDancerModal();
-                updateBarDancerSelect();
-
-                const sel = document.getElementById('bar-dancer-select');
-                if (sel) {
-                    sel.value = String(existing.id);
-                    onDancerSelected();
-                }
-
-                renderDancersTable();
-                playFeedback("success");
-                alert(`Энэ бүжигчин системд аль хэдийн бүртгэлтэй байна!\n\n• Тайзны нэр: ${existing.stage_name}\n• Данс эзэмшигч: ${existing.real_name}\n• Дансны дугаар: ${existing.bank_account}\n• Өмнөх салбар: ${originClubs}\n\nДавхар бүртгэл үүсгэхгүйгээр танай салбар луу амжилттай шилжүүлэн холболоо.`);
+            // 5a. Check duplicate Stage Name (Тайзны нэр)
+            const dupStageName = otherDancers.find(d => (d.stage_name || '').trim().toLowerCase() === cleanStageName);
+            if (dupStageName) {
+                const clubName = store.clubs.find(c => c.id === dupStageName.club_id)?.name.replace(' CLUB', '') || '';
+                showError(`"${stageName}" тайзны нэртэй бүжигчин системд аль хэдийн бүртгэгдсэн байна!${clubName ? ` (${clubName} салбар)` : ''} Өөр тайзны нэр оруулна уу.`);
+                highlightField('modal-dancer-stagename');
+                document.getElementById('modal-dancer-stagename').focus();
                 return;
+            }
+
+            // 5b. Check duplicate Bank Account (Дансны дугаар)
+            const dupBank = otherDancers.find(d => {
+                const dAcc = (d.bank_account || '').replace(/\s+/g, '').toUpperCase();
+                return dAcc && cleanAcc && dAcc === cleanAcc;
+            });
+            if (dupBank) {
+                const dupName = dupBank.stage_name ? `${dupBank.stage_name}` : (dupBank.real_name || 'Бүжигчин');
+                const clubName = store.clubs.find(c => c.id === dupBank.club_id)?.name.replace(' CLUB', '') || '';
+                showError(`"${bankAcc}" дансны дугаартай бүжигчин (${dupName}${clubName ? ` • ${clubName}` : ''}) аль хэдийн бүртгэгдсэн байна! Дансны дугаараа шалгана уу.`);
+                highlightField('modal-dancer-bankacc');
+                document.getElementById('modal-dancer-bankacc').focus();
+                return;
+            }
+
+            // 5c. Check duplicate Phone Number (Утасны дугаар)
+            if (cleanPhone) {
+                const dupPhone = otherDancers.find(d => {
+                    const dPhone = (d.phone || '').toString().replace(/[^0-9]/g, '');
+                    return dPhone && cleanPhone && dPhone === cleanPhone;
+                });
+                if (dupPhone) {
+                    const dupName = dupPhone.stage_name ? `${dupPhone.stage_name}` : (dupPhone.real_name || 'Бүжигчин');
+                    const clubName = store.clubs.find(c => c.id === dupPhone.club_id)?.name.replace(' CLUB', '') || '';
+                    showError(`"${phone}" утасны дугаартай бүжигчин (${dupName}${clubName ? ` • ${clubName}` : ''}) аль хэдийн бүртгэгдсэн байна! Утасны дугаараа шалгана уу.`);
+                    highlightField('modal-dancer-phone');
+                    document.getElementById('modal-dancer-phone').focus();
+                    return;
+                }
             }
 
             let targetId = null;
